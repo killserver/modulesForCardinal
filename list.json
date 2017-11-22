@@ -1,0 +1,34 @@
+{
+	"copyrightForCopy": {
+		"name": "Защита от копирования",
+		"altName": "copyrightForCopy",
+		"description": "Защита от копирования с сайта путем добавления откуда был скопирован материал",
+		"author": "killserver",
+		"version": "1.0",
+		"image": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Copyright.svg/170px-Copyright.svg.png"
+	},
+	"parallax": {
+		"name": "Параллакс",
+		"altName": "parallax",
+		"description": "Модуль параллакса, который корректно работает в мобильном",
+		"author": "killserver",
+		"version": "1.0",
+		"image": "http://codictados.com/wp-content/uploads/2015/03/parallax-effect-espacio-1038x649.jpg"
+	},
+	"seoFinder": {
+		"name": "Поиск СЕО",
+		"altName": "seoFinder",
+		"description": "Модуль \"Поиск СЕО\" предназначен для выявления отсутствия требуемой разметки, а также выявления не корректной разметки на сайте",
+		"author": "killserver",
+		"version": "1.0",
+		"image": "http://blog.verticalresponse.com/wp-content/uploads/2015/02/top_10_best_seo_resources1.jpg"
+	},
+	"wow": {
+		"name": "WOW.js + Animate.css – скрипт анимации для сайта",
+		"altName": "wow",
+		"description": "Использование Animate.css анимаций для сайта во время прокрутки",
+		"author": "killserver",
+		"version": "1.1",
+		"image": "http://mynameismatthieu.com/WOW/img/wow-logo.jpg"
+	}
+}
