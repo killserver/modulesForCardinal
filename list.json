@@ -6,7 +6,8 @@
 		"author": "killserver",
 		"version": "1.0",
 		"image": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Copyright.svg/170px-Copyright.svg.png",
-		"type": "module"
+		"type": "module",
+		"cardinalVersion": "7.5"
 	},
 	"parallax": {
 		"name": "Параллакс",
@@ -15,7 +16,8 @@
 		"author": "killserver",
 		"version": "1.0",
 		"image": "http://codictados.com/wp-content/uploads/2015/03/parallax-effect-espacio-1038x649.jpg",
-		"type": "module"
+		"type": "module",
+		"cardinalVersion": "7.5"
 	},
 	"seoFinder": {
 		"name": "Поиск СЕО",
@@ -24,7 +26,8 @@
 		"author": "killserver",
 		"version": "1.0",
 		"image": "http://blog.verticalresponse.com/wp-content/uploads/2015/02/top_10_best_seo_resources1.jpg",
-		"type": "module"
+		"type": "module",
+		"cardinalVersion": "7.5"
 	},
 	"wow": {
 		"name": "WOW.js + Animate.css – скрипт анимации для сайта",
@@ -33,24 +36,29 @@
 		"author": "killserver",
 		"version": "1.2",
 		"image": "http://mynameismatthieu.com/WOW/img/wow-logo.jpg",
-		"type": "module"
+		"type": "module",
+		"cardinalVersion": "7.5"
 	},
 	"neon-admin": {
 		"name": "Neon Admin Theme",
 		"altName": "neon-admin",
 		"description": "Шаблон админ-панели 'Neon Admin Theme' для движка Cardinal Engine",
 		"author": "killserver",
-		"version": "1.1",
+		"version": "1.2",
 		"image": "https://s3.envato.com/files/184339880/neon_1_LARGE.__large_preview.jpg",
-		"type": "theme"
+		"type": "theme",
+		"cardinalVersion": "7.5",
+		"changelog": "<b>1.2</b><br>Актуализирован раздел настроек в админ-панели"
 	},
 	"bxslider": {
 		"name": "BxSlider",
 		"altName": "bxslider",
 		"description": "Готовый слайдер для Cardinal Engine",
 		"author": "killserver",
-		"version": "1.0",
+		"version": "1.1",
 		"image": "http://jquer.in/wp-content/uploads/2013/01/bxSlider-jquery-plugin.png",
-		"type": "module"
+		"type": "module",
+		"cardinalVersion": "7.5",
+		"changelog": "<b>1.1</b><br>Добавлен готовый пример использования установленного слайдера"
 	}
 }
