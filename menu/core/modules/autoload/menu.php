@@ -28,15 +28,15 @@ class menu {
 			if($v['mIcon']!=="") {
 				$countClass++;
 			}
-			$ret .= '<li'.($v['mClass']!=="" ? ' class="'.$v['mClass'].'"' : "").'>'.
-						'<a href="{C_default_http_local}'.($lang!==false ? $lang."/" : "").($v['mPage']!=="" ? $v['mPage'] : "#").'"'.($v['mClass']!=="" ? ' class="'.$v['mClass'].'"' : "").''.($v['mOpened']!=="" ? ' target="'.$v['mOpened'].'"' : "").'>'.
+			$ret .= (strpos($v['mPage'], "@")!==false ? "<!--email_off-->" : "").'<li'.($v['mClass']!=="" ? ' class="'.$v['mClass'].'"' : "").'>'.
+						'<a href="'.(strpos($v['mPage'], "@")!==false ? $v['mPage'] : '{C_default_http_local}'.($lang!==false ? $lang."/" : "").($v['mPage']!=="" ? $v['mPage'] : "#")).'"'.($v['mClass']!=="" ? ' class="'.$v['mClass'].'"' : "").''.($v['mOpened']!=="" ? ' target="'.$v['mOpened'].'"' : "").'>'.
 							($v['mIcon']!=="" ? '<i class="fa fa-'.$v['mIcon'].'"></i>' : "").
 							'<span>'.$v['mContent'].'</span>'.
 						'</a>';
 			if(isset($v['children'])) {
 				$ret .= $this->build($v['children'], $countClass, ($level+1));
 			}
-			$ret .= "</li>";
+			$ret .= "</li>".(strpos($v['mPage'], "@")!==false ? "<!--/email_off-->" : "");
 		}
 		$ret .= "</ul>";
 		return $ret;

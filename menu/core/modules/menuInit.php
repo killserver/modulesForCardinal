@@ -18,6 +18,6 @@ class menuInit extends modules {
 									"primary key `id`(`mId`)");
 	}
 
-	public static $version = "1.0";
+	public static $version = "1.0.1";
 
 }
