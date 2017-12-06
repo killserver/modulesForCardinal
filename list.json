@@ -60,5 +60,15 @@
 		"type": "module",
 		"cardinalVersion": "7.5",
 		"changelog": "<b>1.1</b><br>Добавлен готовый пример использования установленного слайдера"
+	},
+	"faq": {
+		"name": "FAQ - вопрос/ответ",
+		"altName": "faq",
+		"description": "Готовый раздел вопросов и ответов для Cardinal Engine",
+		"author": "killserver",
+		"version": "1.0",
+		"image": "http://cropas.by/wp-content/uploads/2015/09/faq.png",
+		"type": "module",
+		"cardinalVersion": "7.5"
 	}
 }
