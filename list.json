@@ -4,40 +4,44 @@
 		"altName": "copyrightForCopy",
 		"description": "Защита от копирования с сайта путем добавления откуда был скопирован материал",
 		"author": "killserver",
-		"version": "1.0",
+		"version": "1.1",
 		"image": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Copyright.svg/170px-Copyright.svg.png",
 		"type": "module",
-		"cardinalVersion": "7.5"
+		"cardinalVersion": "7.6",
+		"changelog": "<b>1.1</b><br>Модуль обновлен до последней версии ядра"
 	},
 	"parallax": {
 		"name": "Параллакс",
 		"altName": "parallax",
 		"description": "Модуль параллакса, который корректно работает в мобильном",
 		"author": "killserver",
-		"version": "1.0",
+		"version": "1.2",
 		"image": "http://codictados.com/wp-content/uploads/2015/03/parallax-effect-espacio-1038x649.jpg",
 		"type": "module",
-		"cardinalVersion": "7.5"
+		"cardinalVersion": "7.6",
+		"changelog": "<b>1.1</b><br>Модуль обновлен до последней версии ядра<br><br><b>1.2</b><br>Исправлены ошибки в самих скриптах, теперь они работают без сбоев"
 	},
 	"seoFinder": {
 		"name": "Поиск СЕО",
 		"altName": "seoFinder",
 		"description": "Модуль 'Поиск СЕО' предназначен для выявления отсутствия требуемой разметки, а также выявления не корректной разметки на сайте",
 		"author": "killserver",
-		"version": "1.0",
+		"version": "1.1",
 		"image": "http://blog.verticalresponse.com/wp-content/uploads/2015/02/top_10_best_seo_resources1.jpg",
 		"type": "module",
-		"cardinalVersion": "7.5"
+		"cardinalVersion": "7.6",
+		"changelog": "<b>1.1</b><br>Модуль обновлен до последней версии ядра"
 	},
 	"wow": {
 		"name": "WOW.js + Animate.css – скрипт анимации для сайта",
 		"altName": "wow",
 		"description": "Использование Animate.css анимаций для сайта во время прокрутки",
 		"author": "killserver",
-		"version": "1.2",
+		"version": "1.1",
 		"image": "http://mynameismatthieu.com/WOW/img/wow-logo.jpg",
 		"type": "module",
-		"cardinalVersion": "7.5"
+		"cardinalVersion": "7.6",
+		"changelog": "<b>1.1</b><br>Модуль обновлен до последней версии ядра"
 	},
 	"neon-admin": {
 		"name": "Neon Admin Theme",
@@ -55,11 +59,11 @@
 		"altName": "bxslider",
 		"description": "Готовый слайдер для Cardinal Engine",
 		"author": "killserver",
-		"version": "1.1",
+		"version": "1.3",
 		"image": "http://jquer.in/wp-content/uploads/2013/01/bxSlider-jquery-plugin.png",
 		"type": "module",
-		"cardinalVersion": "7.5",
-		"changelog": "<b>1.1</b><br>Добавлен готовый пример использования установленного слайдера"
+		"cardinalVersion": "7.6",
+		"changelog": "<b>1.3</b><br>Модуль обновлен до последней версии ядра<br><br><b>1.1</b><br>Добавлен готовый пример использования установленного слайдера"
 	},
 	"faq": {
 		"name": "FAQ - вопрос/ответ",

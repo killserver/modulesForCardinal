@@ -3,10 +3,12 @@
 class seoFinder extends modules {
 	
 	function __construct() {
-		$this->manifest_set(array("create_css", "full"), array("{C_default_http_local}js/seoFinder/seodebugbar.min.css"));
-		$this->manifest_set(array("create_js", "full"), array("{C_default_http_local}js/seoFinder/seodebugbar.min.js"));
+		$this->regCssJs("{C_default_http_local}js/seoFinder/seodebugbar.min.css", "css");
+		$this->regCssJs("{C_default_http_local}js/seoFinder/seodebugbar.min.js", "js");
 		cardinalEvent::addListener("templates::display", array(&$this, "add"));
 	}
+
+	public static $version = "1.1";
 	
 	function add($send, $page) {
 		$tmp = $this->init_templates();

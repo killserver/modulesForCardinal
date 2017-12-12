@@ -3,9 +3,8 @@
 class slider extends modules {
 
 	function __construct() {
-		$this->manifest_set(array("create_css", "full"), array("https://cdn.jsdelivr.net/bxslider/4.2.12/jquery.bxslider.css"));
-		$this->manifest_set(array("create_js", "full"), array("{C_default_http_local}js/jquery.bxslider.min.js"));
-		$this->manifest_set(array("create_js", "full"), array("{C_default_http_local}js/cardinalSlider.min.js"));
+		$this->regCssJs("https://cdn.jsdelivr.net/bxslider/4.2.12/jquery.bxslider.css", "css");
+		$this->regCssJs(array("{C_default_http_local}js/jquery.bxslider.min.js", "{C_default_http_local}js/cardinalSlider.min.js"), "js");
 		KernelArcher::excludeField("add", "Shield", array("slide_descr"));
 		KernelArcher::callback("Shield", "TraceOn", array(&$this, "RebuildShields"));
 		KernelArcher::callback("ShieldFunc", "slider::RebuildShield");
@@ -26,7 +25,7 @@ class slider extends modules {
 										" PRIMARY KEY `id` (`slide_id`)");
 	}
 
-	public static $version = "1.1";
+	public static $version = "1.3";
 
 	public static function updater($version) {
 		if($version=="1.0") {
