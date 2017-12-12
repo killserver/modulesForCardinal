@@ -3,20 +3,23 @@
 class menu {
 
 	function start($id) {
-		db::doquery("SELECT * FROM {{menu}} WHERE `mMenu` = ".$id." ORDER BY `mParentId` ASC", true);
-		$arr = array();
-		while($row = db::fetch_assoc()) {
-			if($row['mParentId']>0) {
-				$arr[$row['mParentId']]['children'][] = $row;
-			} else {
-				$arr[$row['mId']] = $row;
+		$ret = "";
+		if(db::getTable("menu")!==false) {
+			db::doquery("SELECT * FROM {{menu}} WHERE `mMenu` = ".$id." ORDER BY `mParentId` ASC", true);
+			$arr = array();
+			while($row = db::fetch_assoc()) {
+				if($row['mParentId']>0) {
+					$arr[$row['mParentId']]['children'][] = $row;
+				} else {
+					$arr[$row['mId']] = $row;
+				}
 			}
-		}
-		$arr = array_values($arr);
-		$countClass = 0;
-		$ret = $this->build($arr, $countClass);
-		if($countClass>0) {
-			regCssJs("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css", "css");
+			$arr = array_values($arr);
+			$countClass = 0;
+			$ret = $this->build($arr, $countClass);
+			if($countClass>0) {
+				regCssJs("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css", "css");
+			}
 		}
 		return $ret;
 	}

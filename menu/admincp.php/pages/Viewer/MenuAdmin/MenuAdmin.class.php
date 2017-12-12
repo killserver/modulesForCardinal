@@ -53,7 +53,8 @@ class MenuAdmin extends Core {
 								<div class="uk-nestable-item" data-toggle="collapse" href="#collapseTwo-'.$i.'">
 									<div class="uk-nestable-handle"></div>
 									<div data-nestable-action="toggle"></div>
-									<div class="list-label">'.($v['mContent']!=="" ? $v['mContent'] : '{L_"Не заданно"}').'</div>
+									<div class="list-label">'.($v['mIcon']!=="" ? '<i class="fa-'.$v['mIcon'].'" style="width:2.5em;text-align:center;font-size:1.35em;"></i>' : "").'<span>'.($v['mContent']!=="" ? $v['mContent'] : '{L_"Не заданно"}').'</span></div>
+									<div class="btn btn-red btn-single pull-right remove">x</div>
 								</div>
 								<div id="collapseTwo-'.$i.'" class="panel panel-collapse collapse">
 									<div class="panel-body">
@@ -91,6 +92,11 @@ class MenuAdmin extends Core {
 			return false;
 		}
 		if(isset($_GET['add']) || (isset($_GET['edit']) && is_numeric($_GET['edit']) && $_GET['edit']>0)) {
+			$additions = HTTP::getServer("REQUEST_URI");
+			$additions = nsubstr($additions, nstrlen(config::Select("default_http_local")));
+			$additions = str_replace((defined("ADMINCP_DIRECTORY") ? ADMINCP_DIRECTORY : "admincp.php"), "", $additions);
+			$additions = str_replace("/?pages=MenuAdmin", "", $additions);
+			templates::assign_var("additions", $additions);
 			$post = file_get_contents("php://input");
 			if(strlen($post)>0) {
 				$post = json_decode($post, true);

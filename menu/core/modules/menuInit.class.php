@@ -7,6 +7,7 @@ class menuInit extends modules {
 
 	public static function installation() {
 		self::create_table("menu", "`mId` int not null auto_increment,".
+									"`mUId` int(11) not null,"
 									"`mMenu` int(11) not null,".
 									"`mLevel` int(11) not null,".
 									"`mIcon` varchar(255) not null,".
@@ -18,6 +19,10 @@ class menuInit extends modules {
 									"primary key `id`(`mId`)");
 	}
 
-	public static $version = "1.0.1";
+	public static $version = "1.0.2";
+
+	public static function updater() {
+		self::add_fields("menu", array("mUId" => "int(11) not null"));
+	}
 
 }

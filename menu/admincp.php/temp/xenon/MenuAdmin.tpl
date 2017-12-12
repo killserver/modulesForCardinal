@@ -23,7 +23,7 @@
 		<div class="uk-nestable-item" data-toggle="collapse" href="#collapseTwo-{uid}">
 			<div class="uk-nestable-handle"></div>
 			<div data-nestable-action="toggle"></div>
-			<div class="list-label">{L_"Не заданно"}</div>
+			<div class="list-label"><i class="" style="width:2.5em;text-align:center;font-size:1.35em;"></i><span>{L_"Не заданно"}</span></div>
 			<div class="btn btn-red btn-single pull-right remove">x</div>
 		</div>
 		<div id="collapseTwo-{uid}" class="panel panel-collapse collapse">
@@ -100,14 +100,17 @@
 	});
 	jQuery(".form-menu").submit(function(event) {
 		var elem = this;
-		jQuery.post("./?pages=MenuAdmin", JSON.stringify(jQuery("#nestable-list-1").data('nestable').serialize()), function(data) {
+		jQuery.post("./?pages=MenuAdmin{additions}", JSON.stringify(jQuery("#nestable-list-1").data('nestable').serialize()), function(data) {
 			if(data==1) {
 				toastr.info("Menu admin", "done save");
 				jQuery(elem).find("input").attr("disabled", "disabled");
 				jQuery(elem).find("select").attr("disabled", "disabled");
 				jQuery(elem).find("a").attr("disabled", "disabled");
+				jQuery(elem).find(".remove").attr("disabled", "disabled");
 				setTimeout(function() {
-					window.location.href = window.location.href.replace(/\&id=(.+?)/, "");
+					var link = window.location.href.replace(/\&edit=(.+?)/, "");
+					link = link.replace(/\&add(.*?)/, "");
+					window.location.href = link;
 				}, 3000);
 			} else {
 				toastr.error("Menu admin", "error on save");
@@ -124,9 +127,10 @@
 			jQuery("#modal-3 .modal-body").on("click", "a", function() {
 				jQuery(elem).parent().children("input").val(jQuery(this).attr("data-icon"));
 				jQuery(elem).children("i").children("b").remove();
-				jQuery(elem).children("i").addClass("fa-"+jQuery(this).attr("data-icon"));
+				jQuery(elem).children("i").attr("class", "").addClass("fa-"+jQuery(this).attr("data-icon"));
 				jQuery(elem).parent().parent().parent().parent().parent().parent().data("icon", jQuery(this).attr("data-icon"));
-				jQuery(elem).parent().parent().parent().parent().parent().parent().attr("data-icon", jQuery(this).attr("data-icon"));
+				jQuery(elem).parent().parent().parent().parent().parent().parent().data("icon", jQuery(this).attr("data-icon"));
+				jQuery(elem).parent().parent().parent().parent().parent().parent().find(".list-label").children('i').attr("class", "fa-"+jQuery(this).attr("data-icon"));
 				jQuery('#modal-3').modal('hide');
 				return false;
 			});
@@ -161,7 +165,7 @@
 		jQuery("div[data-uid='"+jQuery(this).attr("data-id")+"']").parent().parent().parent().attr("data-"+jQuery(this).attr("data-name"), jQuery(this).val());
 	});
 	jQuery("#nestable-list-1").on("keyup", "#field-2", function(e) {
-		jQuery('[data-toggle="collapse"][href="#'+jQuery(this).parent().parent().parent().parent().parent().attr("id")+'"]').find(".list-label").html(jQuery(this).val());
+		jQuery('[data-toggle="collapse"][href="#'+jQuery(this).parent().parent().parent().parent().parent().attr("id")+'"]').find(".list-label").children("span").html(jQuery(this).val());
 	});
 	var disableAllEditors = true;
 </script>
