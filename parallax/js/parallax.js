@@ -10,6 +10,7 @@
 			'size' : 'cover',
 			'position' : '50%',
 			'zIndex' : '-5',
+			'persentPlus' : '5vh',
 		}, options);
 
 	    var isOnScreen = function(elemTh) {
@@ -66,7 +67,7 @@
 			}
 			jQuery(elem).css(sets);
 			if(!settings.isMobile || (settings.detectMobile && $(window).width()>900)) {
-				jQuery(elem).append('<div class="parallax-container" style="position: absolute; width:100%; height:100%; top:0; left: 0; right: 0; bottom: 0; overflow: hidden; z-index: '+settings.zIndex+';"><div class="parallax-wrapper" style="position: absolute; top: 0; left: 0; width: 100%; height: 105%; height: -webkit-calc(100% + 5vh); height: -moz-calc(100% + 5vh); height: calc(100% + 5vh);"><div class="parallax-bg" style="background-image: url(' + image + '); background-size: '+settings.size+'; background-repeat: no-repeat; background-position: '+position+'; position: absolute; top: 0; left: 0; right: 0; bottom: 0; width: 100%; height: 100%;"></div></div></div>');
+				jQuery(elem).append('<div class="parallax-container" style="position: absolute; width:100%; height:100%; top:0; left: 0; right: 0; bottom: 0; overflow: hidden; z-index: '+settings.zIndex+';"><div class="parallax-wrapper" style="position: absolute; top: 0; left: 0; width: 100%; height: 105%; height: -webkit-calc(100% + '+settings.persentPlus+'); height: -moz-calc(100% + '+settings.persentPlus+'); height: calc(100% + '+settings.persentPlus+');"><div class="parallax-bg" style="background-image: url(' + image + '); background-size: '+settings.size+'; background-repeat: no-repeat; background-position: '+position+'; position: absolute; top: 0; left: 0; right: 0; bottom: 0; width: 100%; height: 100%;"></div></div></div>');
 			} else {
 				jQuery(elem).append('<div class="parallax-container" style="position: absolute; width:100%; height:100%; top:0; left: 0; right: 0; bottom: 0; overflow: hidden; z-index: '+settings.zIndex+';"><div class="parallax-wrapper" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"><div class="parallax-bg" style="background-image: url(' + image + '); background-size: '+settings.size+'; background-repeat: no-repeat; background-position: '+position+'; position: absolute; top: 0; left: 0; right: 0; bottom: 0; width: 100%; height: 100%;"></div></div></div>');
 			}
