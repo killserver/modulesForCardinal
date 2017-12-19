@@ -70,7 +70,7 @@
 			"1.2": "Актуализирован раздел настроек в админ-панели"
 		}
 	},
-	"bxslider": {
+	"slider": {
 		"name": "BxSlider",
 		"altName": "bxslider",
 		"description": "Готовый слайдер для Cardinal Engine",
