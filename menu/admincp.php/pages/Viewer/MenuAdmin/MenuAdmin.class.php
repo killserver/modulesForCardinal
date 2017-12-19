@@ -18,16 +18,17 @@ class MenuAdmin extends Core {
 
 	function childrenRebuild($id, $arr, $parent = 0) {
 		foreach($arr as $v) {
-			$v['parent_id'] = $parent;
 			$child = false;
 			if(isset($v['children'])) {
 				$child = $v['children'];
-				$parent = db::last_id("menu");
+				$parentNext = $v['uid']-1;
+				//$parent = db::last_id("menu");
 				unset($v['children']);
 			}
+			$v['parent_id'] = $parent;
 			$arrs = array();
 			$arrs['mMenu'] = $id;
-			$arrs['mUId'] = $id;
+			$arrs['mUId'] = $v['uid']-1;
 			$arrs['mLevel'] = $v['level'];
 			$arrs['mIcon'] = $v['icon'];
 			$arrs['mOpened'] = $v['opened'];
@@ -37,7 +38,7 @@ class MenuAdmin extends Core {
 			$arrs['mParentId'] = $v['parent_id'];
 			db::doquery("INSERT INTO {{menu}} SET ".implode(", ", array_map(array(&$this, "build"), array_keys($arrs), array_values($arrs))));
 			if(!is_bool($child)) {
-				$this->childrenRebuild($id, $child, $parent);
+				$this->childrenRebuild($id, $child, ($parentNext));
 			}
 		}
 	}
@@ -49,23 +50,27 @@ class MenuAdmin extends Core {
 	function builder($arr, &$count, $i = 1) {
 		$ret = "";
 		foreach($arr as $v) {
-			$ret .= '<li data-page="'.$v['mPage'].'" data-content="'.$v['mContent'].'" data-class="'.$v['mClass'].'" data-opened="'.$v['mOpened'].'" data-icon="'.$v['mIcon'].'" data-level="'.$v['mLevel'].'" data-uid="'.$i.'">
-								<div class="uk-nestable-item" data-toggle="collapse" href="#collapseTwo-'.$i.'">
-									<div class="uk-nestable-handle"></div>
-									<div data-nestable-action="toggle"></div>
-									<div class="list-label">'.($v['mIcon']!=="" ? '<i class="fa-'.$v['mIcon'].'" style="width:2.5em;text-align:center;font-size:1.35em;"></i>' : "").'<span>'.($v['mContent']!=="" ? $v['mContent'] : '{L_"Не заданно"}').'</span></div>
-									<div class="btn btn-red btn-single pull-right remove">x</div>
-								</div>
-								<div id="collapseTwo-'.$i.'" class="panel panel-collapse collapse">
-									<div class="panel-body">
+			if(isset($v['mPage'])) {
+				$ret .= '<li data-page="'.$v['mPage'].'" data-content="'.$v['mContent'].'" data-class="'.$v['mClass'].'" data-opened="'.$v['mOpened'].'" data-icon="'.$v['mIcon'].'" data-level="'.$v['mLevel'].'" data-uid="'.$i.'">
+									<div class="uk-nestable-item" data-toggle="collapse" href="#collapseTwo-'.$i.'">
+										<div class="uk-nestable-handle"></div>
+										<div data-nestable-action="toggle"></div>
+										<div class="list-label">'.($v['mIcon']!=="" ? '<i class="fa-'.$v['mIcon'].'" style="width:2.5em;text-align:center;font-size:1.35em;"></i>' : "").'<span>'.($v['mContent']!=="" ? $v['mContent'] : '{L_"Не заданно"}').'</span></div>
+										<div class="btn btn-red btn-single pull-right remove">x</div>
 									</div>
-								</div>';
+									<div id="collapseTwo-'.$i.'" class="panel panel-collapse collapse">
+										<div class="panel-body">
+										</div>
+									</div>';
+			}
 			if(isset($v['children'])) {
 				$ret .= '<ul>';
 				$ret .= $this->builder($v['children'], $count, ($i+1));
 				$ret .= '</ul>';
 			}
-			$ret .= '</li>';
+			if(isset($v['mPage'])) {
+				$ret .= '</li>';
+			}
 			$i++;
 			$count++;
 		}
@@ -123,9 +128,10 @@ class MenuAdmin extends Core {
 					if($row['mParentId']>0) {
 						$arr[$row['mParentId']]['children'][] = $row;
 					} else {
-						$arr[$row['mId']] = $row;
+						$arr[$row['mUId']] = $row;
 					}
 				}
+				ksort($arr);
 				$count = 0;
 				templates::assign_var("menuBuilder", $this->builder($arr, $count));
 				templates::assign_var("countItems", ($count>0 ? $count : "undefined"));
@@ -138,7 +144,7 @@ class MenuAdmin extends Core {
 			$this->Prints("MenuAdmin");
 			return false;
 		}
-		db::doquery("SELECT * FROM {{menu}} WHERE `mParentId` = 0 GROUP BY `mMenu`", true);
+		db::doquery("SELECT *, (SELECT DISTINCT `mContent` FROM {{menu}} WHERE `mMenu` = {{menu}}.`mMenu` ORDER BY `mUId` ASC LIMIT 1) as `mContent` FROM {{menu}} WHERE `mParentId` = 0 GROUP BY `mMenu`", true);
 		while($row = db::fetch_assoc()) {
 			templates::assign_vars($row, "menuTmp", $row['mId']);
 		}

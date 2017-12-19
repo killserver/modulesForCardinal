@@ -19,7 +19,7 @@ class menuInit extends modules {
 									"primary key `id`(`mId`)");
 	}
 
-	public static $version = "1.1";
+	public static $version = "1.2";
 
 	public static function updater() {
 		self::add_fields("menu", array("mUId" => "int(11) not null"));

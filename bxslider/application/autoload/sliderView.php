@@ -10,6 +10,7 @@ class sliderView {
 			$tmp->assign_vars($row, "sliderz", $row['slide_id']);
 		}
 		$template = config::Select("templateSlider");
+		modules::regCssJs('jQuery(document).ready(function(){ jQuery(".sliderz").cardinalBxSlider(); });', "js", false);
 		$tpl = $tmp->completed_assign_vars($template, null);
 		return $tmp->view($tpl);
 	}
