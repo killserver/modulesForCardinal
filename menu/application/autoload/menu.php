@@ -5,7 +5,7 @@ class menu {
 	function start($id) {
 		$ret = "";
 		if(db::getTable("menu")!==false) {
-			db::doquery("SELECT * FROM {{menu}} WHERE `mMenu` = ".$id." ORDER BY `mParentId` ASC", true);
+			db::doquery("SELECT * FROM {{menu}} WHERE `mMenu` = ".$id." ORDER BY `mId` ASC", true);
 			$arr = array();
 			while($row = db::fetch_assoc()) {
 				if($row['mParentId']>0) {

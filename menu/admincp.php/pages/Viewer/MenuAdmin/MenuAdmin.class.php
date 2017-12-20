@@ -12,23 +12,25 @@ CREATE TABLE `menu` (
 `mParentId` int(11) not null,
 primary key `id`(`mId`)
 ) ENGINE=MyISAM;
+ALTER TABLE `cardinal_menu` ADD `mName` varchar(255) not null
  */
 
 class MenuAdmin extends Core {
 
-	function childrenRebuild($id, $arr, $parent = 0) {
-		foreach($arr as $v) {
+	function childrenRebuild($namer, $id, $arr, $parent = 0) {
+		foreach($arr as $k => $v) {
 			$child = false;
 			if(isset($v['children'])) {
 				$child = $v['children'];
-				$parentNext = $v['uid']-1;
+				$parentNext = $k;
 				//$parent = db::last_id("menu");
 				unset($v['children']);
 			}
 			$v['parent_id'] = $parent;
 			$arrs = array();
+			$arrs['mName'] = $namer;
 			$arrs['mMenu'] = $id;
-			$arrs['mUId'] = $v['uid']-1;
+			$arrs['mUId'] = $k;
 			$arrs['mLevel'] = $v['level'];
 			$arrs['mIcon'] = $v['icon'];
 			$arrs['mOpened'] = $v['opened'];
@@ -38,7 +40,7 @@ class MenuAdmin extends Core {
 			$arrs['mParentId'] = $v['parent_id'];
 			db::doquery("INSERT INTO {{menu}} SET ".implode(", ", array_map(array(&$this, "build"), array_keys($arrs), array_values($arrs))));
 			if(!is_bool($child)) {
-				$this->childrenRebuild($id, $child, ($parentNext));
+				$this->childrenRebuild($namer, $id, $child, ($parentNext));
 			}
 		}
 	}
@@ -105,6 +107,12 @@ class MenuAdmin extends Core {
 			$post = file_get_contents("php://input");
 			if(strlen($post)>0) {
 				$post = json_decode($post, true);
+				$name = end($post);
+				$namer = "";
+				if(isset($name['name'])) {
+					$namer = $name['name'];
+					array_pop($post);
+				}
 				if(isset($_GET['add'])) {
 					$id = db::doquery("SELECT DISTINCT MAX(`mMenu`) FROM {{menu}}");
 					$id = $id[0];
@@ -113,11 +121,12 @@ class MenuAdmin extends Core {
 					$id = intval($_GET['edit']);
 				}
 				db::doquery("DELETE FROM {{menu}} WHERE `mMenu` = ".$id);
-				$this->childrenRebuild($id, $post);
+				$this->childrenRebuild($namer, $id, $post);
 				callAjax();
 				HTTP::echos("1");
 				return false;
 			}
+			templates::assign_var("name", "");
 			templates::assign_var("menuBuilder", "");
 			templates::assign_var("countItems", "undefined");
 			if(isset($_GET['edit']) && is_numeric($_GET['edit']) && $_GET['edit']>0) {
@@ -130,6 +139,7 @@ class MenuAdmin extends Core {
 					} else {
 						$arr[$row['mUId']] = $row;
 					}
+					templates::assign_var("name", $row['mName']);
 				}
 				ksort($arr);
 				$count = 0;
@@ -144,7 +154,7 @@ class MenuAdmin extends Core {
 			$this->Prints("MenuAdmin");
 			return false;
 		}
-		db::doquery("SELECT *, (SELECT DISTINCT `mContent` FROM {{menu}} WHERE `mMenu` = {{menu}}.`mMenu` ORDER BY `mUId` ASC LIMIT 1) as `mContent` FROM {{menu}} WHERE `mParentId` = 0 GROUP BY `mMenu`", true);
+		db::doquery("SELECT * FROM {{menu}} WHERE `mParentId` = 0 GROUP BY `mMenu`", true);
 		while($row = db::fetch_assoc()) {
 			templates::assign_vars($row, "menuTmp", $row['mId']);
 		}

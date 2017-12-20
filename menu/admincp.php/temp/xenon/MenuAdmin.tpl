@@ -4,6 +4,12 @@
 		<div class="row">
 			<form method="post" role="form" class="form-menu form-horizontal">
 				<div class="col-sm-12">
+					<div class="form-group">
+						<label class="col-sm-2 control-label">{L_"Наименование меню"}</label>
+						<div class="col-sm-10">
+							<input type="text" name="data[{uid}][name]" id="nameMenu" class="form-control" value="{name}">
+						</div>
+					</div>
 					<ul id="nestable-list-1" class="uk-nestable" style="margin-bottom:0px;" data-uk-nestable><!-- ="{maxDepth:1}" -->
 						{menuBuilder}
 					</ul>
@@ -100,7 +106,9 @@
 	});
 	jQuery(".form-menu").submit(function(event) {
 		var elem = this;
-		jQuery.post("./?pages=MenuAdmin{additions}", JSON.stringify(jQuery("#nestable-list-1").data('nestable').serialize()), function(data) {
+		var named = jQuery("#nestable-list-1").data('nestable').serialize();
+		named.push({ "name": jQuery("input#nameMenu").val() });
+		jQuery.post("./?pages=MenuAdmin{additions}", JSON.stringify(named), function(data) {
 			if(data==1) {
 				toastr.info("Menu admin", "done save");
 				jQuery(elem).find("input").attr("disabled", "disabled");

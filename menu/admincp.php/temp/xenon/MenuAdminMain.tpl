@@ -20,7 +20,7 @@
 [foreach block=menuTmp]<tr>
 	<td>{menuTmp.mMenu}</td>
 	<td>{menuTmp.mPage}</td>
-	<td>{menuTmp.mContent}</td>
+	<td>{menuTmp.mName}</td>
 	<td>
 		<a href="./?pages=MenuAdmin&edit={menuTmp.mMenu}" class="btn btn-turquoise btn-block">{L_edit}</a><br>
 		<a href="./?pages=MenuAdmin&delete={menuTmp.mMenu}" onclick="return confirmDelete();" class="btn btn-red btn-block">{L_delete}</a>
