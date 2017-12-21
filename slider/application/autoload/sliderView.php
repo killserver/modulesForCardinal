@@ -11,6 +11,9 @@ class sliderView {
 		}
 		$template = config::Select("templateSlider");
 		modules::regCssJs('jQuery(document).ready(function(){ jQuery(".sliderz").cardinalBxSlider(); });', "js", false);
+		if(file_exists(PATH_SKINS.$template.".default.".$tmp->changeTypeTpl())) {
+			$template .= ".default";
+		}
 		$tpl = $tmp->completed_assign_vars($template, null);
 		return $tmp->view($tpl);
 	}
