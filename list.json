@@ -99,9 +99,9 @@
 			"1.1": "Модуль обновлен до последней версии ядра"
 		}
 	},
-	"menu": {
+	"menuInit": {
 		"name": "Редактор меню для Cardinal Engine",
-		"altName": "menu",
+		"altName": "menuInit",
 		"description": "Позволяет создавать/редактировать/удалять разнообразные меню в сайтах, построенных на базе Cardinal Engine. Для использования в шаблоне пропишите: {include module='menu&id=1'} где '1' - это идентификатор меню",
 		"author": "killserver",
 		"version": "1.3",
