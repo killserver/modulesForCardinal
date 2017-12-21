@@ -72,7 +72,7 @@
 	},
 	"slider": {
 		"name": "BxSlider",
-		"altName": "bxslider",
+		"altName": "slider",
 		"description": "Готовый слайдер для Cardinal Engine",
 		"author": "killserver",
 		"version": "1.5",
