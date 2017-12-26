@@ -151,5 +151,15 @@
 		"image": "https://image.slidesharecdn.com/20150626ken-150923040132-lva1-app6892/95/jquerytmpl-15-638.jpg?cb=1442980928",
 		"type": "module",
 		"cardinalVersion": "7.8"
+	},
+	"swiper": {
+		"name": "Swiper для Cardinal Engine",
+		"altName": "swiper",
+		"description": "Swiper - is the free and most modern mobile touch slider with hardware accelerated transitions and amazing native behavior. It is intended to be used in mobile websites, mobile web apps, and mobile native/hybrid apps. Designed mostly for iOS, but also works great on latest Android, Windows Phone 8 and modern Desktop browsers",
+		"author": "max",
+		"version": "1.0",
+		"image": "https://idangero.us/swiper/i/swiper-banner.jpg",
+		"type": "module",
+		"cardinalVersion": "7.8"
 	}
 }
