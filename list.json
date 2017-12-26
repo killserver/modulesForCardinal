@@ -62,9 +62,9 @@
 		},
 		"download": "https://github.com/killserver/modulesForCardinal/blob/master/wow.zip"
 	},
-	"neon-admin": {
+	"neon": {
 		"name": "Neon Admin Theme",
-		"altName": "neon-admin",
+		"altName": "neon",
 		"description": "Шаблон админ-панели 'Neon Admin Theme' для движка Cardinal Engine",
 		"author": "killserver",
 		"version": "1.2",
