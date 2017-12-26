@@ -14,6 +14,8 @@ class Settings_cardinalGoogleMaps extends Settings {
 	public function PluginSave($args) {
 		if(isset($args['cardinalGoogleMaps']) && config::Select("cardinalGoogleMaps")!=$args['cardinalGoogleMaps']) {
 			$return = "\t'cardinalGoogleMaps' => '".$args['cardinalGoogleMaps']."',\n";
+		} else {
+			$return = "\t'cardinalGoogleMaps' => '".config::Select("cardinalGoogleMaps")."',\n";
 		}
 		return $return;
 	}

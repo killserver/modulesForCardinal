@@ -78,6 +78,16 @@
 
 if(typeof(parallaxAutoInit)!=="undefined") {
 	jQuery(document).ready(function($) {
-		$('.parallax-image').parallaxCardinal();
+		$('.parallax-image').each(function(i, elem) {
+			var speed = undefined;
+			if(typeof($(elem).attr("parallax-speed"))!=="undefined" || $(elem).attr("parallax-speed").length>0) {
+				speed = $(elem).attr("parallax-speed");
+			}
+			var option = {};
+			if(speed!==undefined) {
+				option['speed'] = speed;
+			}
+			$(elem).parallaxCardinal(option);
+		});
 	});
 }

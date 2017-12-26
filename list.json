@@ -18,11 +18,12 @@
 		"altName": "parallax",
 		"description": "Модуль параллакса, который корректно работает в мобильном",
 		"author": "killserver",
-		"version": "1.4",
+		"version": "1.5",
 		"image": "http://codictados.com/wp-content/uploads/2015/03/parallax-effect-espacio-1038x649.jpg",
 		"type": "module",
 		"cardinalVersion": "7.8",
 		"changelog": {
+			"1.5": "Добавлена возможность редактировать скорость параллакса путём считывания атрибута parallax-speed",
 			"1.4": "Модуль обновлен до последней версии ядра",
 			"1.3": "Добавлена возможность самому выставлять сколько нужно добавить для изображения высоты",
 			"1.2": "Исправлены ошибки в самих скриптах, теперь они работают без сбоев",
@@ -122,11 +123,12 @@
 		"altName": "cardinalGoogleMaps",
 		"description": "Модуль установки Google Maps в любых местах на сайте для Cardinal Engine",
 		"author": "killserver",
-		"version": "1.1",
+		"version": "1.2",
 		"image": "https://upload.wikimedia.org/wikipedia/en/thumb/2/23/GoogleMaps.svg/1200px-GoogleMaps.svg.png",
 		"type": "module",
 		"cardinalVersion": "7.8",
 		"changelog": {
+			"1.2": "Исправлена ошибка когда не сохранялися/не считывались установленные данные позиции",
 			"1.1": "Модуль обновлен до последней версии ядра"
 		}
 	},
