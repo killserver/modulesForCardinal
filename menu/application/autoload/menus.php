@@ -1,6 +1,6 @@
 <?php
 
-class menu {
+class menus {
 
 	function start($id) {
 		$ret = "";
@@ -24,7 +24,7 @@ class menu {
 		return $ret;
 	}
 
-	function build($arr, &$countClass, $level = 0) {
+	private function build($arr, &$countClass, $level = 0) {
 		$ret = '<ul data-level="'.($level+1).'">';
 		$lang = Route::param("lang");
 		foreach($arr as $v) {
