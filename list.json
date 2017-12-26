@@ -11,7 +11,8 @@
 		"changelog": {
 			"1.2": "Модуль обновлен до последней версии ядра",
 			"1.1": "Модуль обновлен до последней версии ядра"
-		}
+		},
+		"download": "https://github.com/killserver/modulesForCardinal/blob/master/copyrightForCopy.zip"
 	},
 	"parallax": {
 		"name": "Параллакс",
@@ -28,7 +29,8 @@
 			"1.3": "Добавлена возможность самому выставлять сколько нужно добавить для изображения высоты",
 			"1.2": "Исправлены ошибки в самих скриптах, теперь они работают без сбоев",
 			"1.1": "Модуль обновлен до последней версии ядра"
-		}
+		},
+		"download": "https://github.com/killserver/modulesForCardinal/blob/master/parallax.zip"
 	},
 	"seoFinder": {
 		"name": "Поиск СЕО",
@@ -42,7 +44,8 @@
 		"changelog": {
 			"1.2": "Модуль обновлен до последней версии ядра",
 			"1.1": "Модуль обновлен до последней версии ядра"
-		}
+		},
+		"download": "https://github.com/killserver/modulesForCardinal/blob/master/seoFinder.zip"
 	},
 	"wow": {
 		"name": "WOW.js + Animate.css – скрипт анимации для сайта",
@@ -56,7 +59,8 @@
 		"changelog": {
 			"1.2": "Модуль обновлен до последней версии ядра",
 			"1.1": "Модуль обновлен до последней версии ядра"
-		}
+		},
+		"download": "https://github.com/killserver/modulesForCardinal/blob/master/wow.zip"
 	},
 	"neon-admin": {
 		"name": "Neon Admin Theme",
@@ -69,7 +73,8 @@
 		"cardinalVersion": "7.5",
 		"changelog": {
 			"1.2": "Актуализирован раздел настроек в админ-панели"
-		}
+		},
+		"download": "https://github.com/killserver/modulesForCardinal/blob/master/neon.zip"
 	},
 	"slider": {
 		"name": "BxSlider",
@@ -86,7 +91,8 @@
 			"1.4": "Модуль обновлен до последней версии ядра",
 			"1.3": "Модуль обновлен до последней версии ядра",
 			"1.1": "Добавлен готовый пример использования установленного слайдера"
-		}
+		},
+		"download": "https://github.com/killserver/modulesForCardinal/blob/master/slider.zip"
 	},
 	"faq": {
 		"name": "FAQ - вопрос/ответ",
@@ -99,7 +105,8 @@
 		"cardinalVersion": "7.8",
 		"changelog": {
 			"1.1": "Модуль обновлен до последней версии ядра"
-		}
+		},
+		"download": "https://github.com/killserver/modulesForCardinal/blob/master/faq.zip"
 	},
 	"menuInit": {
 		"name": "Редактор меню для Cardinal Engine",
@@ -116,7 +123,8 @@
 			"1.1": "Модуль обновлен до последней версии ядра",
 			"1.0.2": "Исправлена ошибка в базе данных",
 			"1.0.1": "Исправлена ошибка, при которой было невозможно создать ссылку с почтой.<br>Исправлена подпись раздела в админ-панели"
-		}
+		},
+		"download": "https://github.com/killserver/modulesForCardinal/blob/master/menu.zip"
 	},
 	"cardinalGoogleMaps": {
 		"name": "Модуль Google Maps для Cardinal Engine",
@@ -130,7 +138,8 @@
 		"changelog": {
 			"1.2": "Исправлена ошибка когда не сохранялися/не считывались установленные данные позиции",
 			"1.1": "Модуль обновлен до последней версии ядра"
-		}
+		},
+		"download": "https://github.com/killserver/modulesForCardinal/blob/master/cardinalGoogleMaps.zip"
 	},
 	"velocity": {
 		"name": "VelocityJS для Cardinal Engine",
@@ -140,7 +149,8 @@
 		"version": "1.0",
 		"image": "https://www.sydjs.com/images/showbag/velocity.jpg",
 		"type": "module",
-		"cardinalVersion": "7.8"
+		"cardinalVersion": "7.8",
+		"download": "https://github.com/killserver/modulesForCardinal/blob/master/velocity.zip"
 	},
 	"jqueryTmpl": {
 		"name": "jQuery Templates для Cardinal Engine",
@@ -150,7 +160,8 @@
 		"version": "1.0",
 		"image": "https://image.slidesharecdn.com/20150626ken-150923040132-lva1-app6892/95/jquerytmpl-15-638.jpg?cb=1442980928",
 		"type": "module",
-		"cardinalVersion": "7.8"
+		"cardinalVersion": "7.8",
+		"download": "https://github.com/killserver/modulesForCardinal/blob/master/jqueryTmpl.zip"
 	},
 	"swiper": {
 		"name": "Swiper для Cardinal Engine",
@@ -160,6 +171,7 @@
 		"version": "1.0",
 		"image": "https://idangero.us/swiper/i/swiper-banner.jpg",
 		"type": "module",
-		"cardinalVersion": "7.8"
+		"cardinalVersion": "7.8",
+		"download": "https://github.com/killserver/modulesForCardinal/blob/master/swiper.zip"
 	}
 }
