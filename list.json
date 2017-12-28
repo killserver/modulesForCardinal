@@ -185,5 +185,16 @@
 		"type": "module",
 		"cardinalVersion": "7.8",
 		"download": "https://github.com/killserver/modulesForCardinal/blob/master/installer.zip"
+	},
+	"stats": {
+		"name": "Статистика посещений для Cardinal Engine",
+		"altName": "stats",
+		"description": "Показывает сколько людей интересуются Вашим сайтом и как часто это происходит",
+		"author": "killserver",
+		"version": "1.0",
+		"image": "http://www.postquickly.com/weblog/wp-content/uploads/2012/11/populyarnyie-servisyi-statistiki-300x226.jpg.pagespeed.ce.hX3PjShKI3.jpg",
+		"type": "module",
+		"cardinalVersion": "7.8",
+		"download": "https://github.com/killserver/modulesForCardinal/blob/master/stats.zip"
 	}
 }
