@@ -6,6 +6,6 @@ class parallaxJS extends modules {
 		$this->regCssJs("{C_default_http_local}js/parallax.min.js", "js");
 	}
 
-	public static $version = "1.5";
+	public static $version = "1.6";
 	
 }
