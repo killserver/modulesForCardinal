@@ -2,7 +2,7 @@
 
 class Installer extends Core {
 
-	function rebuild($arr) {
+	private function rebuild($arr) {
 		$newArr = array();
 		for($i=0;$i<sizeof($arr);$i++) {
 			$arr[$i]['active'] = true;
@@ -10,6 +10,22 @@ class Installer extends Core {
 		}
 		return $newArr;
 	}
+
+	private function rcopyModules($src, $dst) {
+        if(is_dir($src)) {
+            @mkdir($dst, 0777);
+            $files = @scandir($src);
+            foreach($files as $file) {
+                if($file != "." && $file != "..") {
+                    $this->rcopyModules($src.DS.$file, $dst.DS.$file);
+                    @rmdir($src);
+                }
+            }
+        } else if(file_exists($src)) {
+            @copy($src, $dst);
+            @unlink($src);
+        }
+    }
 	
 	function __construct() {
 	global $manifest;
@@ -42,20 +58,24 @@ class Installer extends Core {
 				header("HTTP/1.0 404 Not Found");
 				die();
 			}
-			$tar_object = new Archive_Tar(PATH_CACHE_SYSTEM.$_GET['install'].".zip", "gz");
-			$list = $tar_object->listContent();
-			if(!is_array($list) || sizeof($list)==0) {
+			$tar_object = new ZipArchive();
+			$list = $tar_object->open(PATH_CACHE_SYSTEM.$_GET['install'].".zip");
+			if($list!==true) {
 				header("HTTP/1.0 404 Not Found");
 				die();
 			}
+			$tr = $tar_object->extractTo(ROOT_PATH);
+			$this->rcopyModules(ROOT_PATH.$_GET['install'], ROOT_PATH);
 			cardinal::RegAction("Установка модуля ".$_GET['install']);
-			$tr = $tar_object->extractModify(ROOT_PATH, $_GET['install']."/");
 			if($tr === true) {
+				$tar_object->close();
 				unlink(PATH_CACHE_SYSTEM.$_GET['install'].".zip");
 				echo "1";
 			} else {
+				$tar_object->close();
 				header("HTTP/1.1 406 Not Acceptable");
 			}
+
 			return false;
 		}
 		if(isset($_GET['active'])) {
