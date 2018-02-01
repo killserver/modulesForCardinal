@@ -65,6 +65,10 @@
 				console.error("Position is not set");
 				return false;
 			}
+			var persentPlus = jQuery(elem).attr('parallax-persent');
+			if(typeof(persentPlus) !== "undefined" && persentPlus.length>0) {
+				settings.persentPlus = persentPlus;
+			}
 			var sets = {};
 			sets['backgroundImage'] = "none";
 			if(jQuery(elem).css("position")!="fixed" && jQuery(elem).css("position")!="absolute" && jQuery(elem).css("position")!="relative") {

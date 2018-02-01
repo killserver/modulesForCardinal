@@ -95,9 +95,9 @@
 	}
 	jQuery(".add").click(function() {
 		var tmps = tmp;
+		iszt++;
 		tmps = tmps.replace(/{uid}/g, iszt);
 		jQuery("#nestable-list-1").append(tmps);
-		iszt++;
 		return false;
 	});
 	jQuery("#nestable-list-1").on("click", ".remove", function() {

@@ -32,7 +32,7 @@ class menus {
 				$countClass++;
 			}
 			$ret .= (strpos($v['mPage'], "@")!==false ? "<!--email_off-->" : "").'<li'.($v['mClass']!=="" ? ' class="'.$v['mClass'].'"' : "").'>'.
-						'<a href="'.(strpos($v['mPage'], "@")!==false ? $v['mPage'] : '{C_default_http_local}'.($lang!==false ? $lang."/" : "").($v['mPage']!=="" ? $v['mPage'] : "#")).'"'.($v['mClass']!=="" ? ' class="'.$v['mClass'].'"' : "").''.($v['mOpened']!=="" ? ' target="'.$v['mOpened'].'"' : "").'>'.
+						'<a href="'.(strpos($v['mPage'], "@")!==false||strpos($v['mPage'], "http")!==false ? $v['mPage'] : '{C_default_http_local}'.($lang!==false ? $lang."/" : "").($v['mPage']!=="" ? $v['mPage'] : "#")).'"'.($v['mClass']!=="" ? ' class="'.$v['mClass'].'"' : "").''.($v['mOpened']!=="" ? ' target="'.$v['mOpened'].'"' : "").'>'.
 							($v['mIcon']!=="" ? '<i class="fa fa-'.$v['mIcon'].'"></i>' : "").
 							'<span>'.$v['mContent'].'</span>'.
 						'</a>';
