@@ -100,7 +100,7 @@ class Installer extends Core {
 		$lists = $this->rebuild($lists);
 		$newList = array();
 		foreach($lists as $k => $v) {
-			if("SEOBlock"!==$k && "ArcherExample"!==$k && "base"!==$k && "changelog"!==$k && "mobile"!==$k && "installerAdmin"!==$k) {
+			if("SEOBlock"!==$k && "ArcherExample"!==$k && "base"!==$k && "changelog"!==$k && "mobile"!==$k && "installerAdmin"!==$k && strpos($v[1], PATH_MODULES)!==false) {
 				$v['active'] = true;
 				$newList[$k] = $v;
 			}
