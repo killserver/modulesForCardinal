@@ -138,7 +138,11 @@
 				html += "<b>"+v+"</b>"+data.changelog[v]+"<br>";
 			});
 		}
-		jQuery("#modal-3 .modal-body .changelog span").html(html);
+		if(html.length>0) {
+			jQuery("#modal-3 .modal-body .changelog span").html(html);
+		} else {
+			jQuery("#modal-3 .modal-body .changelog").remove();
+		}
 		if(installation=="notInstall") {
 			jQuery("#modal-3 .modal-body a.btn.action").attr("class", "").addClass("btn action btn-turquoise install").css("cursor", "").attr("data-action", data.altName).html("Установить");
 		} else if(installation=="update") {
