@@ -16,7 +16,7 @@
 	},
 	"parallaxJS": {
 		"name": "Параллакс",
-		"altName": "parallax",
+		"altName": "parallaxJS",
 		"description": "Модуль параллакса, который корректно работает в мобильном",
 		"author": "killserver",
 		"version": "1.6",
