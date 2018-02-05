@@ -181,10 +181,13 @@
 		"altName": "installer",
 		"description": "Помогает в автоматизированном режиме устанавливать, обновлять, включать и выключать модули на сайте",
 		"author": "killserver",
-		"version": "1.0",
+		"version": "1.1",
 		"image": "https://cdn0.iconfinder.com/data/icons/web-development-2/512/clipboard_report_form_checklist_business_plan_sheet_file_note_pad_paper_page_document_planning_check_list_survey_questionnaire_flat_design_icon-128.png",
 		"type": "module",
-		"cardinalVersion": "7.8",
+		"cardinalVersion": "8.2",
+		"changelog": {
+			"1.1": "Модуль обновлен до последней версии ядра. Исправлены некоторые ошибки отказа работоспособности"
+		},
 		"download": "https://raw.githubusercontent.com/killserver/modulesForCardinal/master/installer.zip"
 	},
 	"stats": {
