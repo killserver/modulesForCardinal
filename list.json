@@ -100,11 +100,12 @@
 		"altName": "faq",
 		"description": "Готовый раздел вопросов и ответов для Cardinal Engine",
 		"author": "killserver",
-		"version": "1.2",
+		"version": "1.3",
 		"image": "http://cropas.by/wp-content/uploads/2015/09/faq.png",
 		"type": "module",
 		"cardinalVersion": "7.8",
 		"changelog": {
+			"1.3": "Модуль добавлен в боковую панель админки",
 			"1.2": "Модуль обновлен до последней версии ядра",
 			"1.1": "Модуль обновлен до последней версии ядра"
 		},
