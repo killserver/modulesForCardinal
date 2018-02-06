@@ -11,7 +11,7 @@ class Main_Visitors extends Main {
     }
 
 	function __construct() {
-        if(self::getTable("visitorsHits")===false) {
+        if(db::getTable("visitorsHits")===false) {
             return;
         }
         $days = 14;
@@ -19,7 +19,7 @@ class Main_Visitors extends Main {
         $month = date('n');
         $year = date('Y');
         $chart = array();
-        $dataAll = array();
+        $dataAll = array("hits" => 0, "unique_hits" => 0, "hits_tf" => 0, "unique_hits_tf" => 0);
         if($today>$days) {
             for($i=$today-$days+1;$i<=$today;$i++) {
                 $chart[$this->addZero($i).'.'.$this->addZero($month).'.'.$year] = array(
