@@ -201,8 +201,9 @@
 		"version": "1.1",
 		"image": "http://www.postquickly.com/weblog/wp-content/uploads/2012/11/populyarnyie-servisyi-statistiki-300x226.jpg.pagespeed.ce.hX3PjShKI3.jpg",
 		"type": "module",
-		"cardinalVersion": "8.2",
+		"cardinalVersion": "8.3",
 		"changelog": {
+			"1.2": "Модуль обновлён до последней версии ядра. Исправлены ошибки, связанные с использование данного модуля",
 			"1.1": "Модуль обновлён до последней версии ядра"
 		},
 		"download": "https://raw.githubusercontent.com/killserver/modulesForCardinal/master/stats.zip"
