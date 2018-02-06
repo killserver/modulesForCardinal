@@ -1,8 +1,10 @@
 <div class="row">
 	<div class="col-sm-12 iframe">
-		<input type="text" class="url col-sm-12">
-		<div class="desktop">
-			<iframe></iframe>
+		<div class="row">
+			<input type="text" class="url col-sm-12">
+			<div class="desktop">
+				<iframe></iframe>
+			</div>
 		</div>
 	</div>
 </div>
@@ -10,6 +12,8 @@
 .iframe input {
 	height: 25px;
 	padding: 0px;
+	position: relative;
+	z-index: 50;
 }
 .iframe {
 	right: auto;
@@ -31,8 +35,9 @@
 	left: 0px;
 	border: 0px;
 	background: #fff;
+	z-index: 40;
 }
-.iframe div {
+.iframe > div > div {
 	position: absolute;
 	left: 0;
 	right: 0;
@@ -42,7 +47,7 @@
 	-webkit-transition: all .2s;
 	transition: all .2s;
 }
-.iframe div.tablet {
+.iframe > div > div.tablet {
 	margin: auto 0 auto -360px;
 	width: 720px;
 	height: 1080px;
@@ -50,7 +55,7 @@
 	max-width: 100%;
 	left: 50%;
 }
-.iframe div.mobile {
+.iframe > div > div.mobile {
 	margin: auto 0 auto -160px;
 	width: 320px;
 	height: 480px;
@@ -114,10 +119,11 @@
 	position: fixed;
 	bottom: 0px;
 	left: 0px;
-	width: 340px;
-	padding-left: 4.05%;
+	width: 280px;
+	padding-left: 0.75%;
 	background: #2c2e2f;
 	border-top: 2px solid #aaa;
+	z-index: 5;
 }
 .sidebar-menu.collapsed .devices {
 	width: 80px;
@@ -153,28 +159,55 @@
 <script>
 $(document).ready(function() {
 	setTimeout(function() {
-		$('.iframe div iframe').attr("src", "{C_default_http_local}?noShowAdmin");
-		$('.iframe div iframe').load(function() {
-			var linked = $('.iframe div iframe').contents()[0].location.href;
+		$('.iframe > div > div iframe').attr("src", "{C_default_http_local}?noShowAdmin");
+		$('.iframe > div > div iframe').load(function() {
+			var linked = $('.iframe > div > div iframe').contents()[0].location.href;
 			var noAdmin = linked.substr(-("?noShowAdmin".length)).length;
 			linked = linked.substr(0, linked.length-noAdmin);
 			$(".iframe input").val(linked);
-			$('.iframe div iframe').contents().find("a[href*='/']").each(function(i, k) {
+			$('.iframe > div > div iframe').contents().find("a[href*='/']").each(function(i, k) {
 				var elem = k;
-				$(elem).attr("href", elem.href+(elem.href.match(/\?/) ? "&noShowAdmin" : "?noShowAdmin"));
+				var tester = new RegExp("{C_default_http_host}#", "g");
+				if(!tester.test(elem.href)) {
+					$(elem).attr("href", elem.href+(elem.href.match(/\?/) ? "&noShowAdmin" : "?noShowAdmin"));
+				}
 			});
 		});
 	}, 1500);
+	$('.colorpicker').on('changeColor.colorpicker', function(event) {
+		console.log(event.color.toRGB());
+		if($(this).attr("data-colorId")) {
+			$('.iframe > div > div iframe').contents().find("#styleId-"+$(this).attr("data-colorId")).remove();
+			var col = event.color.toRGB();
+			$('.iframe > div > div iframe').contents().find("body").append("<style id='styleId-"+$(this).attr("data-colorId")+"'> .colorSize-"+$(this).attr("data-colorId")+" { background-color: rgba("+col.r+","+col.g+","+col.b+","+col.a+") !important; } </style>");
+		}
+	});
+	$(".saveBackground").click(function() {
+		var backgrounds = {};
+		$(".backgrounds").each(function(i, elem) {
+			backgrounds[$(elem).attr("data-colorId")] = $(elem).val();
+		});
+		jQuery.post("./?pages=Customize&saveCss=true", {"backgrounds": backgrounds}, function(data) {}).done(function(data) {
+			toastr.success("Успешно сохранили", "{L_done}");
+		}).fail(function(data) {
+			toastr.error("Ошибка при сохранении", "{L_error}");
+		});
+		return false;
+	});
 });
 $(".iframe input").change(function() {
-	$('.iframe div iframe').attr("src", ($(this).val().match(/\?/) ? $(this).val()+"&noShowAdmin" : $(this).val()+"?noShowAdmin"));
+	if($(this).val().match(/{D_ADMINCP_DIRECTORY}/)) {
+		alert("You are stuped idiot!");
+		return false;
+	}
+	$('.iframe > div > div iframe').attr("src", ($(this).val().match(/\?/) ? $(this).val()+"&noShowAdmin" : $(this).val()+"?noShowAdmin"));
 });
 $(".sidebar-menu-inner").append('<div class="devices"><div class="hideDev fa-minus-square"><span>&nbsp;Скрыть панель</span></div><div class="resize-desktop fa-desktop active" data-resize="desktop"></div><div class="resize-tablet fa-tablet" data-resize="tablet"></div><div class="resize-mobile fa-mobile" data-resize="mobile"></div><div class="reload fa-retweet"></div></div>');
 $(".resize-desktop, .resize-tablet, .resize-mobile").click(function() {
 	$(".sidebar-menu-inner").find("[class*='resize-']").removeClass("active");
 	$(this).addClass("active");
-	$(".iframe div").removeClass("desktop tablet mobile").addClass($(this).attr("data-resize"));
-	$('.iframe div iframe').contents().find("body").removeClass("desktop tablet mobile").addClass($(this).attr("data-resize"));
+	$(".iframe > div > div").removeClass("desktop tablet mobile").addClass($(this).attr("data-resize"));
+	$('.iframe > div > div iframe').contents().find("body").removeClass("desktop tablet mobile").addClass($(this).attr("data-resize"));
 });
 $(".hideDev").click(function() {
 	if($(".sidebar-menu").hasClass("collapsed")) {
@@ -185,7 +218,7 @@ $(".hideDev").click(function() {
 	$(".sidebar-menu").toggleClass("collapsed");
 });
 $(".reload").click(function() {
-	$('.iframe div iframe').contents()[0].location.reload();
+	$('.iframe > div > div iframe').contents()[0].location.reload();
 	toastr.success("Reloaded");
 });
 </script>
