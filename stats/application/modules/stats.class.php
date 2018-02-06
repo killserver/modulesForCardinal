@@ -35,7 +35,7 @@ class stats extends modules {
 											" PRIMARY KEY `id` (`vId`)");
 	}
 
-	public static $version = "1.0";
+	public static $version = "1.1";
 
 	function saveInfo() {
 		$db = $this->init_db();
@@ -48,7 +48,7 @@ class stats extends modules {
 		$ext = explode('.', $arr);
 		$ip = HTTP::getip();
 		if(strpos($req, ADMINCP_DIRECTORY)===false) {
-			$SxGeo = $this->loader("SxGeo", array("db_file" => PATH_LOAD_LIBRARY."SxGeoCity.dat", "type" => 2 | 1));
+			$SxGeo = $this->loader("SxGeo", array("db_file" => "SxGeoCity.dat", "type" => 2 | 1));
 			$city = $SxGeo->getCityFull("193.151.240.61");
 			// Save hit
 			// Create/update visitor information

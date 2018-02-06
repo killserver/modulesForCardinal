@@ -16,7 +16,7 @@ class faq extends modules {
 										" PRIMARY KEY `id` (`fId`)");
 	}
 
-	public static $version = "1.3";
+	public static $version = "1.3.1";
 
 	public static function updater() {}
 	
