@@ -26,7 +26,7 @@ class swiper extends modules {
 		config::Update("templateSwiper", "swiper");
 	}
 
-	public static $version = "1.0";
+	public static $version = "1.1";
 
 	public static function updater($version) {}
 
@@ -40,7 +40,9 @@ class swiper extends modules {
 	}
 
 	public function RebuildShields($table, $page, $model, $tpl) {
-		defines::add("DisableSort", "0");
+		if(!defined("DisableSort")) {
+			define("DisableSort", "0");
+		}
 		return $tpl;
 	}
 
