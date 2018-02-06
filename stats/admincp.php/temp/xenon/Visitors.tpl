@@ -1,5 +1,5 @@
 <div class="col-sm-12">
-	<div class="panel panel-default">
+	<div class="panel panel-default" data-module="stats">
 		<div class="panel-heading">
 			<h3 class="panel-title">Статистика посещений</h3>
 			<div class="panel-options">

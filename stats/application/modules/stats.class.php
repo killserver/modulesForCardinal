@@ -35,7 +35,7 @@ class stats extends modules {
 											" PRIMARY KEY `id` (`vId`)");
 	}
 
-	public static $version = "1.3";
+	public static $version = "1.4";
 
 	function saveInfo() {
 		$db = $this->init_db();

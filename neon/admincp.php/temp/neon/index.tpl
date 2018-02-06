@@ -1,13 +1,13 @@
 
 			<div class="row">
 				
-				[if {is_new}==1]<a href="{C_default_http_host}admincp.php/?pages=Updaters" class="col-md-[if {C_FullMenu}==1]4[/if {C_FullMenu}==1][if {C_FullMenu}!=1]3[/if {C_FullMenu}!=1] col-sm-12">
+				[if {is_new}==new]<a href="{C_default_http_host}admincp.php/?pages=Updaters" class="col-md-[if {C_FullMenu}==1]4[/if {C_FullMenu}==1][if {C_FullMenu}!=1]3[/if {C_FullMenu}!=1] col-sm-12">
 					<div class="tile-stats tile-red">
 						<div class="icon"><i class="linecons-params"></i></div>
 						<h3>{L_new_version}</h3>
 						<p class="num">{new_version}</p>
 					</div>
-				</a>[/if {is_new}==1]
+				</a>[/if {is_new}==new]
 
 				[if {showLoads}==1]{include templates="MainServerLoad"}[/if {showLoads}==1]
 				
@@ -60,6 +60,8 @@
 					</div>
 				
 				</a>
+
+				{contentForAdmin}
 				
 				[if {is_messagesAdmin}==1]
 				<div class="col-sm-12">
@@ -72,9 +74,9 @@
 						</div>
 					</div>
 				</div>
-				[/if]
+				[/if {is_messagesAdmin}==1]
 				
-				[if {is_new}==1]
+				[if {is_new}==new]
 				<div class="col-sm-12">
 					<div class="panel panel-warning">
 						<div class="panel-heading"><div class="panel-title">{L_list_changelog}</div></div>
@@ -85,7 +87,7 @@
 						</div>
 					</div>
 				</div>
-				[/if]
+				[/if {is_new}==new]
 			</div>
 <script type="text/javascript">
 jQuery(document).ready(function() {
@@ -115,5 +117,33 @@ jQuery(document).ready(function() {
 			toastr.info(data, "{L_"Debug Panel"} "+states);
 		});
 	});
+    var data = localStorage.getItem("mainAdminCollapsed");
+    if(data!==null) {
+        data = JSON.parse(data);
+    } else {
+        data = {};
+    }
+    Object.keys(data).forEach(function(elem) {
+        var e = jQuery("[data-module='"+elem+"']");
+        if(data[elem]===true) {
+            e.removeClass('collapsed');
+        } else if(data[elem]===false) {
+            e.addClass('collapsed');
+        }
+    });
+});
+jQuery(".content_admin [data-toggle]").click(function() {
+    var elem = jQuery(this).parent().parent().parent();
+    var module = elem.attr("data-module");
+    var hidded = elem.hasClass("collapsed");
+    var data = localStorage.getItem("mainAdminCollapsed");
+    if(data!==null) {
+        data = JSON.parse(data);
+    } else {
+        data = {};
+    }
+    data[module] = hidded;
+    data = JSON.stringify(data);
+    localStorage.setItem("mainAdminCollapsed", data);
 });
 </script>
