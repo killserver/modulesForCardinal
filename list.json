@@ -214,5 +214,16 @@
 			"1.1": "Модуль обновлён до последней версии ядра"
 		},
 		"download": "https://raw.githubusercontent.com/killserver/modulesForCardinal/master/stats.zip"
+	},
+	"paper": {
+		"name": "Paper Dashboard",
+		"altName": "paper",
+		"description": "Новая тема админ-панели созданая группой 'CREATIVE TIM', которую мы адаптировали для Cardinal Engine",
+		"author": "killserver",
+		"version": "1.0",
+		"image": "https://s3.amazonaws.com/creativetim_bucket/products/47/original/opt_pdp_thumbnail.jpg",
+		"type": "module",
+		"cardinalVersion": "8.3",
+		"download": "https://raw.githubusercontent.com/killserver/modulesForCardinal/master/paper.zip"
 	}
 }
