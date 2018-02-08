@@ -6,7 +6,7 @@ class googleAuth extends modules {
 		User::addToLogin(array($this, "auth"));
 	}
 
-	public static $version = "1.0";
+	public static $version = "1.1";
 
 	function auth($user, $pass, $row) {
 		HTTP::set_cookie(COOK_USER, "", true);

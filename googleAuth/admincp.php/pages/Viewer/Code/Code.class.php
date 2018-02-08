@@ -8,6 +8,11 @@ class Code extends Core {
 		}
 		$ga = modules::loader("GoogleAuthenticator");
 		$user = User::getInfo(Arr::get($_COOKIE, "userForAuth"));
+		if(isset($_GET['path'])) {
+			header("Content-Type: image/jpg");
+			echo file_get_contents($ga->getUrl($user['username'], config::Select("default_http_hostname"), $user['ga_code']));
+			die();
+		}
 		if(sizeof($_POST)>0) {
 			$code = $ga->getCode($user['ga_code']);
 			$resp = array('accessGranted' => false, 'errors' => '');
@@ -32,12 +37,12 @@ class Code extends Core {
 		templates::assign_var("qrcode", '');
 		if(!isset($user['ga_showed'])) {
 			User::update(array("username" => $user['username']), array("ga_showed" => true), 0);
-			templates::assign_var("qrcode", '<img src="'.$ga->getUrl($user['username'], config::Select("default_http_hostname"), $user['ga_code']).'"><br>');
+			templates::assign_var("qrcode", '<img src="./?pages=code&path" style="display:table;margin:0px auto;"><br>');
 		}
 		$echos = templates::view(templates::completed_assign_vars("code", null));
 		$echos = str_replace("{js_list}", "", $echos);
 		$echos = str_replace("{css_list}", "", $echos);
-		echo $echos;
+		HTTP::echos($echos);
 	}
 
 }
