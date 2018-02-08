@@ -225,5 +225,16 @@
 		"type": "module",
 		"cardinalVersion": "8.3",
 		"download": "https://raw.githubusercontent.com/killserver/modulesForCardinal/master/paper.zip"
+	},
+	"googleAuth": {
+		"name": "Google Authenticator",
+		"altName": "googleAuth",
+		"description": "При помощи данного модуля теперь появилась возможность защиты входа в аккаунт при помощи Google Authenticator. Google Authenticator в свою очередь позволяет создавать на телефоне коды для двухэтапной аутентификации. Двухэтапная аутентификация обеспечивает более надежную защиту аккаунта",
+		"author": "killserver",
+		"version": "1.0",
+		"image": "https://dhanendranblog.files.wordpress.com/2017/09/google-authenticator.png",
+		"type": "module",
+		"cardinalVersion": "8.4",
+		"download": "https://raw.githubusercontent.com/killserver/modulesForCardinal/master/googleAuth.zip"
 	}
 }
