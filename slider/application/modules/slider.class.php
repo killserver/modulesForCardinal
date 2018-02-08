@@ -25,7 +25,7 @@ class slider extends modules {
 										" PRIMARY KEY `id` (`slide_id`)");
 	}
 
-	public static $version = "1.6";
+	public static $version = "1.7";
 
 	public static function updater($version) {
 		if($version=="1.0") {
@@ -43,7 +43,9 @@ class slider extends modules {
 	}
 
 	public function RebuildShields($table, $page, $model, $tpl) {
-		defines::add("DisableSort", "0");
+		if(!defined("DisableSort")) {
+			define("DisableSort", "0");
+		}
 		return $tpl;
 	}
 
