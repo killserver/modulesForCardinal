@@ -236,11 +236,22 @@
 		"version": "1.2",
 		"image": "https://dhanendranblog.files.wordpress.com/2017/09/google-authenticator.png",
 		"type": "module",
-		"cardinalVersion": "8.4",
+		"cardinalVersion": "8.5",
 		"changelog": {
 			"1.2": "Исправлена ошибка QR-кода",
 			"1.1": "Исправлены ошибки"
 		},
 		"download": "https://raw.githubusercontent.com/killserver/modulesForCardinal/master/googleAuth.zip"
+	},
+	"preloader": {
+		"name": "Предзагрузчики",
+		"altName": "preloader",
+		"description": "При помощи данного модуля можно выбрать и установить тот прелоадер, который захочется",
+		"author": "killserver",
+		"version": "1.0",
+		"image": "https://www.kobzarev.com/wp-content/uploads/2014/05/css-loaders-screenshot.jpg",
+		"type": "module",
+		"cardinalVersion": "8.5",
+		"download": "https://raw.githubusercontent.com/killserver/modulesForCardinal/master/preloader.zip"
 	}
 }
