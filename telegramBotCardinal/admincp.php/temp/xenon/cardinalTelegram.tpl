@@ -1,0 +1,2 @@
+<div style="display:inline-block;width:50%;">{L_"Telegram Token"}:</div><div style="display:inline-block;"><input type="text" name="telegramToken" value="{C_telegramToken}" style="width:100%;" /><br><br>
+<small>Его можно получить обратившись к <b>@BotFather</b> перейдя по <a href="https://t.me/BotFather" target="_blank" style="color:red;">ссылке</a></small></div>

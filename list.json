@@ -253,5 +253,16 @@
 		"type": "module",
 		"cardinalVersion": "8.5",
 		"download": "https://raw.githubusercontent.com/killserver/modulesForCardinal/master/preloader.zip"
+	},
+	"telegramBotCardinal": {
+		"name": "Push-уведомления в Telegram",
+		"altName": "telegramBotCardinal",
+		"description": "При помощи данного модуля можно отправлять push-уведомления в Telegram всем тем, кто подписан на рассылку уведомлений",
+		"author": "killserver",
+		"version": "1.0",
+		"image": "https://cdn-images-1.medium.com/max/1000/1*2eHsI5M_V4dAW-iJZh5RbQ.png",
+		"type": "module",
+		"cardinalVersion": "8.5",
+		"download": "https://raw.githubusercontent.com/killserver/modulesForCardinal/master/telegramBotCardinal.zip"
 	}
 }
