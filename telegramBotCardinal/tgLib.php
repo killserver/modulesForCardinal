@@ -26,7 +26,7 @@ if(class_exists("config", false) && method_exists("config", "Select")) {
 	$hostname = (isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : getenv("HTTP_HOST"));
 }
 
-$tgUnsubscribe = "tgLib.php";
+$tgUnsubscribe = (isset($_GET['u']) ? $_GET['u'] : "tgLib.php");
 if(defined("ROOT_PATH")) {
 	$route = Route::get("tgUnsubscribe");
 	if(!is_bool($route)) {
@@ -35,11 +35,11 @@ if(defined("ROOT_PATH")) {
 	}
 } else {
 	$requests = (isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : getenv("REQUEST_URI"));
-	$requests = str_replace(array("tg.php", "tgLib.php"), "", $requests);
+	$requests = str_replace(array("tg.php", "tgLib.php", "?start"), "", $requests);
 	$host .= $requests;
 }
 
-function templateTG($host, $hostname, $echo = "", $type = "all") {
+function templateTG($host, $hostname, $tgUnsubscribe, $echo = "", $type = "all") {
 	if($type=="all" || $type=="head") {
 ?>
 <!DOCTYPE html>
@@ -84,6 +84,23 @@ function templateTG($host, $hostname, $echo = "", $type = "all") {
     </div>
 
     <div id="tgme_frame_cont"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script>
+    	var tests = "";
+    	function loadData() {
+    		jQuery.post("./tgLib.php?start&u=<?php echo $tgUnsubscribe; ?>", function(d) {}).done(function(data) {
+    			jQuery(".result").html(data);
+    			tests = data;
+    		}).fail(function() {
+    			if(tests.length>0) {
+    				loadData();
+    			}
+    		})
+    	}
+    	jQuery(document).ready(function() {
+			loadData();
+    	});
+    </script>
   </body>
 </html>
 <?php
@@ -99,7 +116,7 @@ function rebuildArrTG($arr) {
 }
 
 if(empty($token)) {
-	templateTG($host, $hostname, "<div style='color:red;font-weight:900;'>Token for Telegram is not set</div>");
+	templateTG($host, $hostname, $tgUnsubscribe, "<div style='color:red;font-weight:900;'>Token for Telegram is not set</div>");
 	die();
 }
 $username = "";
@@ -135,7 +152,7 @@ if(!$load) {
 	templateTG($host, $hostname, "<div style='color:red;font-weight:900;'>TelegramBot is not load</div>");
 	die();
 }
-$file = (defined("PATH_CACHE_USERDATA") ? PATH_CACHE_USERDATA : ($localFile ? ROOT_TG : ROOT_TG."application".DS."cache".DS))."tgNoty_chatId.txt";
+$file = (defined("PATH_CACHE_USERDATA") ? PATH_CACHE_USERDATA : (isset($config['telegramPath']) && !empty($config['telegramPath']) ? $config['telegramPath'] : ($localFile ? ROOT_TG : ROOT_TG."application".DS."cache".DS)))."tgNoty_chatId.txt";
 ob_end_flush();
 ob_implicit_flush();
 if(function_exists("callAjax")) {
@@ -154,69 +171,72 @@ if(file_exists($file) && isset($_GET['id'])) {
 	}
 	if($save) {
 		file_put_contents($file, implode(PHP_EOL, $arr).PHP_EOL);
-		templateTG($host, $hostname, "Вы успешно отписаны от уведомлений с сайта <b>".$hostname."</b>");
+		templateTG($host, $hostname, $tgUnsubscribe, "Вы успешно отписаны от уведомлений с сайта <b>".$hostname."</b>");
 	} else {
-		templateTG($host, $hostname, "Вы не были подписаны или уже отписались от уведомлений с сайта <b>".$hostname."</b>");
+		templateTG($host, $hostname, $tgUnsubscribe, "Вы не были подписаны или уже отписались от уведомлений с сайта <b>".$hostname."</b>");
 	}
 	die();
 }
-templateTG($host, $hostname, "Информация о роботе:<br>", "head");
-$updates = $tg->getMe();
-templateTG($host, $hostname, "Имя робота: <b>".$updates['result']['first_name']."</b><br><a href=\"https://t.me/".$updates['result']['username']."\" target=\"_blank\">Написать боту</a><br><br>", "info");
-
-do {
-	// Get updates the bot has received
-	// Offset to confirm previous updates
-	$updates = $tg->pollUpdates($offset);
-	if($updates['ok'] && count($updates['result']) > 0) {
-		foreach($updates['result'] as $data) {
-			// Get updates the bot has received
-			// Offset to confirm previous updates
-			$updates = $tg->pollUpdates($offset);
-			if($updates['ok'] && count($updates['result']) > 0) {
-				foreach($updates['result'] as $data) {
-					if(is_null($chat_id)) {
-						$username = $data['message']['chat']['first_name']." ".$data['message']['chat']['last_name'];
-						$chat_id = $data['message']['chat']['id'];
-					}
-					$arr = array();
-					$save = false;
-					if(file_exists($file)) {
-						$arr = file($file);
-						$arr = array_map("trim", $arr);
-						$arr = rebuildArrTG($arr);
-						if(!in_array($chat_id, $arr)) {
+if(isset($_GET['start'])) {
+	do {
+		// Get updates the bot has received
+		// Offset to confirm previous updates
+		$updates = $tg->pollUpdates($offset);
+		if($updates['ok'] && count($updates['result']) > 0) {
+			foreach($updates['result'] as $data) {
+				// Get updates the bot has received
+				// Offset to confirm previous updates
+				$updates = $tg->pollUpdates($offset);
+				if($updates['ok'] && count($updates['result']) > 0) {
+					foreach($updates['result'] as $data) {
+						if(is_null($chat_id)) {
+							$username = $data['message']['chat']['first_name']." ".$data['message']['chat']['last_name'];
+							$chat_id = $data['message']['chat']['id'];
+						}
+						$arr = array();
+						$save = false;
+						if(file_exists($file)) {
+							$arr = file($file);
+							$arr = array_map("trim", $arr);
+							$arr = rebuildArrTG($arr);
+							if(!in_array($chat_id, $arr)) {
+								$arr[] = $chat_id;
+								$save = true;
+								// sends an action 'typing'
+								$tg->sendChatAction($chat_id, 'typing');
+								// send message with a custom reply markup
+								$tg->sendMessage($chat_id, "Вы успешно подписались на уведомления с сайта <b>".$hostname."</b>\nДля отписки - перейдите по <a href=\"".$host.$tgUnsubscribe."?id=".$chat_id."\">ссылке</a>", "HTML");
+							} else {
+								// sends an action 'typing'
+								$tg->sendChatAction($chat_id, 'typing');
+								// send message with a custom reply markup
+								$tg->sendMessage($chat_id, "Вы уже подписанны на уведомления с сайта <b>".$hostname."</b>\nДля отписки - перейдите по <a href=\"".$host.$tgUnsubscribe."?id=".$chat_id."\">ссылке</a>", "HTML");
+							}
+						} else {
 							$arr[] = $chat_id;
 							$save = true;
 							// sends an action 'typing'
 							$tg->sendChatAction($chat_id, 'typing');
 							// send message with a custom reply markup
 							$tg->sendMessage($chat_id, "Вы успешно подписались на уведомления с сайта <b>".$hostname."</b>\nДля отписки - перейдите по <a href=\"".$host.$tgUnsubscribe."?id=".$chat_id."\">ссылке</a>", "HTML");
-						} else {
-							// sends an action 'typing'
-							$tg->sendChatAction($chat_id, 'typing');
-							// send message with a custom reply markup
-							$tg->sendMessage($chat_id, "Вы уже подписанны на уведомления с сайта <b>".$hostname."</b>\nДля отписки - перейдите по <a href=\"".$host.$tgUnsubscribe."?id=".$chat_id."\">ссылке</a>", "HTML");
 						}
-					} else {
-						$arr[] = $chat_id;
-						$save = true;
-						// sends an action 'typing'
-						$tg->sendChatAction($chat_id, 'typing');
-						// send message with a custom reply markup
-						$tg->sendMessage($chat_id, "Вы успешно подписались на уведомления с сайта <b>".$hostname."</b>\nДля отписки - перейдите по <a href=\"".$host.$tgUnsubscribe."?id=".$chat_id."\">ссылке</a>", "HTML");
+						if($save) {
+							file_put_contents($file, implode(PHP_EOL, $arr).PHP_EOL);
+						}
+						$guessed = true;
 					}
-					if($save) {
-						file_put_contents($file, implode(PHP_EOL, $arr).PHP_EOL);
-					}
-					$guessed = true;
 				}
 			}
+			$offset = $updates['result'][count($updates['result']) - 1]['update_id'] + 1;
 		}
-		$offset = $updates['result'][count($updates['result']) - 1]['update_id'] + 1;
-	}
-} while(!$guessed);
-$offset  = $updates['result'][count($updates['result']) - 1]['update_id'] + 1;
-$updates = $tg->pollUpdates($offset);
-templateTG($host, $hostname, "<hr><br>Данные от пользователя успешно получены.<br>Пользователь: <b>".$username."</b>", "foot");
+	} while(!$guessed);
+	echo "Данные от пользователя успешно получены.<br>Пользователь: <b>".$username."</b>";
+	$offset  = $updates['result'][count($updates['result']) - 1]['update_id'] + 1;
+	$updates = $tg->pollUpdates($offset);
+die();
+}
+templateTG($host, $hostname, $tgUnsubscribe, "Информация о роботе:<br>", "head");
+$updates = $tg->getMe();
+templateTG($host, $hostname, $tgUnsubscribe, "Имя робота: <b>".$updates['result']['first_name']."</b><br><a href=\"https://t.me/".$updates['result']['username']."\" target=\"_blank\">Написать боту</a><br><br>", "info");
+templateTG($host, $hostname, $tgUnsubscribe, "<hr><br><div class='result'></div>", "foot");
 die();

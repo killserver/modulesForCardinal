@@ -2,7 +2,7 @@
 
 class tgNoty {
 
-	public static function noty($text, $type = "text") {
+	public static function noty($text, $type = "text", $config = array()) {
 		if(class_exists("config", false) && method_exists("config", "Select")) {
 			$token = config::Select("telegramToken");
 		} else {
@@ -31,7 +31,7 @@ class tgNoty {
 		}
 		$count = 0;
 		$list = 0;
-		$file = (defined("PATH_CACHE_USERDATA") ? PATH_CACHE_USERDATA : (defined("PATH_CACHE") ? PATH_CACHE : dirname(__FILE__).DIRECTORY_SEPARATOR))."tgNoty_chatId.txt";
+		$file = (defined("PATH_CACHE_USERDATA") ? PATH_CACHE_USERDATA : (isset($config['telegramPath']) && !empty($config['telegramPath']) ? $config['telegramPath'] : (defined("PATH_CACHE") ? PATH_CACHE : dirname(__FILE__).DIRECTORY_SEPARATOR)))."tgNoty_chatId.txt";
 		if($type=="text") {
 			$arr = array();
 			if(file_exists($file)) {

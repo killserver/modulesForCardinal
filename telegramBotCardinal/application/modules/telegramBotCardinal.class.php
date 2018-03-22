@@ -5,6 +5,8 @@ if(!defined("IS_CORE")) {
 }
 
 class telegramBotCardinal extends modules {
+
+	public static $version = "1.0.2";
 	
 	function __construct() {
 		Route::Set('tgUnsubscribe', "tgUnsubscribe.php")->defaults(array(
