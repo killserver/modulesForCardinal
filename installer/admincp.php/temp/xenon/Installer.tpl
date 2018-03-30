@@ -125,6 +125,7 @@
 	jQuery("a[data-info]").off("click").on("click", function() {
 		var data = infoAll[jQuery(this).attr("data-info")];
 		var installation = jQuery(this).attr("data-install");
+		console.log(installation);
 		jQuery("#modal-3 .modal-body").html(jQuery("#templateModule").html());
 		jQuery("#modal-3 .modal-body .title").html(data.name);
 		jQuery("#modal-3 .modal-body .description span").html(data.description);
@@ -143,7 +144,7 @@
 		} else {
 			jQuery("#modal-3 .modal-body .changelog").remove();
 		}
-		if(installation=="notInstall") {
+		if(installation=="install") {
 			jQuery("#modal-3 .modal-body a.btn.action").attr("class", "").addClass("btn action btn-turquoise install").css("cursor", "").attr("data-action", data.altName).html("Установить");
 		} else if(installation=="update") {
 			jQuery("#modal-3 .modal-body a.btn.action").attr("class", "").addClass("btn action btn-blue update").css("cursor", "").attr("data-action", data.altName).html("Обновить");

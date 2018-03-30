@@ -224,7 +224,7 @@
 		"author": "killserver",
 		"version": "1.0",
 		"image": "https://s3.amazonaws.com/creativetim_bucket/products/47/original/opt_pdp_thumbnail.jpg",
-		"type": "module",
+		"type": "theme",
 		"cardinalVersion": "8.3",
 		"download": "https://raw.githubusercontent.com/killserver/modulesForCardinal/master/paper.zip"
 	},
@@ -268,5 +268,16 @@
 			"1.0.2": "Исправлены зависания в работе на некоторых серверах и указания на неверную ссылку для отписки",
 			"1.0.1": "Исправлена ошибка в сохранении данных о тех, кто подписан на уведомления"
 		}
+	},
+	"x-editable": {
+		"name": "Быстрое редактирование записей при помощи X-Editable",
+		"altName": "x-editable",
+		"description": "При помощи данного плагина появляется возможность редактирования данных на лету в Арчеро-подобных страницах с помощью X-editable",
+		"author": "killserver",
+		"version": "1.0",
+		"image": "http://itsolutionstuff.com/upload/x-editable-ajax-php.png",
+		"type": "plugins",
+		"cardinalVersion": "9.2",
+		"download": "https://raw.githubusercontent.com/killserver/modulesForCardinal/master/x-editable.zip"
 	}
 }

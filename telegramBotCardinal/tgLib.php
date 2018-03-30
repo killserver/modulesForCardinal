@@ -35,7 +35,7 @@ if(defined("ROOT_PATH")) {
 	}
 } else {
 	$requests = (isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : getenv("REQUEST_URI"));
-	$requests = str_replace(array("tg.php", "tgLib.php", "?start"), "", $requests);
+	$requests = str_replace(array("tg.php", "tgLib.php", "?start", "&u="), "", $requests);
 	$host .= $requests;
 }
 
@@ -139,7 +139,6 @@ if(class_exists("modules", false) && method_exists("modules", "loader")) {
 		$localFile = false;
 	} else if(file_exists(ROOT_TG."telegramBot.php")) {
 		$libLoad = ROOT_TG."telegramBot.php";
-		$localFile = false;
 	}
 	$lib = $libLoad;
 	if(file_exists($lib)) {

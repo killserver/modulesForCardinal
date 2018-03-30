@@ -3,10 +3,20 @@
 class tgNoty {
 
 	public static function noty($text, $type = "text", $config = array()) {
+		if(!defined("DS")) {
+			define("DS", DIRECTORY_SEPARATOR);
+		}
+		define("ROOT_TG", dirname(__FILE__).DS);
 		if(class_exists("config", false) && method_exists("config", "Select")) {
 			$token = config::Select("telegramToken");
 		} else {
 			global $config;
+			if(!isset($config) && !is_array($config)) {
+				$config = array();
+			}
+			if(file_exists(ROOT_TG."configTg.php")) {
+				require_once(ROOT_TG."configTg.php");
+			}
 			$token = (isset($config['telegramToken']) && !empty($config['telegramToken']) ? $config['telegramToken'] : "");
 		}
 		if(empty($token)) {
@@ -18,7 +28,7 @@ class tgNoty {
 			$tg = modules::loader("telegramBot", array("token" => $token));
 			$load = true;
 		} else {
-			$lib = dirname(__FILE__).DIRECTORY_SEPARATOR."telegramBot.php";
+			$lib = ROOT_TG."telegramBot.php";
 			if(file_exists($lib)) {
 				require_once($lib);
 				$tg = new telegramBot($token);
@@ -31,7 +41,7 @@ class tgNoty {
 		}
 		$count = 0;
 		$list = 0;
-		$file = (defined("PATH_CACHE_USERDATA") ? PATH_CACHE_USERDATA : (isset($config['telegramPath']) && !empty($config['telegramPath']) ? $config['telegramPath'] : (defined("PATH_CACHE") ? PATH_CACHE : dirname(__FILE__).DIRECTORY_SEPARATOR)))."tgNoty_chatId.txt";
+		$file = (defined("PATH_CACHE_USERDATA") ? PATH_CACHE_USERDATA : (isset($config['telegramPath']) && !empty($config['telegramPath']) ? $config['telegramPath'] : (defined("PATH_CACHE") ? PATH_CACHE : ROOT_TG)))."tgNoty_chatId.txt";
 		if($type=="text") {
 			$arr = array();
 			if(file_exists($file)) {
