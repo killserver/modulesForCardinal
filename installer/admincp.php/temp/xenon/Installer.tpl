@@ -50,35 +50,120 @@
 					<div class="tab-pane" id="tab-5">
 						<textarea class="form-control" rows="15">{listServer}</textarea><br><a href="#" class="saveListModules btn btn-success pull-right">Сохранить</a>
 					</div>
-					<div class="tab-pane" id="tab-6">
-						[if {count[listAll]}==0]Сервера не ответили вовремя либо не доступны[/if {count[listAll]}==0]
-						[foreach block=listAll]
-						<div class="col-sm-4">
-							<a href="#" data-info="{listAll.altName}" style="width: 100%;" [foreachif {listAll.installed}=="1"]data-install="install" class="btn install "[/foreachif {listAll.installed}=="1"][foreachif {listAll.installed}=="2"]data-install="update" class="btn update"[/foreachif {listAll.installed}=="2"][foreachif {listAll.installed}=="3"]data-install="installed" class="btn installed"[/foreachif {listAll.installed}=="3"]>
-								<div style="height:15em;display:flex;align-items:center;"><img src="{listAll.image}" style="max-width: 100%; max-height: 15em; margin: auto; display: table;"></div>
-								<br>
-								<b style="width: 100%; height: 3em; display: table-cell; vertical-align: middle; white-space: normal;">{listAll.name}</b>
-							</a>
-							[foreachif {listAll.installed}=="1"]<a href="#" class="btn btn-turquoise btn-block action install" data-action="{listAll.altName}">Установить</a>[/foreachif {listAll.installed}=="1"]
-							[foreachif {listAll.installed}=="2"]<a href="#" class="btn btn-blue btn-block action update" data-action="{listAll.altName}">Обновить</a>[/foreachif {listAll.installed}=="2"]
-							[foreachif {listAll.installed}=="3"]<a href="#" class="btn btn-success btn-block action installed" style="cursor: not-allowed;" data-action="{listAll.altName}">Установлено</a>[/foreachif {listAll.installed}=="3"]
-						</div>
-						[/foreach]
+					<div class="tab-pane moduleList" id="tab-6">
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
 </div>
+<script type="text/template" id="templateCategory">
+	<div class="col-md-12">
+		<ul class="nav nav-tabs nav-tabs-justified">
+			<li class="active">
+				<a href="#module" data-toggle="tab"><span>{L_"Модули"}</span></a>
+			</li>
+			<li>
+				<a href="#theme" data-toggle="tab"><span>{L_"Шаблоны"}</span></a>
+			</li>
+			<li>
+				<a href="#plugins" data-toggle="tab"><span>{L_"Плагины"}</span></a>
+			</li>
+		</ul>
+		<div class="tab-content">
+			<div class="tab-pane active" id="module"><div class="row">{modules}</div></div>
+			<div class="tab-pane" id="theme"><div class="row">{themes}</div></div>
+			<div class="tab-pane" id="plugins"><div class="row">{plugins}</div></div>
+		</div>
+	</div>
+</script>
+<script type="text/template" id="templateItem">
+	<div class="col-sm-4">
+		<a href="#" data-info="{altName}" style="width: 100%;"{installedHead}>
+			<div style="height:15em;display:flex;align-items:center;"><div class="img" style="background-image:url('{image}');"></div></div>
+			<br>
+			<b style="width: 100%; height: 3em; display: table-cell; vertical-align: middle; white-space: normal;">{name}</b>
+		</a>
+		{installedFoot}
+	</div>
+</script>
+<script type="text/template" id="templateItemInstalledHead1">
+	data-install="install" class="btn install "
+</script>
+<script type="text/template" id="templateItemInstalledHead2">
+	data-install="update" class="btn update"
+</script>
+<script type="text/template" id="templateItemInstalledHead3">
+	data-install="installed" class="btn installed"
+</script>
+<script type="text/template" id="templateItemInstalledHead4">
+	data-install="buy" class="btn buy"
+</script>
+<script type="text/template" id="templateItemInstalledFoot1">
+	<a href="#" class="btn btn-turquoise btn-block action install" data-action="{altName}">Установить</a>
+</script>
+<script type="text/template" id="templateItemInstalledFoot2">
+	<a href="#" class="btn btn-blue btn-block action update" data-action="{altName}">Обновить</a>
+</script>
+<script type="text/template" id="templateItemInstalledFoot3">
+	<a href="#" class="btn btn-success btn-block action installed" style="cursor: not-allowed;" data-action="{altName}">Установлено</a>
+</script>
+<script type="text/template" id="templateItemInstalledFoot4">
+	<a href="#" class="btn btn-purple btn-block action buy" data-action="{altName}">Купить</a>
+</script>
 <script type="text/javascript">
 	var infoAll = '{infoAll}';
 	infoAll = JSON.parse(infoAll);
+	if(Object.keys(infoAll).length==0) {
+		jQuery(".moduleList").html("{L_"Сервера не ответили вовремя либо не доступны"}");
+	} else {
+		var moduleAll = "";
+		var themeAll = "";
+		var pluginAll = "";
+		Object.keys(infoAll).forEach(function(key) {
+			var tmpAll = jQuery("#templateItem").html();
+			var installedHead = "";
+			var installedFoot = "";
+			if(infoAll[key].installed==1) {
+				installedHead = jQuery("#templateItemInstalledHead1").html();
+				installedFoot = jQuery("#templateItemInstalledFoot1").html();
+			} else if(infoAll[key].installed==2) {
+				installedHead = jQuery("#templateItemInstalledHead2").html();
+				installedFoot = jQuery("#templateItemInstalledFoot2").html();
+			} else if(infoAll[key].installed==3) {
+				installedHead = jQuery("#templateItemInstalledHead3").html();
+				installedFoot = jQuery("#templateItemInstalledFoot3").html();
+			} else if(infoAll[key].installed==4) {
+				installedHead = jQuery("#templateItemInstalledHead4").html();
+				installedFoot = jQuery("#templateItemInstalledFoot4").html();
+			}
+			tmpAll = tmpAll.replace(/\{installedHead\}/g, installedHead);
+			tmpAll = tmpAll.replace(/\{installedFoot\}/g, installedFoot);
+			tmpAll = tmpAll.replace(/\{altName\}/g, infoAll[key].altName);
+			tmpAll = tmpAll.replace(/\{image\}/g, infoAll[key].image);
+			tmpAll = tmpAll.replace(/\{name\}/g, infoAll[key].name);
+			if(infoAll[key].type=="module") {
+				moduleAll += tmpAll;
+			} else if(infoAll[key].type=="theme") {
+				themeAll += tmpAll;
+			} else if(infoAll[key].type=="plugins") {
+				pluginAll += tmpAll;
+			}
+		});
+		var allTmp = jQuery("#templateCategory").html();
+		allTmp = allTmp.replace(/\{modules\}/g, moduleAll);
+		allTmp = allTmp.replace(/\{themes\}/g, themeAll);
+		allTmp = allTmp.replace(/\{plugins\}/g, pluginAll);
+		jQuery(".moduleList").html(allTmp);
+	}
 	jQuery(document).ready(function($) {
 		jQuery(".btns").each(function(i, elem) {
 			jQuery(elem).css("height", jQuery(elem).parent().outerHeight()-jQuery(elem).parent().find("b").outerHeight()*3);
 		});
 	});
-	jQuery("[data-action]").off("click").on("click", function() {
+	var test;
+	jQuery("body").off("click").on("click", "[data-action]", function() {
+		test = this;
 		var action = this;
 		if(jQuery(this).hasClass("actived")) {
 			jQuery.post("./?pages=Installer&active="+jQuery(this).attr("data-action"), function(data) {
@@ -119,6 +204,13 @@
 			});
 		} else if(jQuery(this).hasClass('installed')) {
 			toastr.info("Модуль успешно запущен и работает из нарицаний");
+		} else if(jQuery(this).hasClass('buy')) {
+			jQuery("#modal-4 .modal-title").html("Приобретение "+jQuery(this).attr("data-action"));
+			var tmp = '<form class="Paymentform" method="POST" action="https://api.privatbank.ua/p24api/ishop"><input type="hidden" name="amt" value="{price}" /><input type="hidden" name="ccy" value="UAH" /><input type="hidden" name="merchant" value="1234567890" /><input type="hidden" name="order" value="'+jQuery(this).attr("data-action")+'" /><input type="hidden" name="details" value="'+jQuery(this).attr("data-action")+'" /><input type="hidden" name="ext_details" value="'+jQuery(this).attr("data-action")+'" /><input type="hidden" name="pay_way" value="privat24" /><input type="hidden" name="return_url" value="" /><input type="hidden" name="server_url" value="" /><button type="submit" class="Privat24">Приват 24</button></form>';
+			tmp = tmp.replace(/\{price\}/g, "1000");
+			jQuery("#modal-4 .modal-body").html(tmp);
+			jQuery("#modal-3 [data-dismiss]").click();
+			setTimeout(function() { jQuery("#modal-4").modal('show'); }, 400);
 		}
 		return false;
 	});
@@ -150,6 +242,8 @@
 			jQuery("#modal-3 .modal-body a.btn.action").attr("class", "").addClass("btn action btn-blue update").css("cursor", "").attr("data-action", data.altName).html("Обновить");
 		} else if(installation=="installed") {
 			jQuery("#modal-3 .modal-body a.btn.action").attr("class", "").addClass("btn action btn-success installed").css("cursor", "not-allowed").attr("data-action", data.altName).html("Установлено");
+		} else if(installation=="buy") {
+			jQuery("#modal-3 .modal-body a.btn.action").attr("class", "").addClass("btn action btn-purple buy").attr("data-action", data.altName).html("Купить");
 		}
 		jQuery("#title_video").html(data.name);
 		jQuery(".modal .modal-dialog .modal-content .modal-body").css("overflow", "auto");
@@ -230,5 +324,27 @@
     font-style: italic;
     font-weight: bold;
     margin: 1em 0px;
+}
+.tab-content .tab-content {
+    background: whitesmoke !important;
+}
+.tab-content .nav.nav-tabs > li > a {
+    background-color: #fff;
+}
+.tab-content .nav.nav-tabs > li.active > a {
+    background-color: #f4f4f4;
+    border: 0px;
+}
+.tab-content .nav.nav-tabs > li > a:hover {
+    background-color: #f4f4f4;
+}
+.tab-content a .img {
+    width: 100%;
+    height: 15em;
+    margin: auto;
+    display: table;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: 50%;
 }
 </style>

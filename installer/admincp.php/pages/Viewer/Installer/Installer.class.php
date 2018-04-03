@@ -147,24 +147,21 @@ class Installer extends Core {
 			templates::Assign_vars($info, "installed", "i".$i);
 		}
 		foreach($listAll as $k => $v) {
-			if(isset($v['changelog'])) {
-				$changelog = "";
-				foreach($v['changelog'] as $b => $vz) {
-					$changelog .= "<b>".$b."</b><br>".$vz."<br><br>";
-				}
-				$v['changelog'] = $changelog;
-				$v['changelog'] = str_replace(array("{", "'"), array("&#123;", "\'"), $v['changelog']);
-			}
 			if(isset($v['description'])) {
-				$v['description'] = str_replace(array("{", "'"), array("&#123;", "\'"), $v['description']);
+				$v['description'] = str_replace(array("{"), array("&#123;"), $v['description']);
 			}
 			$v['installed'] = "1";
 			$v['subName'] = $k;
-			if(isset($lists[$k]) && isset($v['version']) && class_exists($k, false) && property_exists($k, "version") && $k::$version<$v['version']) {
+			if(isset($v['buy'])) {
+				$v['installed'] = "4";
+				$v['buyPrice'] = $v['buy'];
+			} else if(isset($lists[$k]) && isset($v['version']) && class_exists($k, false) && property_exists($k, "version") && $k::$version<$v['version']) {
 				$v['installed'] = "2";
 			} else if(isset($lists[$k])) {
 				$v['installed'] = "3";
 			}
+			$listAll[$k]['installed'] = $v['installed'];
+			$listAll[$k]['description'] = $v['description'];
 			templates::assign_vars($v, "listAll", $k);
 		}
 		$json = json_encode($listAll);
