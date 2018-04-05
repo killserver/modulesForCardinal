@@ -182,7 +182,7 @@ class Creator extends Core {
 				$altNameField = nucfirst(ToTranslit($data[$i]['name']));
 				$data[$i]['altName'] = $first.$altNameField;
 				if($data[$i]['type']=="image") {
-					$listShild .= 'if(isset($row[\''.$first.$altNameField.'\'])) { $row[\''.$first.$altNameField.'\'] = "{C_default_http_local}".$row[\''.$first.$altNameField.'\']; }';
+					$listShild .= 'if(isset($row[\''.$first.$altNameField.'\'])) { $row[\''.$first.$altNameField.'\'] = "<img src=\"{C_default_http_local}".$row[\''.$first.$altNameField.'\']."\" width=\"200\">"; }';
 				}
 				if($data[$i]['type']=="systime") {
 					$universalAttributesTakeAdd .= 'if(isset($model->'.$first.$altNameField.')) { $model->'.$first.$altNameField.' = $model->Time(); }'.PHP_EOL;

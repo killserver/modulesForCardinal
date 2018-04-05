@@ -287,10 +287,13 @@
 		"altName": "creatorAdmin",
 		"description": "При помощи данного модуля появляется возможность быстрого создания разделов. Создаётся структура таблиц и разделов в админ-панели. Теперь создавать сайты стало проще!!",
 		"author": "killserver",
-		"version": "1.0",
+		"version": "1.0.1",
 		"image": "http://wwbmaster.ru/images/responsive.png",
 		"type": "module",
 		"cardinalVersion": "9.2",
-		"download": "https://raw.githubusercontent.com/killserver/modulesForCardinal/master/creatorAdmin.zip"
+		"download": "https://raw.githubusercontent.com/killserver/modulesForCardinal/master/creatorAdmin.zip",
+		"changelog": {
+			"1.0.1": "Исправлена ошибка, когда при выборе типа загружаемого материала как 'картинка' - выдавало просто текст в главном меню раздела. Исправлен мультивыбор для активации скрытого режима и альтернативного имени для полей данных"
+		}
 	}
 }
