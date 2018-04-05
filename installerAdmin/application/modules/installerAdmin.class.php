@@ -8,7 +8,7 @@ class installerAdmin extends modules {
 
 	function __construct() {}
 
-	public static $version = "1.2";
+	public static $version = "1.3";
 
 }
 

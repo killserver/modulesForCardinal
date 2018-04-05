@@ -1,0 +1,20 @@
+<?php
+/*
+  !!!НЕ РЕДАКТИРУЙТЕ ДАННЫЙ ФАЙЛ!!! Он будет пересоздан при внесении изменений в разделе "Быстрое создание разделов"
+*/
+
+$links["{altName}"]["cat"][] = array(
+"link" => "#",
+"title" => "{L_\"{name}\"}",
+"type" => "cat",
+"access" => db::connected(),
+"icon" => "{icon}",
+);
+$links["{altName}"]["item"][] = array(
+"link" => "{C_default_http_host}{D_ADMINCP_DIRECTORY}/?pages=Archer&type={altLink}",
+"title" => "{L_\"{name}\"}",
+"type" => "item",
+"access" => db::connected(),
+"icon" => "",
+);
+?>

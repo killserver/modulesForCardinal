@@ -112,109 +112,113 @@
 	<a href="#" class="btn btn-purple btn-block action buy" data-action="{altName}">Купить</a>
 </script>
 <script type="text/javascript">
+	var cardinalVersionNow = "{D_VERSION}";
 	var infoAll = '{infoAll}';
 	infoAll = JSON.parse(infoAll);
-	if(Object.keys(infoAll).length==0) {
-		jQuery(".moduleList").html("{L_"Сервера не ответили вовремя либо не доступны"}");
-	} else {
-		var moduleAll = "";
-		var themeAll = "";
-		var pluginAll = "";
-		Object.keys(infoAll).forEach(function(key) {
-			var tmpAll = jQuery("#templateItem").html();
-			var installedHead = "";
-			var installedFoot = "";
-			if(infoAll[key].installed==1) {
-				installedHead = jQuery("#templateItemInstalledHead1").html();
-				installedFoot = jQuery("#templateItemInstalledFoot1").html();
-			} else if(infoAll[key].installed==2) {
-				installedHead = jQuery("#templateItemInstalledHead2").html();
-				installedFoot = jQuery("#templateItemInstalledFoot2").html();
-			} else if(infoAll[key].installed==3) {
-				installedHead = jQuery("#templateItemInstalledHead3").html();
-				installedFoot = jQuery("#templateItemInstalledFoot3").html();
-			} else if(infoAll[key].installed==4) {
-				installedHead = jQuery("#templateItemInstalledHead4").html();
-				installedFoot = jQuery("#templateItemInstalledFoot4").html();
-			}
-			tmpAll = tmpAll.replace(/\{installedHead\}/g, installedHead);
-			tmpAll = tmpAll.replace(/\{installedFoot\}/g, installedFoot);
-			tmpAll = tmpAll.replace(/\{altName\}/g, infoAll[key].altName);
-			tmpAll = tmpAll.replace(/\{image\}/g, infoAll[key].image);
-			tmpAll = tmpAll.replace(/\{name\}/g, infoAll[key].name);
-			if(infoAll[key].type=="module") {
-				moduleAll += tmpAll;
-			} else if(infoAll[key].type=="theme") {
-				themeAll += tmpAll;
-			} else if(infoAll[key].type=="plugins") {
-				pluginAll += tmpAll;
-			}
-		});
-		var allTmp = jQuery("#templateCategory").html();
-		allTmp = allTmp.replace(/\{modules\}/g, moduleAll);
-		allTmp = allTmp.replace(/\{themes\}/g, themeAll);
-		allTmp = allTmp.replace(/\{plugins\}/g, pluginAll);
-		jQuery(".moduleList").html(allTmp);
-	}
+	var test;
 	jQuery(document).ready(function($) {
+		if(Object.keys(infoAll).length==0) {
+			jQuery(".moduleList").html("{L_"Сервера не ответили вовремя либо не доступны"}");
+		} else {
+			var moduleAll = "";
+			var themeAll = "";
+			var pluginAll = "";
+			Object.keys(infoAll).forEach(function(key) {
+				if(infoAll[key].cardinalVersion > cardinalVersionNow) {
+					return false;
+				}
+				var tmpAll = jQuery("#templateItem").html();
+				var installedHead = "";
+				var installedFoot = "";
+				if(infoAll[key].installed==1) {
+					installedHead = jQuery("#templateItemInstalledHead1").html();
+					installedFoot = jQuery("#templateItemInstalledFoot1").html();
+				} else if(infoAll[key].installed==2) {
+					installedHead = jQuery("#templateItemInstalledHead2").html();
+					installedFoot = jQuery("#templateItemInstalledFoot2").html();
+				} else if(infoAll[key].installed==3) {
+					installedHead = jQuery("#templateItemInstalledHead3").html();
+					installedFoot = jQuery("#templateItemInstalledFoot3").html();
+				} else if(infoAll[key].installed==4) {
+					installedHead = jQuery("#templateItemInstalledHead4").html();
+					installedFoot = jQuery("#templateItemInstalledFoot4").html();
+				}
+				tmpAll = tmpAll.replace(/\{installedHead\}/g, installedHead);
+				tmpAll = tmpAll.replace(/\{installedFoot\}/g, installedFoot);
+				tmpAll = tmpAll.replace(/\{altName\}/g, infoAll[key].altName);
+				tmpAll = tmpAll.replace(/\{image\}/g, infoAll[key].image);
+				tmpAll = tmpAll.replace(/\{name\}/g, infoAll[key].name);
+				if(infoAll[key].type=="module") {
+					moduleAll += tmpAll;
+				} else if(infoAll[key].type=="theme") {
+					themeAll += tmpAll;
+				} else if(infoAll[key].type=="plugins") {
+					pluginAll += tmpAll;
+				}
+			});
+			var allTmp = jQuery("#templateCategory").html();
+			allTmp = allTmp.replace(/\{modules\}/g, moduleAll);
+			allTmp = allTmp.replace(/\{themes\}/g, themeAll);
+			allTmp = allTmp.replace(/\{plugins\}/g, pluginAll);
+			jQuery(".moduleList").html(allTmp);
+		}
 		jQuery(".btns").each(function(i, elem) {
 			jQuery(elem).css("height", jQuery(elem).parent().outerHeight()-jQuery(elem).parent().find("b").outerHeight()*3);
 		});
-	});
-	var test;
-	jQuery("body").off("click").on("click", "[data-action]", function() {
-		test = this;
-		var action = this;
-		if(jQuery(this).hasClass("actived")) {
-			jQuery.post("./?pages=Installer&active="+jQuery(this).attr("data-action"), function(data) {
-				jQuery(action).html(jQuery(action).attr("data-status")=="active" ? "Включить" : "Отключить");
-				if(jQuery(action).attr("data-status")=="active") {
-					jQuery(action).removeClass("btn-blue").addClass('btn-turquoise');
-				} else {
-					jQuery(action).removeClass("btn-turquoise").addClass('btn-blue');
-				}
-				jQuery(action).attr("data-status", (jQuery(action).attr("data-status")=="active" ? "unactive" : "active"));
-				toastr.info("Переключён режим работы модуля");
-			});
-		} else if(jQuery(this).hasClass('install')) {
-			var th = this;
-			toastr.info("Скачивание модуля");
-			jQuery.post("./?pages=Installer&download="+jQuery(th).attr("data-action"), function(data) {}).fail(function(data) {
-				toastr.error("Модуль не был скачан, попробуйте позже");
-			}).done(function(data) {
-				toastr.info("Установка нового модуля");
-				jQuery.post("./?pages=Installer&install="+jQuery(th).attr("data-action"), function(data) {}).fail(function(data) {
-					toastr.error("Модуль не был установлен, попробуйте позже");
-				}).done(function(data) {
-					toastr.info("Установлен новый модуль");
+		jQuery("body").off("click").on("click", "[data-action]", function() {
+			test = this;
+			var action = this;
+			if(jQuery(this).hasClass("actived")) {
+				jQuery.post("./?pages=Installer&active="+jQuery(this).attr("data-action"), function(data) {
+					jQuery(action).html(jQuery(action).attr("data-status")=="active" ? "Включить" : "Отключить");
+					if(jQuery(action).attr("data-status")=="active") {
+						jQuery(action).removeClass("btn-blue").addClass('btn-turquoise');
+					} else {
+						jQuery(action).removeClass("btn-turquoise").addClass('btn-blue');
+					}
+					jQuery(action).attr("data-status", (jQuery(action).attr("data-status")=="active" ? "unactive" : "active"));
+					toastr.info("Переключён режим работы модуля");
 				});
-			});
-		} else if(jQuery(this).hasClass('update')) {
-			var th = this;
-			toastr.info("Обновление модуля");
-			jQuery.post("./?pages=Installer&download="+jQuery(th).attr("data-action"), function(data) {}).fail(function(data) {
-				toastr.error("Модуль не был скачан, попробуйте позже");
-			}).done(function(data) {
+			} else if(jQuery(this).hasClass('install')) {
+				var th = this;
+				toastr.info("Скачивание модуля");
+				jQuery.post("./?pages=Installer&download="+jQuery(th).attr("data-action"), function(data) {}).fail(function(data) {
+					toastr.error("Модуль не был скачан, попробуйте позже");
+				}).done(function(data) {
+					toastr.info("Установка нового модуля");
+					jQuery.post("./?pages=Installer&install="+jQuery(th).attr("data-action"), function(data) {}).fail(function(data) {
+						toastr.error("Модуль не был установлен, попробуйте позже");
+					}).done(function(data) {
+						toastr.info("Установлен новый модуль");
+					});
+				});
+			} else if(jQuery(this).hasClass('update')) {
+				var th = this;
 				toastr.info("Обновление модуля");
-				jQuery.post("./?pages=Installer&install="+jQuery(th).attr("data-action"), function(data) {}).fail(function(data) {
-					toastr.error("Модуль не был обновлён, попробуйте позже");
+				jQuery.post("./?pages=Installer&download="+jQuery(th).attr("data-action"), function(data) {}).fail(function(data) {
+					toastr.error("Модуль не был скачан, попробуйте позже");
 				}).done(function(data) {
-					toastr.info("Обновлён модуль");
+					toastr.info("Обновление модуля");
+					jQuery.post("./?pages=Installer&install="+jQuery(th).attr("data-action"), function(data) {}).fail(function(data) {
+						toastr.error("Модуль не был обновлён, попробуйте позже");
+					}).done(function(data) {
+						toastr.info("Обновлён модуль");
+					});
 				});
-			});
-		} else if(jQuery(this).hasClass('installed')) {
-			toastr.info("Модуль успешно запущен и работает из нарицаний");
-		} else if(jQuery(this).hasClass('buy')) {
-			jQuery("#modal-4 .modal-title").html("Приобретение "+jQuery(this).attr("data-action"));
-			var tmp = '<form class="Paymentform" method="POST" action="https://api.privatbank.ua/p24api/ishop"><input type="hidden" name="amt" value="{price}" /><input type="hidden" name="ccy" value="UAH" /><input type="hidden" name="merchant" value="1234567890" /><input type="hidden" name="order" value="'+jQuery(this).attr("data-action")+'" /><input type="hidden" name="details" value="'+jQuery(this).attr("data-action")+'" /><input type="hidden" name="ext_details" value="'+jQuery(this).attr("data-action")+'" /><input type="hidden" name="pay_way" value="privat24" /><input type="hidden" name="return_url" value="" /><input type="hidden" name="server_url" value="" /><button type="submit" class="Privat24">Приват 24</button></form>';
-			tmp = tmp.replace(/\{price\}/g, "1000");
-			jQuery("#modal-4 .modal-body").html(tmp);
-			jQuery("#modal-3 [data-dismiss]").click();
-			setTimeout(function() { jQuery("#modal-4").modal('show'); }, 400);
-		}
-		return false;
+			} else if(jQuery(this).hasClass('installed')) {
+				toastr.info("Модуль успешно запущен и работает из нарицаний");
+			} else if(jQuery(this).hasClass('buy')) {
+				jQuery("#modal-4 .modal-title").html("Приобретение "+jQuery(this).attr("data-action"));
+				var tmp = '<form class="Paymentform" method="POST" action="https://api.privatbank.ua/p24api/ishop"><input type="hidden" name="amt" value="{price}" /><input type="hidden" name="ccy" value="UAH" /><input type="hidden" name="merchant" value="1234567890" /><input type="hidden" name="order" value="'+jQuery(this).attr("data-action")+'" /><input type="hidden" name="details" value="'+jQuery(this).attr("data-action")+'" /><input type="hidden" name="ext_details" value="'+jQuery(this).attr("data-action")+'" /><input type="hidden" name="pay_way" value="privat24" /><input type="hidden" name="return_url" value="" /><input type="hidden" name="server_url" value="" /><button type="submit" class="Privat24">Приват 24</button></form>';
+				tmp = tmp.replace(/\{price\}/g, "1000");
+				jQuery("#modal-4 .modal-body").html(tmp);
+				jQuery("#modal-3 [data-dismiss]").click();
+				setTimeout(function() { jQuery("#modal-4").modal('show'); }, 400);
+			}
+			return false;
+		});
 	});
-	jQuery("a[data-info]").off("click").on("click", function() {
+	jQuery("body").off("click").on("click", "a[data-info]", function() {
 		var data = infoAll[jQuery(this).attr("data-info")];
 		var installation = jQuery(this).attr("data-install");
 		console.log(installation);

@@ -30,10 +30,13 @@ class Installer extends Core {
 	function __construct() {
 	global $manifest;
 		callAjax();
-		$config = array("https://raw.githubusercontent.com/killserver/modulesForCardinal/master/list.min.json");
+		$configs = array("https://raw.githubusercontent.com/killserver/modulesForCardinal/master/list.min.json");
+		$paths = array();
 		$listAll = array();
-		for($i=0;$i<sizeof($config);$i++) {
-			$listMirror = new Parser($config[$i]."?".time());
+		for($i=0;$i<sizeof($configs);$i++) {
+			$path = pathinfo($configs[$i]);
+			$paths[] = $path['dirname']."/";
+			$listMirror = new Parser($configs[$i]."?".time());
 			$listMirror->timeout(3);
 			$listMirror = $listMirror->get();
 			$listMirror = json_decode($listMirror, true);
@@ -54,6 +57,11 @@ class Installer extends Core {
 			return false;
 		}
 		if(isset($_GET['install'])) {
+			if(!isset($listAll[$_GET['install']]) || !isset($listAll[$_GET['install']]['download'])) {
+				header("HTTP/1.1 406 Not Acceptable");
+				echo "not found";
+				return false;
+			}
 			if(!file_exists(PATH_CACHE_SYSTEM.$_GET['install'].".zip")) {
 				header("HTTP/1.0 404 Not Found");
 				die();
@@ -64,6 +72,26 @@ class Installer extends Core {
 				header("HTTP/1.0 404 Not Found");
 				die();
 			}
+			$path = $listAll[$_GET['install']]['download'];
+			$path = str_replace($paths, "", $path);
+			$path = str_replace(".zip", "", $path);
+			$listFiles = array("allList" => array(), "forDelete" => array());
+			for($i=0;$i<$tar_object->numFiles;$i++) {
+				$file = nsubstr($tar_object->getNameIndex($i), nstrlen($path."/"));
+				if(empty($file)) { continue; }
+				$fileInfo = pathinfo($file);
+				$listFiles['allList'][$file] = $file;
+				if(isset($fileInfo['extension'])) {
+					$listFiles['forDelete'][$file] = $file;
+				}
+			}
+			if(!file_exists(PATH_CACHE_USERDATA."Installer".DS)) {
+				@mkdir(PATH_CACHE_USERDATA."Installer".DS, 0777);
+			}
+			if(!is_writeable(PATH_CACHE_USERDATA."Installer".DS)) {
+				@chmod(PATH_CACHE_USERDATA."Installer".DS, 0777);
+			}
+			@file_put_contents(PATH_CACHE_USERDATA."Installer".DS.$path.".json", json_encode($listFiles));
 			$tr = $tar_object->extractTo(ROOT_PATH);
 			$this->rcopyModules(ROOT_PATH.$_GET['install'], ROOT_PATH);
 			cardinal::RegAction("Установка модуля ".$_GET['install']);
@@ -75,7 +103,6 @@ class Installer extends Core {
 				$tar_object->close();
 				header("HTTP/1.1 406 Not Acceptable");
 			}
-
 			return false;
 		}
 		if(isset($_GET['active'])) {
@@ -107,7 +134,7 @@ class Installer extends Core {
 		}
 		$lists = $newList;
 		$lists = array_merge($arr, $lists);
-		templates::assign_var("listServer", implode("\n", $config));
+		templates::assign_var("listServer", implode("\n", $configs));
 		$list = array_values($lists);
 		for($i=0;$i<sizeof($list);$i++) {
 			$info = array("name" => $list[$i][0], "path" => $list[$i][1], "altName" => $list[$i][0]);
