@@ -30,7 +30,7 @@ class {altTitle}Archer extends modules {
 		if(!defined("DisableSort")) {
 			define("DisableSort", "0"); // отключение сортировки
 		}
-		return $tpl;
+		return array($table, $page, $model, $tpl);
 	}
 
 	public function RebuildShow($table, $tpl, $model) {
@@ -49,22 +49,22 @@ class {altTitle}Archer extends modules {
 
 	public static function RebuildEditModel($model, &$exc = array()) {
 		{universalAttributes}
-		return $model;
+		return array($model);
 	}
 
 	function RebuildAddModel($model, &$exc = array()) {
 		{universalAttributes}
-		return $model;
+		return array($model);
 	}
 
 	function RebuildTakeAddModel($model, $id, $countCall) {
 		{universalAttributesTakeAdd}
-		return $model;
+		return array($model, $id, $countCall);
 	}
 
 	function RebuildTakeEditModel($model, $id, $countCall) {
 		{universalAttributesTakeEdit}
-		return $model;
+		return array($model, $id, $countCall);
 	}
 	
 }
