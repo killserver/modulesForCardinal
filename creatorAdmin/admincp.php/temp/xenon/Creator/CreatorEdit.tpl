@@ -39,14 +39,20 @@
 				</optgroup>
 				<optgroup label="Текст">
 					<option value="varchar">Однострочный текст</option>
-					<option value="longtext">Многострочный редактор текста</option>
+					<option value="email">E-mail</option>
+					<option value="link">Ссылка</option>
+					<option value="password">Пароль</option>
+					<option value="onlytextareatext">Многострочный редактор текста</option>
+					<option value="longtext">Визуальный редактор текста</option>
 				</optgroup>
 				<optgroup label="Картинки">
 					<option value="image">Загрузка картинки</option>
+					<option value="imageAccess">Загрузка картинки через доступ к загруженным картинкам</option>
 					<option value="imageArray">Загрузка нескольких картинок</option>
 				</optgroup>
 				<optgroup label="Файлы">
 					<option value="file">Загрузка файла</option>
+					<option value="fileAccess">Загрузка файла через доступ к загруженным картинкам</option>
 					<option value="fileArray">Загрузка нескольких файлов</option>
 				</optgroup>
 				<optgroup label="Дата/время">
