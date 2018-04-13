@@ -25,7 +25,7 @@ class slider extends modules {
 										" PRIMARY KEY `id` (`slide_id`)");
 	}
 
-	public static $version = "1.7";
+	public static $version = "1.8";
 
 	public static function updater($version) {
 		if($version=="1.0") {

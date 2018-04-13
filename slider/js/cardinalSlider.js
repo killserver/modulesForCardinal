@@ -6,10 +6,23 @@
         init : function(options) {
             var settings = $.extend({
                 'slidePerView' : 1,
-                'slideMargin' : 0,
             }, options);
             this.each(function(i, elem) {
-                var subSettings = $.extend({ 'slideWidth': (jQuery(elem).outerWidth() / settings.slidePerView - (settings.slideMargin>0 ? settings.slideMargin / 2 : 0)), 'minSlides' : settings.slidePerView, 'maxSlides' : settings.slidePerView }, settings);
+                var slideWidth = (jQuery(elem).innerWidth() / settings.slidePerView - (typeof(settings.slideMargin)!=="undefined" && settings.slideMargin>0 ? settings.slideMargin / 2 : 0));
+                var ch = jQuery(elem).children();
+                if(typeof(ch[0])!=="undefined") {
+                    var marginLeft = parseFloat(jQuery(ch[0]).css("marginLeft"));
+                    var marginRight = parseFloat(jQuery(ch[0]).css("marginRight"));
+                } else {
+                    var marginLeft = 0;
+                    var marginRight = 0;
+                }
+                if(typeof(settings.slideMargin)==="undefined") {
+                    settings.slideMargin = (marginLeft+marginRight);
+                }
+                console.log(settings);
+                slideWidth = slideWidth-(marginLeft/1.5)-(marginRight/1.5);
+                var subSettings = $.extend({'slideWidth': slideWidth, 'minSlides' : settings.slidePerView, 'maxSlides' : settings.slidePerView}, settings);
                 lists[lists.length] = jQuery(elem).bxSlider(subSettings);
             });
             return lists;

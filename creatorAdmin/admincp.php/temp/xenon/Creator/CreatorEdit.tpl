@@ -28,7 +28,7 @@
 </style>
 <script type="text/template" id="tmpCreate">
 	<div class="col-sm-12" data-field="{id}">
-		<div class="col-sm-12 col-md-6"><input type="text" class="form-control" name="data[{id}][name]" placeholder="Введите имя" required="required"><br><label class="hides"><input type="checkbox" name="data[{id}][hideOnMain]" class="cbr cbr-primary" value="yes">Скрыть с главной</label>&nbsp;&nbsp;&nbsp;&nbsp;<label class="altname"><input type="checkbox" name="data[{id}][translate]" class="cbr cbr-primary" value="yes" data-id="{id}">Создать альтернативное имя</label><br><div class="createAltName" data-altname="{id}"></div></div>
+		<div class="col-sm-12 col-md-6"><input type="text" class="form-control" name="data[{id}][name]" placeholder="Введите имя" required="required"><br><label class="hides"><input type="checkbox" name="data[{id}][hideOnMain]" class="cbr cbr-primary" value="yes">Скрыть с главной</label>&nbsp;&nbsp;&nbsp;&nbsp;<label class="altname"><input type="checkbox" name="data[{id}][translate]" class="cbr cbr-primary" value="yes" data-id="{id}">Создать альтернативное имя</label>&nbsp;&nbsp;&nbsp;&nbsp;<label class="supportLang"><input type="checkbox" name="data[{id}][supportLang]" class="cbr cbr-primary" value="yes" data-id="{id}">Поддержка мультиязычности</label><br><div class="createAltName" data-altname="{id}"></div></div>
 		<div class="col-sm-12 col-md-4">
 			<select class="form-control selected" required="required" data-selectId="{id}" name="data[{id}][type]">
 				<option value="" selected="selected" disabled="disabled">Выберите тип</option>
@@ -47,12 +47,10 @@
 				</optgroup>
 				<optgroup label="Картинки">
 					<option value="image">Загрузка картинки</option>
-					<option value="imageAccess">Загрузка картинки через доступ к загруженным картинкам</option>
 					<option value="imageArray">Загрузка нескольких картинок</option>
 				</optgroup>
 				<optgroup label="Файлы">
 					<option value="file">Загрузка файла</option>
-					<option value="fileAccess">Загрузка файла через доступ к загруженным картинкам</option>
 					<option value="fileArray">Загрузка нескольких файлов</option>
 				</optgroup>
 				<optgroup label="Дата/время">
@@ -149,6 +147,9 @@
 					jQuery("[data-field='"+i+"']").find("select").val(dataField.type);
 					if(typeof(dataField.hideOnMain)!=="undefined" && dataField.hideOnMain=="yes") {
 						jQuery("[data-field='"+i+"']").find("label.hides input[type='checkbox']").attr("checked", "checked");
+					}
+					if(typeof(dataField.supportLang)!=="undefined" && dataField.supportLang=="yes") {
+						jQuery("[data-field='"+i+"']").find("label.supportLang input[type='checkbox']").attr("checked", "checked");
 					}
 					if(typeof(dataField.translate)!=="undefined" && typeof(dataField.alttitle)!=="undefined") {
 						var tmp = $(".inputTranslate").html();

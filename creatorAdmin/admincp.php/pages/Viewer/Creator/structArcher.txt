@@ -40,7 +40,7 @@ class {altTitle}Archer extends modules {
 
 	public static function RebuildShield($row) {
 		{listShild}
-		return $row;
+		return array($row);
 	}
 
 	public function RebuildTakeUpload($model, $field, $id, $file, $path, $type = "", $i = -1) {

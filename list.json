@@ -287,15 +287,27 @@
 		"altName": "creatorAdmin",
 		"description": "При помощи данного модуля появляется возможность быстрого создания разделов. Создаётся структура таблиц и разделов в админ-панели. Теперь создавать сайты стало проще!!",
 		"author": "killserver",
-		"version": "1.0.3",
+		"version": "1.1",
 		"image": "http://wwbmaster.ru/images/responsive.png",
 		"type": "module",
 		"cardinalVersion": "9.2",
 		"download": "https://raw.githubusercontent.com/killserver/modulesForCardinal/master/creatorAdmin.zip",
 		"changelog": {
+			"1.1": "Исправлены ошибки, которые появлялись после создания нового раздела. Добавлена возможность включения поддержки мультиязычности. Практически на 80% переписан код",
 			"1.0.3": "Улучшена поддержка новых функций добавленных в Арчере",
 			"1.0.2": "Улучшена поддержка новой ревизии в которой была исправлена ошибка в работе с мульти-управляющими файлами Арчера",
 			"1.0.1": "Исправлена ошибка, когда при выборе типа загружаемого материала как 'картинка' - выдавало просто текст в главном меню раздела. Исправлен мультивыбор для активации скрытого режима и альтернативного имени для полей данных"
 		}
+	},
+	"browserSync": {
+		"name": "BrowserSync для Cardinal Engine",
+		"altName": "browserSync",
+		"description": "При помощи данного модуля можно не беспокоиться, что где-то на сайте не будет указан скрипт для перезагрузки страницы, который нужен для корректной работы BrowserSync",
+		"author": "killserver",
+		"version": "1.0",
+		"image": "https://www.espai.es/blog/wp-content/uploads/2016/11/browsersync-logo-e1478685343568.jpg",
+		"type": "module",
+		"cardinalVersion": "9.2",
+		"download": "https://raw.githubusercontent.com/killserver/modulesForCardinal/master/browserSync.zip"
 	}
 }
