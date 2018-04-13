@@ -396,7 +396,7 @@ class Creator extends Core {
 				}
 				if(sizeof($afterSQL)>0) {
 					for($i=0;$i<sizeof($afterSQL);$i++) {
-						db::doquery($afterSQL, true);
+						db::doquery($afterSQL[$i], true);
 					}
 				}
 			} else {
