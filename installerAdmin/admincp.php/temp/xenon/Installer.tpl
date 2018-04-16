@@ -229,7 +229,13 @@
 			jQuery("#modal-3 .modal-body .title").html(data.name);
 			jQuery("#modal-3 .modal-body .description span").html(data.description);
 			jQuery("#modal-3 .modal-body .version span").html(data.version);
-			jQuery("#modal-3 .modal-body .author span").html(data.author);
+			if(typeof(data.authorLink)!=="undefined") {
+				jQuery("#modal-3 .modal-body .author span").remove();
+				jQuery("#modal-3 .modal-body .author a").attr("href", data.authorLink).html(data.author);
+			} else {
+				jQuery("#modal-3 .modal-body .author a").remove();
+				jQuery("#modal-3 .modal-body .author span").html(data.author);
+			}
 			jQuery("#modal-3 .modal-body .screens").remove();
 			jQuery("#modal-3 .modal-body .img").css("backgroundImage", "url('"+data.image+"')");
 			var html = "";
