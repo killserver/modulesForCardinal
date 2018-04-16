@@ -99,6 +99,9 @@
 <script type="text/template" id="templateItemInstalledHead4">
 	data-install="buy" class="btn buy"
 </script>
+<script type="text/template" id="templateItemInstalledFoot0">
+	<a href="#" class="btn btn-red btn-block disabled">Поддерживается на версии {version}</a>
+</script>
 <script type="text/template" id="templateItemInstalledFoot1">
 	<a href="#" class="btn btn-turquoise btn-block action install" data-action="{altName}">Установить</a>
 </script>
@@ -124,13 +127,14 @@
 			var themeAll = "";
 			var pluginAll = "";
 			Object.keys(infoAll).forEach(function(key) {
-				if(infoAll[key].cardinalVersion > cardinalVersionNow) {
-					return false;
-				}
 				var tmpAll = jQuery("#templateItem").html();
 				var installedHead = "";
 				var installedFoot = "";
-				if(infoAll[key].installed==1) {
+				if(infoAll[key].cardinalVersion > cardinalVersionNow) {
+					installedHead = "class=\"btn\"";
+					installedFoot = jQuery("#templateItemInstalledFoot0").html();
+					installedFoot = installedFoot.replace(/\{version\}/g, infoAll[key].cardinalVersion);
+				} else if(infoAll[key].installed==1) {
 					installedHead = jQuery("#templateItemInstalledHead1").html();
 					installedFoot = jQuery("#templateItemInstalledFoot1").html();
 				} else if(infoAll[key].installed==2) {
@@ -165,7 +169,7 @@
 		jQuery(".btns").each(function(i, elem) {
 			jQuery(elem).css("height", jQuery(elem).parent().outerHeight()-jQuery(elem).parent().find("b").outerHeight()*3);
 		});
-		jQuery("body").off("click").on("click", "[data-action]", function() {
+		jQuery("body").off("click").on("click", "[data-action]:not(.disabled)", function() {
 			test = this;
 			var action = this;
 			if(jQuery(this).hasClass("actived")) {
@@ -217,42 +221,44 @@
 			}
 			return false;
 		});
-	});
-	jQuery("body").off("click").on("click", "a[data-info]", function() {
-		var data = infoAll[jQuery(this).attr("data-info")];
-		var installation = jQuery(this).attr("data-install");
-		console.log(installation);
-		jQuery("#modal-3 .modal-body").html(jQuery("#templateModule").html());
-		jQuery("#modal-3 .modal-body .title").html(data.name);
-		jQuery("#modal-3 .modal-body .description span").html(data.description);
-		jQuery("#modal-3 .modal-body .version span").html(data.version);
-		jQuery("#modal-3 .modal-body .author span").html(data.author);
-		jQuery("#modal-3 .modal-body .screens").remove();
-		jQuery("#modal-3 .modal-body .img").css("backgroundImage", "url('"+data.image+"')");
-		var html = "";
-		if(typeof(data.changelog)!=="undefined") {
-			Object.keys(data.changelog).forEach(function(v) {
-				html += "<b>"+v+"</b>"+data.changelog[v]+"<br>";
-			});
-		}
-		if(html.length>0) {
-			jQuery("#modal-3 .modal-body .changelog span").html(html);
-		} else {
-			jQuery("#modal-3 .modal-body .changelog").remove();
-		}
-		if(installation=="install") {
-			jQuery("#modal-3 .modal-body a.btn.action").attr("class", "").addClass("btn action btn-turquoise install").css("cursor", "").attr("data-action", data.altName).html("Установить");
-		} else if(installation=="update") {
-			jQuery("#modal-3 .modal-body a.btn.action").attr("class", "").addClass("btn action btn-blue update").css("cursor", "").attr("data-action", data.altName).html("Обновить");
-		} else if(installation=="installed") {
-			jQuery("#modal-3 .modal-body a.btn.action").attr("class", "").addClass("btn action btn-success installed").css("cursor", "not-allowed").attr("data-action", data.altName).html("Установлено");
-		} else if(installation=="buy") {
-			jQuery("#modal-3 .modal-body a.btn.action").attr("class", "").addClass("btn action btn-purple buy").attr("data-action", data.altName).html("Купить");
-		}
-		jQuery("#title_video").html(data.name);
-		jQuery(".modal .modal-dialog .modal-content .modal-body").css("overflow", "auto");
-		jQuery('#modal-3').modal('show');
-		return false;
+		jQuery("body").off("click").on("click", "a[data-info]", function() {
+			var data = infoAll[jQuery(this).attr("data-info")];
+			var installation = jQuery(this).attr("data-install");
+			console.log(installation);
+			jQuery("#modal-3 .modal-body").html(jQuery("#templateModule").html());
+			jQuery("#modal-3 .modal-body .title").html(data.name);
+			jQuery("#modal-3 .modal-body .description span").html(data.description);
+			jQuery("#modal-3 .modal-body .version span").html(data.version);
+			jQuery("#modal-3 .modal-body .author span").html(data.author);
+			jQuery("#modal-3 .modal-body .screens").remove();
+			jQuery("#modal-3 .modal-body .img").css("backgroundImage", "url('"+data.image+"')");
+			var html = "";
+			if(typeof(data.changelog)!=="undefined") {
+				Object.keys(data.changelog).forEach(function(v) {
+					html += "<b>"+v+"</b>"+data.changelog[v]+"<br>";
+				});
+			}
+			if(html.length>0) {
+				jQuery("#modal-3 .modal-body .changelog span").html(html);
+			} else {
+				jQuery("#modal-3 .modal-body .changelog").remove();
+			}
+			if(data.cardinalVersion > cardinalVersionNow) {
+				jQuery("#modal-3 .modal-body a.btn.action").attr("class", "").addClass("btn btn-red disabled").css("cursor", "").html("Поддерживается на версии "+data.cardinalVersion);
+			} else if(installation=="update") {
+				jQuery("#modal-3 .modal-body a.btn.action").attr("class", "").addClass("btn action btn-blue update").css("cursor", "").attr("data-action", data.altName).html("Обновить");
+			} else if(installation=="installed") {
+				jQuery("#modal-3 .modal-body a.btn.action").attr("class", "").addClass("btn action btn-success installed").css("cursor", "not-allowed").attr("data-action", data.altName).html("Установлено");
+			} else if(installation=="buy") {
+				jQuery("#modal-3 .modal-body a.btn.action").attr("class", "").addClass("btn action btn-purple buy").attr("data-action", data.altName).html("Купить");
+			} else if(installation=="buy") {
+				jQuery("#modal-3 .modal-body a.btn.action").attr("class", "").addClass("btn action btn-purple buy").attr("data-action", data.altName).html("Купить");
+			}
+			jQuery("#title_video").html(data.name);
+			jQuery(".modal .modal-dialog .modal-content .modal-body").css("overflow", "auto");
+			jQuery('#modal-3').modal('show');
+			return false;
+		});
 	});
 	var disableAllEditors = true;
 </script>
