@@ -252,11 +252,14 @@
 		"altName": "preloader",
 		"description": "При помощи данного модуля можно выбрать и установить тот прелоадер, который захочется",
 		"author": "killserver",
-		"version": "1.0",
+		"version": "1.1",
 		"image": "https://www.kobzarev.com/wp-content/uploads/2014/05/css-loaders-screenshot.jpg",
 		"type": "module",
 		"cardinalVersion": "8.5",
-		"download": "https://raw.githubusercontent.com/killserver/modulesForCardinal/master/preloader.zip"
+		"download": "https://raw.githubusercontent.com/killserver/modulesForCardinal/master/preloader.zip",
+		"changelog": {
+			"1.1": "Исправлены ошибки. Теперь прелоадер будет показываться до того как загрузится страница(как и нужно по логике)"
+		}
 	},
 	"telegramBotCardinal": {
 		"name": "Push-уведомления в Telegram",
@@ -311,5 +314,16 @@
 		"type": "module",
 		"cardinalVersion": "9.2",
 		"download": "https://raw.githubusercontent.com/killserver/modulesForCardinal/master/browserSync.zip"
+	},
+	"cardinalEngineDocs": {
+		"name": "Документация для Cardinal Engine",
+		"altName": "cardinalEngineDocs",
+		"description": "При помощи данной модификации Вы сможете узнать о каждой функции/методе/классе, которые есть внутри данного движка",
+		"author": "killserver",
+		"version": "1.0",
+		"image": "http://waterenergy.com.ua/media/k2/categories/17.jpg",
+		"type": "module",
+		"cardinalVersion": "9.3",
+		"download": "https://raw.githubusercontent.com/killserver/modulesForCardinal/master/cardinalEngineDocs.zip"
 	}
 }

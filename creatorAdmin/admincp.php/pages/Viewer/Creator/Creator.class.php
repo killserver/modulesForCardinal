@@ -277,6 +277,7 @@ class Creator extends Core {
 			$dataFirst = $first."Id";
 			$data[-1]['altName'] = $dataFirst;
 			$data[-1]['type'] = "int";
+			$data[-1]['auto_increment'] = true;
 			sortByKey($data);
 			$data = array_merge($data, $createAutoField);
 			$model = str_replace("{fields}", implode(PHP_EOL, array_map(array($this, "createFields"), $data)), $model);
@@ -466,12 +467,16 @@ class Creator extends Core {
 		} else if($type=="hidden") {
 			$type = "varchar".($isDB ? "(255)" : "");
 		}
+		$auto_increment = "";
+		if(isset($struct['auto_increment'])) {
+			$auto_increment = " auto_increment";
+		}
 		if($isAdd === false && $withName===false) {
 			return array($struct['altName'] => (isset($struct['orName']) ? array("orName" => $struct['orName'], $type) : $type));
 		} else if($isAdd !== false && $withName===false) {
 			return array($struct['altName'] => $type);
 		} else if($isDB) {
-			return '`'.$struct['altName'].'` '.$type.' not null';
+			return '`'.$struct['altName'].'` '.$type.' not null'.$auto_increment;
 		} else {
 			return array($struct['altName'] => $type);
 		}
