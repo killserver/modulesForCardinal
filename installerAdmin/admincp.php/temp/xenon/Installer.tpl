@@ -69,11 +69,15 @@
 			<li>
 				<a href="#plugins" data-toggle="tab"><span>{L_"Плагины"}</span></a>
 			</li>
+			<li>
+				<a href="#components" data-toggle="tab"><span>{L_"Разделы"}</span></a>
+			</li>
 		</ul>
 		<div class="tab-content">
 			<div class="tab-pane active" id="module"><div class="row">{modules}</div></div>
 			<div class="tab-pane" id="theme"><div class="row">{themes}</div></div>
 			<div class="tab-pane" id="plugins"><div class="row">{plugins}</div></div>
+			<div class="tab-pane" id="components"><div class="row">{components}</div></div>
 		</div>
 	</div>
 </script>
@@ -126,11 +130,12 @@
 			var moduleAll = "";
 			var themeAll = "";
 			var pluginAll = "";
+			var componentsAll = "";
 			Object.keys(infoAll).forEach(function(key) {
 				var tmpAll = jQuery("#templateItem").html();
 				var installedHead = "";
 				var installedFoot = "";
-				if(infoAll[key].cardinalVersion > cardinalVersionNow) {
+				if(infoAll[key].cardinalVersion < cardinalVersionNow) {
 					installedHead = "class=\"btn\"";
 					installedFoot = jQuery("#templateItemInstalledFoot0").html();
 					installedFoot = installedFoot.replace(/\{version\}/g, infoAll[key].cardinalVersion);
@@ -158,12 +163,15 @@
 					themeAll += tmpAll;
 				} else if(infoAll[key].type=="plugins") {
 					pluginAll += tmpAll;
+				} else if(infoAll[key].type=="components") {
+					componentsAll += tmpAll;
 				}
 			});
 			var allTmp = jQuery("#templateCategory").html();
 			allTmp = allTmp.replace(/\{modules\}/g, moduleAll);
 			allTmp = allTmp.replace(/\{themes\}/g, themeAll);
 			allTmp = allTmp.replace(/\{plugins\}/g, pluginAll);
+			allTmp = allTmp.replace(/\{components\}/g, componentsAll);
 			jQuery(".moduleList").html(allTmp);
 		}
 		jQuery(".btns").each(function(i, elem) {
@@ -224,6 +232,7 @@
 		jQuery("body").off("click").on("click", "a[data-info]", function() {
 			var data = infoAll[jQuery(this).attr("data-info")];
 			var installation = jQuery(this).attr("data-install");
+			console.log(data);
 			console.log(installation);
 			jQuery("#modal-3 .modal-body").html(jQuery("#templateModule").html());
 			jQuery("#modal-3 .modal-body .title").html(data.name);
@@ -241,24 +250,31 @@
 			var html = "";
 			if(typeof(data.changelog)!=="undefined") {
 				Object.keys(data.changelog).forEach(function(v) {
-					html += "<b>"+v+"</b>"+data.changelog[v]+"<br>";
+					html += "<b>"+v+"</b>&nbsp;"+data.changelog[v]+"<br>";
 				});
+			}
+			if(typeof(data.afterInstall)!=="undefined") {
+				jQuery("#modal-3 .modal-body .installation span").html(data.afterInstall);
+			} else {
+				jQuery("#modal-3 .modal-body .installation").remove();
 			}
 			if(html.length>0) {
 				jQuery("#modal-3 .modal-body .changelog span").html(html);
 			} else {
 				jQuery("#modal-3 .modal-body .changelog").remove();
 			}
-			if(data.cardinalVersion > cardinalVersionNow) {
-				jQuery("#modal-3 .modal-body a.btn.action").attr("class", "").addClass("btn btn-red disabled").css("cursor", "").html("Поддерживается на версии "+data.cardinalVersion);
+			jQuery(".btn-copy").remove();
+			jQuery(".modal .modal-dialog .modal-content .modal-footer .btn").after('<a href="#" class="btn action btn-copy">Обновить</a>');
+			if(data.cardinalVersion < cardinalVersionNow) {
+				jQuery("#modal-3 .modal-footer a.btn.action").attr("class", "").addClass("btn btn-copy btn-red disabled").css("cursor", "").html("Поддерживается на версии "+data.cardinalVersion);
 			} else if(installation=="update") {
-				jQuery("#modal-3 .modal-body a.btn.action").attr("class", "").addClass("btn action btn-blue update").css("cursor", "").attr("data-action", data.altName).html("Обновить");
+				jQuery("#modal-3 .modal-footer a.btn.action").attr("class", "").addClass("btn btn-copy action btn-blue update").css("cursor", "").attr("data-action", data.altName).html("Обновить");
 			} else if(installation=="installed") {
-				jQuery("#modal-3 .modal-body a.btn.action").attr("class", "").addClass("btn action btn-success installed").css("cursor", "not-allowed").attr("data-action", data.altName).html("Установлено");
+				jQuery("#modal-3 .modal-footer a.btn.action").attr("class", "").addClass("btn btn-copy action btn-success installed").css("cursor", "not-allowed").attr("data-action", data.altName).html("Установлено");
+			} else if(installation=="install") {
+				jQuery("#modal-3 .modal-footer a.btn.action").attr("class", "").addClass("btn btn-copy action btn-turquoise install").attr("data-action", data.altName).html("Установить");
 			} else if(installation=="buy") {
-				jQuery("#modal-3 .modal-body a.btn.action").attr("class", "").addClass("btn action btn-purple buy").attr("data-action", data.altName).html("Купить");
-			} else if(installation=="buy") {
-				jQuery("#modal-3 .modal-body a.btn.action").attr("class", "").addClass("btn action btn-purple buy").attr("data-action", data.altName).html("Купить");
+				jQuery("#modal-3 .modal-footer a.btn.action").attr("class", "").addClass("btn btn-copy action btn-purple buy").attr("data-action", data.altName).html("Купить");
 			}
 			jQuery("#title_video").html(data.name);
 			jQuery(".modal .modal-dialog .modal-content .modal-body").css("overflow", "auto");
@@ -270,23 +286,39 @@
 </script>
 <script type="text/template" id="templateModule">
 	<div class="installator">
-		<div class="col-sm-12"><div class="img"></div></div>
+		<div class="col-sm-12"><div class="img"><div class="title"></div></div></div>
 		<div class="col-sm-12">
-			<div class="pull-left title"></div>
-			<div class="pull-right"><a href="#" class="btn action">Обновить</a></div>
 		</div>
 		<div class="col-sm-9">
-			<div class="col-sm-12 description">
-				<h4>Описание</h4>
-				<span></span>
-			</div>
-			<div class="col-sm-12 screens">
-				<h4>Скриншоты</h4>
-				<span><i>Не реализовано</i></span>
-			</div>
-			<div class="col-sm-12 changelog">
-				<h4>Список изменений</h4>
-				<span></span>
+			<div class="col-md-12">
+				<ul class="nav nav-tabs nav-tabs-justified">
+					<li class="active description">
+						<a href="#home-1" data-toggle="tab">Описание</a>
+					</li>
+					<li class="screens">
+						<a href="#home-2" data-toggle="tab">Скриншоты</a>
+					</li>
+					<li class="changelog">
+						<a href="#home-3" data-toggle="tab">Список изменений</a>
+					</li>
+					<li class="installation">
+						<a href="#home-4" data-toggle="tab">Установка</a>
+					</li>
+				</ul>
+				<div class="tab-content">
+					<div class="tab-pane active description" id="home-1">
+						<span></span>
+					</div>
+					<div class="tab-pane screens" id="home-2">
+						<span></span>
+					</div>
+					<div class="tab-pane changelog" id="home-3">
+						<span></span>
+					</div>
+					<div class="tab-pane installation" id="home-4">
+						<span></span>
+					</div>
+				</div>
 			</div>
 		</div>
 		<div class="col-sm-3">
@@ -302,65 +334,96 @@
 	</div>
 </script>
 <style type="text/css">
-.modal-body .img {
-    width: 100%;
-    height: 25em;
-    background-size: 90%;
-    background-attachment: fixed;
-    background-repeat: no-repeat;
-    background-position: 50% 0%;
-    border: 0.5em solid #ddd;
-    margin-bottom: 2em;
-}
+	.modal-body .img {
+		width: 100%;
+		height: 25em;
+		background-size: 90%;
+		background-attachment: fixed;
+		background-repeat: no-repeat;
+		background-position: 50% 0%;
+		border: 0.5em solid #ddd;
+		margin-bottom: 2em;
+		position: relative;
+	}
+	.modal-footer a.btn {
+		border-radius: .25rem;
+	}
+	.modal-body .img .title {
+		position: absolute;
+		bottom: 2em;
+		left: 2em;
+		background: #404040;
+		color: #fff;
+		padding: 1rem 1.5rem;
+		border-radius: 0.25rem;
+		letter-spacing: 0.06rem;
+		font-size: 1.25rem;
+		font-weight: 700;
+	}
+	.modal .col-sm-12.description {
+		margin-bottom: 2em;
+	}
+	.modal .col-sm-12.changelog {}
+	.modal .col-sm-12.changelog b {
+		color: #00f;
+		margin: 0.5em 0px 0.5em;
+		display: table;
+	}
+	.modal .col-sm-12.changelog b:before {
+		content: '- ';
+	}
+	.modal .col-sm-12 h4 {
+		color: #333;
+		font-style: italic;
+		font-weight: bold;
+		margin: 1em 0px;
+	}
+	.tab-content .tab-content {
+		background: whitesmoke !important;
+	}
+	.tab-content .nav.nav-tabs > li > a {
+		background-color: #fff;
+	}
+	.tab-content .nav.nav-tabs > li.active > a {
+		background-color: #f4f4f4;
+		border: 0px;
+	}
+	.tab-content .nav.nav-tabs > li > a:hover {
+		background-color: #f4f4f4;
+	}
+	.tab-content a .img {
+		width: 100%;
+		height: 15em;
+		margin: auto;
+		display: table;
+		background-repeat: no-repeat;
+		background-size: cover;
+		background-position: 50%;
+	}
 
-.modal-body a.btn {
-    border-radius: .25rem;
-}
-
-.modal .pull-left.title {
-    font-size: 1.1em;
-    font-weight: 600;
-}
-
-.modal .col-sm-12.description {
-    margin-bottom: 2em;
-}
-
-.modal .col-sm-12.changelog {}
-.modal .col-sm-12.changelog b {
-    color: #00f;
-    margin: 0.5em 0px 0.5em;
-    display: table;
-}
-.modal .col-sm-12.changelog b:before {
-    content: '- ';
-}
-.modal .col-sm-12 h4 {
-    color: #333;
-    font-style: italic;
-    font-weight: bold;
-    margin: 1em 0px;
-}
-.tab-content .tab-content {
-    background: whitesmoke !important;
-}
-.tab-content .nav.nav-tabs > li > a {
-    background-color: #fff;
-}
-.tab-content .nav.nav-tabs > li.active > a {
-    background-color: #f4f4f4;
-    border: 0px;
-}
-.tab-content .nav.nav-tabs > li > a:hover {
-    background-color: #f4f4f4;
-}
-.tab-content a .img {
-    width: 100%;
-    height: 15em;
-    margin: auto;
-    display: table;
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position: 50%;
-}
+	.installator .nav.nav-tabs > li > a,
+	.installator .nav-tabs > li.active > a:focus {
+		border: 1px solid #ddd;
+	}
+	.installator .nav.nav-tabs > li > a,
+	.installator .nav.nav-tabs.nav-tabs-justified {
+		background: #ddd;
+	}
+	.installator .nav.nav-tabs > li.active > a {
+		background: #fff;
+	}
+	.installator .nav.nav-tabs > li > a:hover {
+		border: 1px solid #ddd;
+	}
+	.modal .modal-dialog .modal-content .modal-footer button.btn {
+		display: none;
+	}
+	.modal .modal-dialog .modal-content .modal-body::-webkit-scrollbar {
+		width: 9px;
+		background: white;
+		border: 1px solid #dddddd;
+	}
+	.modal .modal-dialog .modal-content .modal-body::-webkit-scrollbar-thumb {
+		background: #ddd;
+	}
 </style>
