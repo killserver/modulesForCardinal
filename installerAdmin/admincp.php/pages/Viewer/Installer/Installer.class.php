@@ -180,6 +180,8 @@ class Installer extends Core {
 			}
 			if(isset($info['description'])) {
 				$info['description'] = str_replace("{", "&#123;", $info['description']);
+			} else if(isset($list[$i]['Description'])) {
+				$info['description'] = str_replace("{", "&#123;", $list[$i]['Description']);
 			}
 			if(isset($info['changelog'])) {
 				$changelog = "";
@@ -189,13 +191,21 @@ class Installer extends Core {
 				$info['changelog'] = $changelog;
 				$info['changelog'] = str_replace("{", "&#123;", $info['changelog']);
 				$info['noChangelog'] = "false";
+			} else if(isset($list[$i]['Changelog'])) {
+				$info['changelog'] = str_replace("{", "&#123;", $list[$i]['Changelog']);
+				$info['noChangelog'] = "false";
 			} else {
 				$info['noChangelog'] = "true";
 			}
 			if(!isset($info['description'])) {
 				$info['description'] = "";
 			}
-			if(!isset($info['image'])) {
+			if(isset($list[$i]['Version'])) {
+				$info['version'] = $list[$i]['Version'];
+			}
+			if(isset($list[$i]['Image'])) {
+				$info['image'] = $list[$i]['Image'];
+			} else if(!isset($info['image'])) {
 				$info['image'] = "https://png.icons8.com/color/540/app-symbol.png";
 			}
 			if(isset($info['version']) && class_exists($list[$i][0], false) && property_exists($list[$i][0], "version") && $list[$i][0]::$version<$info['version']) {
