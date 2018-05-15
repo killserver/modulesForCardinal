@@ -8,7 +8,7 @@ class creatorAdmin extends modules {
 
 	function __construct() {}
 
-	public static $version = "1.1";
+	public static $version = "1.1.1";
 
 }
 

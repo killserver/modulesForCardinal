@@ -109,6 +109,14 @@ class Creator extends Core {
 			}
 		}
 		modules::drop_table($name);
+		$pathForThisModule = PATH_CACHE_USERDATA."struct".DS;
+		$pathForReady = dirname(__FILE__).DS;
+		if(!file_exists($pathForThisModule)) {
+			@mkdir($pathForThisModule, 0777);
+		}
+		if(!is_writeable($pathForThisModule)) {
+			@chmod($pathForThisModule, 0777);
+		}
 		if(file_exists($pathForThisModule."file_".$name.".txt")) { unlink($pathForThisModule."file_".$name.".txt"); }
 		if(file_exists(PATH_MODULES.$altTitleUp."Archer.class.".ROOT_EX)) { unlink(PATH_MODULES.$altTitleUp."Archer.class.".ROOT_EX); }
 		if(file_exists(PATH_MODELS."Model".$altTitleUp.".".ROOT_EX)) { unlink(PATH_MODELS."Model".$altTitleUp.".".ROOT_EX); }
@@ -159,13 +167,14 @@ class Creator extends Core {
 			$universalAttributes .= '$model->setAttribute(\''.$first.$altTranslateField.'\', \'Type\', \'hidden\');'.PHP_EOL;
 			$universalAttributesTakeAdd .= 'if(isset($model->'.$first.$altTranslateField.')) { $model->'.$first.$altTranslateField.' = ToTranslit($model->'.$first.$altTranslateField.'); }'.PHP_EOL;
 			$createAutoField[] = array("altName" => $first.$altTranslateField, "type" => "hidden");//$data[$i]['type']
+			$exclude[$first.$altTranslateField] = "\"".$first.$altTranslateField."\"";
 		}
 		if($sufix!=="" && $ignoreNotFirst===true) {
 			$exclude[$first.$altNameField.$sufix] = "\"".$first.$altNameField.$sufix."\"";
 			$createAutoField[] = array("altName" => $first.$altNameField.$sufix, "type" => $data[$i]['type']);
 		}
 		for($l=0;$l<sizeof($langSupport);$l++) {
-			lang::Update($langSupport[$l], $first.$altNameField.$sufix, $data[$i]['name']);
+			lang::Update($langSupport[$l], $first.$altNameField.$sufix, $data[$i]['name']."&nbsp;".$sufix);
 		}
 		if(isset($data[$i]['hideOnMain'])) {
 			$exclude[$first.$altNameField] = "\"".$first.$altNameField.$sufix."\"";
