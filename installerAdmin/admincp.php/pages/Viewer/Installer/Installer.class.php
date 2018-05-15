@@ -6,7 +6,9 @@ class Installer extends Core {
 		$newArr = array();
 		for($i=0;$i<sizeof($arr);$i++) {
 			$arr[$i]['active'] = true;
-			$newArr[$arr[$i][0]] = $arr[$i];
+			$res = $arr[$i];
+			$res = array_merge($res, array("Name" => $arr[$i][0], "File" => $arr[$i][1]));
+			$newArr[$arr[$i][0]] = $res;
 		}
 		return $newArr;
 	}
@@ -26,6 +28,22 @@ class Installer extends Core {
             @unlink($src);
         }
     }
+
+	function get_file_data($file, $default_headers, $default = false) {
+		$fp = fopen($file, 'r');
+		$file_data = fread($fp, 8192);
+		fclose($fp);
+		$file_data = str_replace("\r", "\n", $file_data);
+		$ret = array();
+		foreach($default_headers as $field => $regex) {
+			if(preg_match('/^[ \t\/*#@]*'.preg_quote($regex, '/').':(.*)$/mi', $file_data, $match) && isset($match[1])) {
+				$ret[$field] = trim(preg_replace("/\s*(?:\*\/|\?>).*/", '', $match[1]));
+			} else if($default!==false) {
+				$ret[$field] = '';
+			}
+		}
+		return $ret;
+	}
 	
 	function __construct() {
 	global $manifest;
@@ -113,6 +131,14 @@ class Installer extends Core {
 			config::Update("serverList", $_POST['serverList']);
 			return false;
 		}
+		$default_headers = array(
+			'Name' => 'Name',
+			'Description' => 'Description',
+			'Image' => 'Image',
+			'Changelog' => 'Changelog',
+			'Version' => 'Version',
+			"OnlyUse" => "OnlyUse",
+		);
 		$lists = ($manifest['log']['init_modules']);
 		$dt = read_dir(PATH_MODULES, ".class.".ROOT_EX);
 		$dt = array_values($dt);
@@ -121,6 +147,10 @@ class Installer extends Core {
 			if("SEOBlock.class.php"!==$v && "ArcherExample.class.php"!==$v && "base.class.php"!==$v && "changelog.class.php"!==$v && "mobile.class.php"!==$v && "installerAdmin.class.php"!==$v) {
 				$name = nsubstr($v, 0, -nstrlen(".class.".ROOT_EX));
 				$arr[$name] = array($name, PATH_MODULES.$v);
+				$arr[$name]['Name'] = $name;
+				$arr[$name]['File'] = PATH_MODULES.$v;
+				$info = $this->get_file_data(PATH_MODULES.$v, $default_headers);
+				$arr[$name] = array_merge($arr[$name], $info);
 			}
 		}
 		//$dt = array_values($dt);
@@ -128,7 +158,9 @@ class Installer extends Core {
 		$newList = array();
 		foreach($lists as $k => $v) {
 			if("SEOBlock"!==$k && "ArcherExample"!==$k && "base"!==$k && "changelog"!==$k && "mobile"!==$k && "installerAdmin"!==$k && strpos($v[1], PATH_MODULES)!==false) {
+				$info = $this->get_file_data($v[1], $default_headers);
 				$v['active'] = true;
+				$v = array_merge($v, $info);
 				$newList[$k] = $v;
 			}
 		}
@@ -137,7 +169,7 @@ class Installer extends Core {
 		templates::assign_var("listServer", implode("\n", $configs));
 		$list = array_values($lists);
 		for($i=0;$i<sizeof($list);$i++) {
-			$info = array("name" => $list[$i][0], "path" => $list[$i][1], "altName" => $list[$i][0]);
+			$info = array("name" => $list[$i]['Name'], "path" => $list[$i][1], "altName" => $list[$i]['Name']);
 			if(isset($list[$i]["active"]) && $list[$i]["active"]===true) {
 				$info['active'] = "active";
 			} else {
@@ -170,6 +202,9 @@ class Installer extends Core {
 				$info['hasUpdate'] = "true";
 			} else {
 				$info['hasUpdate'] = "false";
+			}
+			if(isset($list[$i]['OnlyUse']) || (class_exists($list[$i][0], false) && property_exists($list[$i][0], "onlyAdmin") && $list[$i][0]::$onlyAdmin)) {
+				continue;
 			}
 			templates::Assign_vars($info, "installed", "i".$i);
 		}
