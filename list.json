@@ -328,5 +328,16 @@
 		"type": "module",
 		"cardinalVersion": "9.3",
 		"download": "https://raw.githubusercontent.com/killserver/modulesForCardinal/master/cardinalEngineDocs.zip"
+	},
+	"brokenLink": {
+		"name": "Поломанные ссылки для Cardinal Engine",
+		"altName": "brokenLink",
+		"description": "При помощи данной модификации Вы сможете узнать какие ссылки на сайте не работают, либо получить информацию о том, какие ссылки отвечают слишком долго",
+		"author": "killserver",
+		"version": "1.0",
+		"image": "https://spandcrm2013.files.wordpress.com/2015/03/broken-links.png?w=788",
+		"type": "module",
+		"cardinalVersion": "10.1",
+		"download": "https://raw.githubusercontent.com/killserver/modulesForCardinal/master/brokenLink.zip"
 	}
 }
