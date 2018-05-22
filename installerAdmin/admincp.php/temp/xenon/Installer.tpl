@@ -39,7 +39,7 @@
 											[foreachif {installed.hasUpdate}==true]<a href="#" class="btn btn-purple btn-icon btn-icon-standalone btn-sm update" data-action="{installed.altName}"><i class="fa fa-refresh"></i><span>Обновить</span></a>[/foreachif {installed.hasUpdate}==true]
 											[foreachif {installed.active}=="active"]<a href="#" class="btn btn-blue btn-sm action actived" data-action="{installed.altName}" data-status="{installed.active}" turquoise><span>Отключить</span></a>[/foreachif {installed.active}=="active"]
 											[foreachif {installed.active}=="unactive"]<a href="#" class="btn btn-turquoise btn-sm action actived" data-action="{installed.altName}" data-status="{installed.active}"><span>Включить</span></a>[/foreachif {installed.active}=="unactive"]
-											<!--a href="#" class="btn btn-red btn-sm"><span>Удалить</span></a--><!-- newer implemented?! -->
+											<a href="#" class="btn btn-red btn-sm remove" data-action="{installed.altName}"><span>Удалить</span></a>
 										</div>
 									</td>
 									<td width="50%">{installed.description}[foreachif {installed.noChangelog}==false]<br><a class="btn" data-toggle="collapse" data-parent="#accordion" href="#collapseOne-{installed.$id}">Список изменений</a><div id="collapseOne-{installed.$id}" class="collapse">{installed.changelog}</div>[/foreachif {installed.noChangelog}==false]</td>
@@ -177,7 +177,7 @@
 		jQuery(".btns").each(function(i, elem) {
 			jQuery(elem).css("height", jQuery(elem).parent().outerHeight()-jQuery(elem).parent().find("b").outerHeight()*3);
 		});
-		jQuery("body").off("click").on("click", "[data-action]:not(.disabled)", function() {
+		jQuery("body").on("click", "div > a[data-action]:not(.disabled)", function() {
 			test = this;
 			var action = this;
 			if(jQuery(this).hasClass("actived")) {
@@ -190,6 +190,15 @@
 					}
 					jQuery(action).attr("data-status", (jQuery(action).attr("data-status")=="active" ? "unactive" : "active"));
 					toastr.info("Переключён режим работы модуля");
+				});
+			} else if(jQuery(this).hasClass('remove')) {
+				var th = this;
+				toastr.info("Удаление модуля");
+				jQuery.post("./?pages=Installer&remove="+jQuery(th).attr("data-action"), function(data) {}).fail(function(data) {
+					toastr.error("Модуль не был удален, попробуйте позже");
+				}).done(function(data) {
+					jQuery(th).parent().parent().parent().remove(600);
+					toastr.info("Удален модуль \""+jQuery(th).attr("data-action")+"\"");
 				});
 			} else if(jQuery(this).hasClass('install')) {
 				var th = this;
@@ -229,7 +238,7 @@
 			}
 			return false;
 		});
-		jQuery("body").off("click").on("click", "a[data-info]", function() {
+		jQuery("body").on("click", "div > a[data-info]", function() {
 			var data = infoAll[jQuery(this).attr("data-info")];
 			var installation = jQuery(this).attr("data-install");
 			console.log(data);

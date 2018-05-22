@@ -44,10 +44,60 @@ class Installer extends Core {
 		}
 		return $ret;
 	}
+
+	function readEmptyParent($file, &$arr) {
+		$check = str_replace(ROOT_PATH, "", $file);
+		$check = trim($check, DS);
+		if(empty($check)) {
+			return;
+		}
+		$dir = dirname($file);
+		$check2 = str_replace(ROOT_PATH, "", $dir);
+		if(empty($check2)) {
+			return;
+		}
+		$empty = read_dir($dir.DS);
+		if(sizeof($empty)==0) {
+			$arr[] = $dir.DS;
+		}
+		$this->readEmptyParent($dir.DS, $arr);
+	}
 	
 	function __construct() {
 	global $manifest;
 		callAjax();
+		if(isset($_GET['remove'])) {
+			if(!file_exists(PATH_CACHE_USERDATA."Installer".DS.$_GET['remove'].".json")) {
+				header("HTTP/1.1 406 Not Acceptable");
+				echo "error 1";
+				return;
+			}
+			$f = file_get_contents(PATH_CACHE_USERDATA."Installer".DS.$_GET['remove'].".json");
+			$f = json_decode($f, true);
+			$f = array_values($f['forDelete']);
+			$f = array_reverse($f);
+			$arr = array();
+			for($i=0;$i<sizeof($f);$i++) {
+				$file = ROOT_PATH.$f[$i];
+				$info = pathinfo($file);
+				if(file_exists($file) && $info['basename']!=ADMINCP_DIRECTORY) {
+					@unlink($file);
+				}
+				if($info['basename']!=ADMINCP_DIRECTORY) {
+					$this->readEmptyParent($file, $arr);
+				}
+			}
+			$arr = array_unique($arr);
+			for($i=0;$i<sizeof($arr);$i++) {
+				if(file_exists($arr[$i])) {
+					@rmdir($arr[$i]);
+				}
+			}
+			@unlink(PATH_CACHE_USERDATA."Installer".DS.$_GET['remove'].".json");
+			cardinal::RegAction("Удаление модуля ".$_GET['remove']);
+			HTTP::echos("1");
+			return false;
+		}
 		$configs = array("https://raw.githubusercontent.com/killserver/modulesForCardinal/master/list.min.json");
 		$paths = array();
 		$listAll = array();
@@ -82,12 +132,14 @@ class Installer extends Core {
 			}
 			if(!file_exists(PATH_CACHE_SYSTEM.$_GET['install'].".zip")) {
 				header("HTTP/1.0 404 Not Found");
+				echo "not exists: ".PATH_CACHE_SYSTEM.$_GET['install'].".zip";
 				die();
 			}
 			$tar_object = new ZipArchive();
 			$list = $tar_object->open(PATH_CACHE_SYSTEM.$_GET['install'].".zip");
 			if($list!==true) {
 				header("HTTP/1.0 404 Not Found");
+				echo "empty: ".PATH_CACHE_SYSTEM.$_GET['install'].".zip";
 				die();
 			}
 			$path = $listAll[$_GET['install']]['download'];
@@ -99,7 +151,7 @@ class Installer extends Core {
 				if(empty($file)) { continue; }
 				$fileInfo = pathinfo($file);
 				$listFiles['allList'][$file] = $file;
-				if(isset($fileInfo['extension'])) {
+				if(!file_exists(ROOT_PATH.$file) || isset($fileInfo['extension']) && $fileInfo['basename']!=ADMINCP_DIRECTORY) {
 					$listFiles['forDelete'][$file] = $file;
 				}
 			}
@@ -136,6 +188,7 @@ class Installer extends Core {
 			'Description' => 'Description',
 			'Image' => 'Image',
 			'Changelog' => 'Changelog',
+			"Author" => "Author",
 			'Version' => 'Version',
 			"OnlyUse" => "OnlyUse",
 		);

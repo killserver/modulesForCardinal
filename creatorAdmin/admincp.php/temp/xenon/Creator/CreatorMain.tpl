@@ -5,14 +5,14 @@
 			<tr>
 				<th><label class="checkbox"><input type="checkbox" class="cbr deleteAll"></label></th>
 				<th>Раздел</th>
-				<th>{L_options}</th>
+				<th width="15%">{L_options}</th>
 			</tr>
 		</thead>
 		<tfoot>
 			<tr>
 				<th><label class="checkbox"><input type="checkbox" class="cbr deleteAll"></label></th>
 				<th>Раздел</th>
-				<th>{L_options}</th>
+				<th width="15%">{L_options}</th>
 			</tr>
 			<tr><td colspan="3"><div class="row"><div class="col-sm-offset-9"><div class="col-sm-7"><select name="action" class="form-control" style="width:100%;"><option value="">{L_"Выберите действие"}</option><option value="delete">{L_delete}</option></select></div><div class="col-sm-5"><input type="submit" class="btn btn-purple" value="{L_"Выполнить"}"></div></div></div></td></tr>
 		</tfoot>
@@ -20,9 +20,9 @@
 		[foreach block=creator]<tr>
 			<td><label class="checkbox"><input type="checkbox" class="cbr" name="delete[]" value="{creator.table}"></label></td>
 			<td>{L_"{creator.table}"}</td>
-			<td>
-				<a href="./?pages=Creator&mod=Edit&name={creator.table}" class="btn btn-turquoise">{L_edit}</a><br>
-				<a href="./?pages=Creator&mod=Delete&name={creator.table}" onclick="return confirmDelete();" class="btn btn-red">{L_delete}</a>
+			<td width="15%">
+				<a href="./?pages=Creator&mod=Edit&name={creator.table}" class="btn btn-turquoise btn-block">{L_edit}</a><br>
+				<a href="./?pages=Creator&mod=Delete&name={creator.table}" onclick="return confirmDelete();" class="btn btn-red btn-block">{L_delete}</a>
 			</td>
 		</tr>[/foreach]
 		</tbody>

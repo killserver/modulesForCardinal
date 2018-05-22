@@ -5,7 +5,7 @@
 			<div class="panel panel-default">
 				<div class="panel-heading"><div class="col-sm-11"><input type="text" class="form-control title" name="data[title]" placeholder="Введите название раздела" required="required"></div><div class="col-sm-1"><div class="iconSelect"><input type="hidden" name="data[icon]" class="icons"><div><i class="" data-icon=""></i></div></div></div></div>
 				<div class="panel-body">
-					<div class="creator"></div>
+					<ul class="creator uk-nestable" data-uk-nestable="{maxDepth:1}"></ul>
 					<input type="submit" class="btn btn-success" value="{L_submit}" disabled="disabled">
 					<a href="#" class="btn btn-info addCreator pull-right">{L_add}</a>
 				</div>
@@ -21,58 +21,65 @@
 	cursor: pointer;
 }
 .iconSelect > div > i {
-    font-size: 1em;
-    margin: 0.4em auto;
-    display: table;
+	font-size: 1em;
+	margin: 0.4em auto;
+	display: table;
 }
 </style>
 <script type="text/template" id="tmpCreate">
-	<div class="col-sm-12" data-field="{id}">
-		<div class="col-sm-12 col-md-6"><input type="text" class="form-control" name="data[{id}][name]" placeholder="Введите имя" required="required"><br><label class="hides"><input type="checkbox" name="data[{id}][hideOnMain]" class="cbr cbr-primary" value="yes">Скрыть с главной</label>&nbsp;&nbsp;&nbsp;&nbsp;<label class="altname"><input type="checkbox" name="data[{id}][translate]" class="cbr cbr-primary" value="yes" data-id="{id}">Создать альтернативное имя</label>&nbsp;&nbsp;&nbsp;&nbsp;<label class="supportLang"><input type="checkbox" name="data[{id}][supportLang]" class="cbr cbr-primary" value="yes" data-id="{id}">Поддержка мультиязычности</label><br><div class="createAltName" data-altname="{id}"></div></div>
-		<div class="col-sm-12 col-md-4">
-			<select class="form-control selected" required="required" data-selectId="{id}" name="data[{id}][type]">
-				<option value="" selected="selected" disabled="disabled">Выберите тип</option>
-				<optgroup label="Числа">
-					<option value="int">Целое число</option>
-					<option value="float">Число с запятой</option>
-					<option value="price">Цена</option>
-				</optgroup>
-				<optgroup label="Текст">
-					<option value="varchar">Однострочный текст</option>
-					<option value="email">E-mail</option>
-					<option value="link">Ссылка</option>
-					<option value="password">Пароль</option>
-					<option value="onlytextareatext">Многострочный редактор текста</option>
-					<option value="longtext">Визуальный редактор текста</option>
-				</optgroup>
-				<optgroup label="Картинки">
-					<option value="image">Загрузка картинки</option>
-					<option value="imageArray">Загрузка нескольких картинок</option>
-				</optgroup>
-				<optgroup label="Файлы">
-					<option value="file">Загрузка файла</option>
-					<option value="fileArray">Загрузка нескольких файлов</option>
-				</optgroup>
-				<optgroup label="Дата/время">
-					<option value="date">Поле для ввода даты</option>
-					<option value="time">Поле для ввода времени</option>
-					<option value="datetime">Поле для ввода даты/времени</option>
-					<option value="systime">Автоматическое установление времени</option>
-				</optgroup>
-				<optgroup label="Разное">
-					<option value="array" disabled="disabled">Массив данных (Скоро)</option>
-					<option value="hidden">Скрытое поле</option>
-				</optgroup>
-			</select>
-			<div class="col-sm-12 databased hide" data-hideId="{id}"></div>
+	<li class="col-sm-12" data-field="{id}">
+		<div class="uk-nestable-item row">
+			<input type="hidden" name="order[]" value="{id}">
+			<div class="col-xs-4 col-md-1"><div class="uk-nestable-handle"></div><div data-nestable-action="toggle"></div></div>
+			<div class="col-xs-8 col-md-11">
+				<div class="col-sm-12 col-md-6"><input type="text" class="form-control" name="data[{id}][name]" placeholder="Введите имя" required="required"><br><label class="hides"><input type="checkbox" name="data[{id}][hideOnMain]" class="cbr cbr-primary" value="yes">Скрыть с главной</label>&nbsp;&nbsp;&nbsp;&nbsp;<label class="altname"><input type="checkbox" name="data[{id}][translate]" class="cbr cbr-primary" value="yes" data-id="{id}">Создать альтернативное имя</label>&nbsp;&nbsp;&nbsp;&nbsp;<label class="supportLang"><input type="checkbox" name="data[{id}][supportLang]" class="cbr cbr-primary" value="yes" data-id="{id}">Поддержка мультиязычности</label><br><div class="createAltName" data-altname="{id}"></div></div>
+				<div class="col-sm-12 col-md-4">
+					<select class="form-control selected" required="required" data-selectId="{id}" name="data[{id}][type]">
+						<option value="" selected="selected" disabled="disabled">Выберите тип</option>
+						<optgroup label="Числа">
+							<option value="int">Целое число</option>
+							<option value="float">Число с запятой</option>
+							<option value="price">Цена</option>
+						</optgroup>
+						<optgroup label="Текст">
+							<option value="varchar">Однострочный текст</option>
+							<option value="email">E-mail</option>
+							<option value="link">Ссылка</option>
+							<option value="password">Пароль</option>
+							<option value="onlytextareatext">Многострочный редактор текста</option>
+							<option value="longtext">Визуальный редактор текста</option>
+						</optgroup>
+						<optgroup label="Картинки">
+							<option value="image">Загрузка картинки</option>
+							<option value="imageArray">Загрузка нескольких картинок</option>
+						</optgroup>
+						<optgroup label="Файлы">
+							<option value="file">Загрузка файла</option>
+							<option value="fileArray">Загрузка нескольких файлов</option>
+						</optgroup>
+						<optgroup label="Дата/время">
+							<option value="date">Поле для ввода даты</option>
+							<option value="time">Поле для ввода времени</option>
+							<option value="datetime">Поле для ввода даты/времени</option>
+							<option value="systime">Автоматическое установление времени</option>
+						</optgroup>
+						<optgroup label="Разное">
+							<option value="array">Массив данных</option>
+							<option value="hidden">Скрытое поле</option>
+							<option value="radio">Радио-группа</option>
+						</optgroup>
+					</select>
+					<div class="col-sm-12 databased hide" data-hideId="{id}"></div>
+				</div>
+				<div class="col-sm-12 col-md-2"><a href="#" class="btn btn-red remove" data-id="{id}" tabindex="-1">{L_delete}</a></div>
+				<div class="col-sm-12 selectedInput hide" data-selectedInput="{id}"></div>
+			</div>
+			<hr class="col-sm-12">
 		</div>
-		<div class="col-sm-12 col-md-2"><a href="#" class="btn btn-red remove" data-id="{id}" tabindex="-1">{L_delete}</a></div>
-		<div class="col-sm-12 selectedInput hide" data-selectedInput="{id}"></div>
-		<hr class="col-sm-12">
-	</div>
+	</li>
 </script>
 <script type="text/template" class="databaseSelectRadio">
-	<br><label><input type="radio" name="data[{id}][selectedData]" class="cbr cbr-primary" value="dataOnTable" onchange="selectedDatabaseChange(this);">Данные из базы данных</label><br>
+	<br><label><input type="radio" name="data[{id}][selectedData]" class="cbr cbr-primary" value="dataOnTable" onchange="selectedDatabaseChange(this);" disabled="disabled">Данные из базы данных (Скоро)</label><br>
 	<label><input type="radio" name="data[{id}][selectedData]" class="cbr cbr-primary" value="dataOnInput" onchange="selectedDatabaseChange(this);">Данные для ввода</label><br><br>
 </script>
 <script type="text/template" class="databaseTemplate">
@@ -105,7 +112,7 @@
 <script type="text/template" class="databaseInputedData">
 	<div class="row">
 		<div class="col-sm-12" data-inputedData="{id}">
-			<div class="col-sm-10"><input type="text" class="form-control" name="data[{groupId}][field][{id}]" placeholder="Введите значение" required="required"></div>
+			<div class="col-sm-10"><input type="text" class="form-control" name="data[{groupId}][field][{id}]" placeholder="Введите значение" required="required" value="{val}"></div>
 			<div class="col-sm-2"><a href="#" class="btn btn-red removeData" data-id="{id}" tabindex="-1">{L_delete}</a></div>
 		</div>
 	</div>
@@ -150,6 +157,39 @@
 					}
 					if(typeof(dataField.supportLang)!=="undefined" && dataField.supportLang=="yes") {
 						jQuery("[data-field='"+i+"']").find("label.supportLang input[type='checkbox']").attr("checked", "checked");
+					}
+					if(typeof(dataField.selectedData)!=="undefined" && dataField.selectedData=="dataOnInput") {
+						var tmp = jQuery(".databaseSelectRadio").html();
+						tmp = tmp.replace(/\{id\}/g, i);
+						jQuery("[data-hideId='"+i+"']").removeClass('hide').html(tmp);
+						jQuery("[data-hideId='"+i+"'] input[value='dataOnInput']").attr("checked", "checked");
+
+						tmp = jQuery(".databaseInput").html();
+						tmp = tmp.replace(/\{id\}/g, i);
+						jQuery("[data-field='"+i+"'] .selectedInput[data-selectedInput='"+i+"']").removeClass('hide').html(tmp);
+						Object.keys(dataField.field).forEach(function(key) {
+							iInputDB++;
+							var tmp = jQuery(".databaseInputedData").html();
+							var tpl = tmp;
+							tpl = tpl.replace(/\{groupId\}/g, i);
+							tpl = tpl.replace(/\{id\}/g, iInputDB);
+							tpl = tpl.replace(/\{val\}/g, dataField.field[key]);
+							jQuery(".inputedData[data-selectInputedData='"+i+"']").append(tpl);
+						});
+					}
+					if(dataField.type=="radio") {
+						tmp = jQuery(".databaseInput").html();
+						tmp = tmp.replace(/\{id\}/g, i);
+						jQuery("[data-field='"+i+"'] .selectedInput[data-selectedInput='"+i+"']").removeClass('hide').html(tmp);
+						Object.keys(dataField.field).forEach(function(key) {
+							iInputDB++;
+							var tmp = jQuery(".databaseInputedData").html();
+							var tpl = tmp;
+							tpl = tpl.replace(/\{groupId\}/g, i);
+							tpl = tpl.replace(/\{id\}/g, iInputDB);
+							tpl = tpl.replace(/\{val\}/g, dataField.field[key]);
+							jQuery(".inputedData[data-selectInputedData='"+i+"']").append(tpl);
+						});
 					}
 					if(typeof(dataField.translate)!=="undefined" && typeof(dataField.alttitle)!=="undefined") {
 						var tmp = $(".inputTranslate").html();
@@ -196,6 +236,7 @@
 		var tpl = tmp;
 		tpl = tpl.replace(/\{groupId\}/g, id);
 		tpl = tpl.replace(/\{id\}/g, iInputDB);
+		tpl = tpl.replace(/\{val\}/g, "");
 		jQuery(".inputedData[data-selectInputedData='"+id+"']").append(tpl);
 		return false;
 	});
@@ -229,6 +270,10 @@
 			tmp = tmp.replace(/\{id\}/g, id);
 			jQuery("[data-hideId='"+id+"']").removeClass('hide').html(tmp);
 			cbr_replace();
+		} else if(this.value=="radio") {
+			tmp = jQuery(".databaseInput").html();
+			tmp = tmp.replace(/\{id\}/g, id);
+			jQuery(".selectedInput[data-selectedInput='"+id+"']").removeClass('hide').html(tmp);
 		} else {
 			jQuery(".selectedInput[data-selectedInput='"+id+"']").addClass('hide').html("");
 			jQuery("[data-hideId='"+id+"']").addClass('hide').html("");
@@ -282,6 +327,12 @@
 			tpl = tpl.replace(/\{id\}/g, id);
 			jQuery(".createAltName[data-altname='"+id+"']").html(tpl);
 			arrTranslate[id] = true;
+		}
+	});
+	jQuery(".creator").off('nestable-stop').on('nestable-stop', function(ev) {
+		var elems = jQuery(this).children();
+		for(var i=0;i<elems.length;i++) {
+			jQuery(elems[i]).find("input[name*='order']").val((i+1));
 		}
 	});
 </script>

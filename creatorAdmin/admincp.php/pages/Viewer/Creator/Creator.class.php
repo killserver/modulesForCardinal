@@ -154,24 +154,37 @@ class Creator extends Core {
 		if($data[$i]['type']=="image") {
 			$listShild .= 'if(isset($row[\''.$first.$altNameField.$sufix.'\'])) { $row[\''.$first.$altNameField.'\'] = "<img src=\"{C_default_http_local}".$row[\''.$first.$altNameField.$sufix.'\']."\" width=\"200\">"; }';
 		}
+		$altName = "";
+		if(isset($data[$i]['alttitle'])) {
+			$altName = $data[$i]['alttitle'];
+			$altTranslateField = nucfirst(ToTranslit($data[$i]['alttitle']));
+		} else if(isset($data[$i]['name'])) {
+			$altName = $data[$i]['name'];
+			$altTranslateField = nucfirst(ToTranslit($data[$i]['name']));
+		}
 		if($data[$i]['type']=="systime") {
 			$universalAttributesTakeAdd .= 'if(isset($model->'.$first.$altNameField.$sufix.')) { $model->'.$first.$altNameField.$sufix.' = $model->Time(); }'.PHP_EOL;
 			$data[$i]['type'] = "hidden";
+		} else if($data[$i]['type']=="array" || $data[$i]['type']=="enum") {
+			$universalAttributes .= '$model->setAttribute(\''.$first.$altTranslateField.'\', \'Type\', \'enum\');'.PHP_EOL;
+			$universalAttributesTakeAdd .= '$model->setAttribute(\''.$first.$altNameField.$sufix.'\', \'Type\', \'enum\');'.PHP_EOL;
+			$universalAttributesTakeEdit .= '$model->setAttribute(\''.$first.$altNameField.$sufix.'\', \'Type\', \'enum\');'.PHP_EOL;
 		} else {
 			$universalAttributesTakeAdd .= '$model->setAttribute(\''.$first.$altNameField.$sufix.'\', \'Type\', \''.$data[$i]['type'].'\');'.PHP_EOL;
 			$universalAttributesTakeEdit .= '$model->setAttribute(\''.$first.$altNameField.$sufix.'\', \'Type\', \''.$data[$i]['type'].'\');'.PHP_EOL;
 		}
-		$universalAttributes .= '$model->setAttribute(\''.$first.$altNameField.$sufix.'\', \'Type\', \''.$data[$i]['type'].'\');'.PHP_EOL;
+		if($data[$i]['type']!="array" && $data[$i]['type']!="enum") {
+			$universalAttributes .= '$model->setAttribute(\''.$first.$altNameField.$sufix.'\', \'Type\', \''.$data[$i]['type'].'\');'.PHP_EOL;
+		}
 		if(isset($data[$i]['translate']) && $ignoreNotFirst===true) {
-			$altTranslateField = nucfirst(ToTranslit($data[$i]['alttitle']));
 			$universalAttributes .= '$model->setAttribute(\''.$first.$altTranslateField.'\', \'Type\', \'hidden\');'.PHP_EOL;
-			$universalAttributesTakeAdd .= 'if(isset($model->'.$first.$altTranslateField.')) { $model->'.$first.$altTranslateField.' = ToTranslit($model->'.$first.$altTranslateField.'); }'.PHP_EOL;
-			$createAutoField[] = array("altName" => $first.$altTranslateField, "type" => "hidden");//$data[$i]['type']
+			$universalAttributesTakeAdd .= 'if(isset($model->'.$first.$altTranslateField.')) { $model->'.$first.$altTranslateField.' = ToTranslit($model->'.$first.$altNameField.'); }'.PHP_EOL;
+			$createAutoField[] = array("altName" => $first.$altTranslateField, "name" => $altName, "type" => "hidden");//$data[$i]['type']
 			$exclude[$first.$altTranslateField] = "\"".$first.$altTranslateField."\"";
 		}
 		if($sufix!=="" && $ignoreNotFirst===true) {
 			$exclude[$first.$altNameField.$sufix] = "\"".$first.$altNameField.$sufix."\"";
-			$createAutoField[] = array("altName" => $first.$altNameField.$sufix, "type" => $data[$i]['type']);
+			$createAutoField[] = array("altName" => $first.$altNameField.$sufix, "name" => $altName.$sufix, "type" => $data[$i]['type']);
 		}
 		for($l=0;$l<sizeof($langSupport);$l++) {
 			lang::Update($langSupport[$l], $first.$altNameField.$sufix, $data[$i]['name']."&nbsp;".$sufix);
@@ -216,6 +229,17 @@ class Creator extends Core {
 			if(!is_writeable(PATH_MODULES)) {
 				@chmod(PATH_MODULES, 077);
 			}
+			$title = $icon = "";
+			if(isset($_POST['data']['title'])) {
+				$title = $_POST['data']['title'];
+				unset($_POST['data']['title']);
+			}
+			if(isset($_POST['data']['icon'])) {
+				$icon = $_POST['data']['icon'];
+				unset($_POST['data']['icon']);
+			}
+			$_POST['data'] = array_values($_POST['data']);
+			$_POST['data'] = array_merge($_POST['data'], array("title" => $title, "icon" => $icon));
 			if(file_exists($pathForThisModule."file_".$altTitle.".txt")) { unlink($pathForThisModule."file_".$altTitle.".txt"); }
 			file_put_contents($pathForThisModule."file_".$altTitle.".txt", json_encode($_POST));
 			unset($_POST['data']['title']);
@@ -280,12 +304,12 @@ class Creator extends Core {
 				}
 			}
 
-
 			// построение модели данных
 			$model = str_replace("{altTitle}", $altTitleUp, $model);
 			$dataFirst = $first."Id";
 			$data[-1]['altName'] = $dataFirst;
 			$data[-1]['type'] = "int";
+			$data[-1]['name'] = "id";
 			$data[-1]['auto_increment'] = true;
 			sortByKey($data);
 			$data = array_merge($data, $createAutoField);
@@ -305,14 +329,18 @@ class Creator extends Core {
 			$edit = db::getTables(true, true);
 			$dbName = $prefix.$altTitle;
 			if(isset($edit[$dbName])) {
-				$struct = array_map(array($this, "createFieldsDB"), $data, array(false));
+				$fall = $this->getB($data, false);
+				$struct = array_map(array($this, "createFieldsDB"), $data, $fall);
 				$langSupport = array_map("nucfirst", $langSupport);
 				$structClear = $structClearForRemove = array();
 				for($i=0;$i<sizeof($struct);$i++) {
 					$k = key($struct[$i]);
 					$v = current($struct[$i]);
 					$ks = str_replace($langSupport, "", $k);
-					$structClear[$k] = array("v" => $v, "orName" => $ks);
+					$structClear[$k] = array("v" => $v, "orName" => $ks, "name" => $data[$i]['name']);
+					if(isset($data[$i]['field'])) {
+						$structClear[$k]['field'] = $data[$i]['field'];
+					}
 					$structClearForRemove[$k] = true;
 					$structClearForRemove[$ks] = true;
 				}
@@ -329,11 +357,11 @@ class Creator extends Core {
 								$groupFieldsForTranslate[$v['orName']] = array();
 							}
 							$groupFieldsForTranslate[$v['orName']]["first"] = $k;
-							$forUpdate['edit'][$k] = array("altName" => $k, "orName" => $v['orName'], "type" => $v['v']);
+							$forUpdate['edit'][$k] = array("altName" => $k, "orName" => $v['orName'], "name" => $v['name'], "type" => $v['v']);
 							$structClearForRemove[$k] = true;
 							$structClearForRemove[$v['orName']] = true;
 						} else {
-							$forUpdate['add'][$k] = array("altName" => $k, "orName" => $k, "type" => $v['v']);
+							$forUpdate['add'][$k] = array("altName" => $k, "orName" => $k, "name" => $v['name'], "type" => $v['v']);
 							if(!isset($groupFieldsForTranslate[$v['orName']])) {
 								$groupFieldsForTranslate[$v['orName']] = array();
 							}
@@ -343,9 +371,15 @@ class Creator extends Core {
 							$groupFieldsForTranslate[$v['orName']]["children"][] = $k;
 						}
 					} else if(isset($edit[$dbName][$k]) && $edit[$dbName][$k]!=$v['v']) {
-						$forUpdate['edit'][$k] = array("altName" => $k, "orName" => $v['orName'], "type" => $v['v']);
+						$forUpdate['edit'][$k] = array("altName" => $k, "orName" => $v['orName'], "name" => $v['name'], "type" => $v['v']);
+						if(isset($v['field'])) {
+							$forUpdate['edit'][$k]['field'] = $v['field'];
+						}
 					} else if(!isset($edit[$dbName][$k])) {
-						$forUpdate['add'][$k] = array("altName" => $k, "orName" => $k, "type" => $v['v']);
+						$forUpdate['add'][$k] = array("altName" => $k, "orName" => $k, "name" => $v['name'], "type" => $v['v']);
+						if(isset($v['field'])) {
+							$forUpdate['add'][$k]['field'] = $v['field'];
+						}
 					}
 				}
 				foreach($edit[$dbName] as $k => $v) {
@@ -363,27 +397,17 @@ class Creator extends Core {
 					}
 				}
 				if(sizeof($forUpdate['add'])>0) {
-					$true = $fall = array();
-					for($i=0;$i<sizeof($forUpdate['add']);$i++) {
-						$true[] = true;
-						$fall[] = false;
-					}
+					$fall = $this->getB($forUpdate['add'], false);
+					$true = $this->getB($forUpdate['add'], true);
 					$forUpdate['add'] = array_map(array($this, "createFieldsDB"), $forUpdate['add'], $true, $fall, $true);
 				}
 				if(sizeof($forUpdate['edit'])>0) {
-					$true = $fall = array();
-					for($i=0;$i<sizeof($forUpdate['edit']);$i++) {
-						$true[] = true;
-						$fall[] = false;
-					}
+					$fall = $this->getB($forUpdate['edit'], false);
+					$true = $this->getB($forUpdate['edit'], true);
 					$forUpdate['edit'] = array_map(array($this, "createFieldsDB"), $forUpdate['edit'], $true, $fall);
 				}
 				if(sizeof($forUpdate['remove'])>0) {
-					$true = $fall = array();
-					for($i=0;$i<sizeof($forUpdate['remove']);$i++) {
-						$true[] = true;
-						$fall[] = false;
-					}
+					$fall = $this->getB($forUpdate['remove'], false);
 					$forUpdate['remove'] = array_map(array($this, "createFieldsDB"), $forUpdate['remove'], $fall);
 				}
 				$afterSQL = array();
@@ -439,9 +463,17 @@ class Creator extends Core {
 		return 'public $'.$struct['altName'].';';
 	}
 
+	function addSlash($data) {
+		return "'".$data."'";
+	}
+
 	function createFieldsDB($struct, $isDB = true, $withName = true, $isAdd = false) {
 		$type = $struct['type'];
-		if($type=="int") {
+		if($isDB && $type=="radio") {
+			$type = "enum".($isDB ? "(".implode(",", array_map(array($this, "addSlash"), $struct['field'])).")" : "");
+		} else if($type=="array" && $struct['selectedData']=="dataOnInput") {
+			$type = "enum".($isDB ? "(".implode(",", array_map(array($this, "addSlash"), $struct['field'])).")" : "");
+		} else if($type=="int") {
 			$type = "int".($isDB ? "(11)" : "");
 		} else if($type=="varchar") {
 			$type = "varchar".($isDB ? "(255)" : "");
@@ -485,10 +517,22 @@ class Creator extends Core {
 		} else if($isAdd !== false && $withName===false) {
 			return array($struct['altName'] => $type);
 		} else if($isDB) {
-			return '`'.$struct['altName'].'` '.$type.' not null'.$auto_increment;
-		} else {
+			return '`'.$struct['altName'].'` '.$type.' not null'.$auto_increment." COMMENT ".db::escape($struct['name']);
+		} elseif($withName===true) {
 			return array($struct['altName'] => $type);
+		} else {
+			$arr = array("value" => $type);
+			(isset($struct['name']) ? $arr['comment'] = $struct['name'] : "");
+			return array($struct['altName'] => $arr);
 		}
+	}
+
+	private function getB($data, $type) {
+		$true = array();
+		for($i=0;$i<sizeof($data);$i++) {
+			$true[] = $type;
+		}
+		return $true;
 	}
 
 }
