@@ -37,8 +37,8 @@
 										<b>{installed.name}</b><br>
 										<div class="btns" style="display: table-cell; vertical-align: bottom;">
 											[foreachif {installed.hasUpdate}==true]<a href="#" class="btn btn-purple btn-icon btn-icon-standalone btn-sm update" data-action="{installed.altName}"><i class="fa fa-refresh"></i><span>Обновить</span></a>[/foreachif {installed.hasUpdate}==true]
-											[foreachif {installed.active}=="active"]<a href="#" class="btn btn-blue btn-sm action actived" data-action="{installed.altName}" data-status="{installed.active}" turquoise><span>Отключить</span></a>[/foreachif {installed.active}=="active"]
-											[foreachif {installed.active}=="unactive"]<a href="#" class="btn btn-turquoise btn-sm action actived" data-action="{installed.altName}" data-status="{installed.active}"><span>Включить</span></a>[/foreachif {installed.active}=="unactive"]
+											[foreachif {installed.active}=="active"&&{installed.OnlyUse}==false]<a href="#" class="btn btn-blue btn-sm action actived" data-action="{installed.altName}" data-status="{installed.active}" turquoise><span>Отключить</span></a>[/foreachif {installed.active}=="active"&&{installed.OnlyUse}==false]
+											[foreachif {installed.active}=="unactive"&&{installed.OnlyUse}==false]<a href="#" class="btn btn-turquoise btn-sm action actived" data-action="{installed.altName}" data-status="{installed.active}"><span>Включить</span></a>[/foreachif {installed.active}=="unactive"&&{installed.OnlyUse}==false]
 											<a href="#" class="btn btn-red btn-sm remove" data-action="{installed.altName}"><span>Удалить</span></a>
 										</div>
 									</td>

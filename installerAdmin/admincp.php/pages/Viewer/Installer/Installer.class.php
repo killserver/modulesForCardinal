@@ -191,13 +191,14 @@ class Installer extends Core {
 			"Author" => "Author",
 			'Version' => 'Version',
 			"OnlyUse" => "OnlyUse",
+			"Hide" => "Hide",
 		);
 		$lists = ($manifest['log']['init_modules']);
 		$dt = read_dir(PATH_MODULES, ".class.".ROOT_EX);
 		$dt = array_values($dt);
 		$arr = array();
 		foreach($dt as $v) {
-			if("SEOBlock.class.php"!==$v && "ArcherExample.class.php"!==$v && "base.class.php"!==$v && "changelog.class.php"!==$v && "mobile.class.php"!==$v && "installerAdmin.class.php"!==$v) {
+			if("SEOBlock.class.php"!==$v && "ArcherExample.class.php"!==$v && "base.class.php"!==$v && "changelog.class.php"!==$v && "mobile.class.php"!==$v) {
 				$name = nsubstr($v, 0, -nstrlen(".class.".ROOT_EX));
 				$arr[$name] = array($name, PATH_MODULES.$v);
 				$arr[$name]['Name'] = $name;
@@ -210,7 +211,7 @@ class Installer extends Core {
 		$lists = $this->rebuild($lists);
 		$newList = array();
 		foreach($lists as $k => $v) {
-			if("SEOBlock"!==$k && "ArcherExample"!==$k && "base"!==$k && "changelog"!==$k && "mobile"!==$k && "installerAdmin"!==$k && strpos($v[1], PATH_MODULES)!==false) {
+			if("SEOBlock"!==$k && "ArcherExample"!==$k && "base"!==$k && "changelog"!==$k && "mobile"!==$k && strpos($v[1], PATH_MODULES)!==false) {
 				$info = $this->get_file_data($v[1], $default_headers);
 				$v['active'] = true;
 				$v = array_merge($v, $info);
@@ -266,7 +267,12 @@ class Installer extends Core {
 			} else {
 				$info['hasUpdate'] = "false";
 			}
-			if(isset($list[$i]['OnlyUse']) || (class_exists($list[$i][0], false) && property_exists($list[$i][0], "onlyAdmin") && $list[$i][0]::$onlyAdmin)) {
+			if(isset($list[$i]['OnlyUse'])) {
+				$info['OnlyUse'] = "true";
+			} else {
+				$info['OnlyUse'] = "false";
+			}
+			if(isset($list[$i]['Hide']) || (class_exists($list[$i][0], false) && property_exists($list[$i][0], "onlyAdmin") && $list[$i][0]::$onlyAdmin)) {
 				continue;
 			}
 			templates::Assign_vars($info, "installed", "i".$i);

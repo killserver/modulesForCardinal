@@ -3,6 +3,7 @@
 Name: Установка модулей, плагинов, тем и разделов для движка CE
 Version: 1.4
 Author: killserver
+OnlyUse: true
  */
 if(!defined("IS_CORE")) {
 	echo "403 ERROR";
