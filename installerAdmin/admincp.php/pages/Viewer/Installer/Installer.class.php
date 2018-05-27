@@ -62,6 +62,13 @@ class Installer extends Core {
 		}
 		$this->readEmptyParent($dir.DS, $arr);
 	}
+
+	function getVersion($module) {
+		if(file_exists(PATH_MODULES.$module.".class.".ROOT_EX)) {
+			include_once(PATH_MODULES.$module.".class.".ROOT_EX);
+		}
+		return (class_exists($module) && property_exists($module, "version") ? $module::$version : "0.0");
+	}
 	
 	function __construct() {
 	global $manifest;
@@ -254,15 +261,15 @@ class Installer extends Core {
 			if(!isset($info['description'])) {
 				$info['description'] = "";
 			}
-			if(isset($list[$i]['Version'])) {
-				$info['version'] = $list[$i]['Version'];
+			if(isset($listAll[$list[$i][0]]) && isset($listAll[$list[$i][0]]['version'])) {
+				$info['version'] = $listAll[$list[$i][0]]['version'];
 			}
 			if(isset($list[$i]['Image'])) {
 				$info['image'] = $list[$i]['Image'];
 			} else if(!isset($info['image'])) {
 				$info['image'] = "https://png.icons8.com/color/540/app-symbol.png";
 			}
-			if(isset($info['version']) && class_exists($list[$i][0], false) && property_exists($list[$i][0], "version") && $list[$i][0]::$version<$info['version']) {
+			if(isset($info['version']) && $this->getVersion($list[$i][0])<$info['version']) {
 				$info['hasUpdate'] = "true";
 			} else {
 				$info['hasUpdate'] = "false";
