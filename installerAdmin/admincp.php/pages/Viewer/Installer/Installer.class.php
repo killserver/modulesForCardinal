@@ -31,7 +31,7 @@ class Installer extends Core {
 
 	function get_file_data($file, $default_headers, $default = false) {
 		$fp = fopen($file, 'r');
-		$file_data = fread($fp, 8192);
+		$file_data = fread($fp, 512);
 		fclose($fp);
 		$file_data = str_replace("\r", "\n", $file_data);
 		$ret = array();
@@ -74,10 +74,31 @@ class Installer extends Core {
 	global $manifest;
 		callAjax();
 		if(isset($_GET['remove'])) {
-			if(!file_exists(PATH_CACHE_USERDATA."Installer".DS.$_GET['remove'].".json")) {
+			if(strpos($_GET['remove'], "/")!==false || strpos($_GET['remove'], "\\")!==false) {
 				header("HTTP/1.1 406 Not Acceptable");
 				echo "error 1";
 				return;
+			}
+			if(!file_exists(PATH_CACHE_USERDATA."Installer".DS.$_GET['remove'].".json") || !file_exists(PATH_MODULES.$_GET['remove'].".class.".ROOT_EX)) {
+				header("HTTP/1.1 406 Not Acceptable");
+				echo "error 1";
+				return;
+			}
+			$m = new ReflectionMethod($_GET['remove'], "installation");
+			$data = "";
+			$f = file(PATH_MODULES.$_GET['remove'].".class.".ROOT_EX);
+			for($i=$m->getStartLine();$i<$m->getEndLine()-1;$i++) {
+				$data .= $f[$i];
+			}
+			preg_match_all("#create_table\(['\"](.+?)['\"]#is", $data, $arr);
+			$forDelete = array();
+			for($i=0;$i<sizeof($arr[1]);$i++) {
+				if(db::getTable($arr[1][$i])!==false) {
+					$forDelete[] = $arr[1][$i];
+				}
+			}
+			for($i=0;$i<sizeof($forDelete);$i++) {
+				db::query("DROP TABLE IF EXISTS {{".$forDelete[$i]."}}");
 			}
 			$f = file_get_contents(PATH_CACHE_USERDATA."Installer".DS.$_GET['remove'].".json");
 			$f = json_decode($f, true);
@@ -230,6 +251,9 @@ class Installer extends Core {
 		templates::assign_var("listServer", implode("\n", $configs));
 		$list = array_values($lists);
 		for($i=0;$i<sizeof($list);$i++) {
+			if(isset($list[$i]['Hide']) || (class_exists($list[$i][0], false) && property_exists($list[$i][0], "onlyAdmin") && $list[$i][0]::$onlyAdmin)) {
+				continue;
+			}
 			$info = array("name" => $list[$i]['Name'], "path" => $list[$i][1], "altName" => $list[$i]['Name']);
 			if(isset($list[$i]["active"]) && $list[$i]["active"]===true) {
 				$info['active'] = "active";
@@ -278,9 +302,6 @@ class Installer extends Core {
 				$info['OnlyUse'] = "true";
 			} else {
 				$info['OnlyUse'] = "false";
-			}
-			if(isset($list[$i]['Hide']) || (class_exists($list[$i][0], false) && property_exists($list[$i][0], "onlyAdmin") && $list[$i][0]::$onlyAdmin)) {
-				continue;
 			}
 			templates::Assign_vars($info, "installed", "i".$i);
 		}

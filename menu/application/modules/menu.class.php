@@ -2,7 +2,29 @@
 
 class menu extends modules {
 
-	function __construct() {}
+	public static $version = "1.5";
+
+	function __construct() {
+		if(defined("IS_ADMIN")) {
+			if($this->actived()===false || db::connected() || db::getTable("menu")) {
+				addEvent("admin_core_prints_info", array($this, "show"), $this->actived(), db::connected(), db::getTable("menu"));
+			}
+		}
+	}
+
+	function show($data, $ret) {
+		$mess = "";
+		if(db::connected() || db::getTable("menu")) {
+			$mess = "Для корректной работы меню - установите подключение к базе данных";
+		} else if($this->actived()===false) {
+			$mess = "Для корректной работы меню - включите данную модификацию";
+		}
+		if($mess==="") {
+			return $ret;
+		}
+		$ret[$mess] = array("echo" => $mess, "time" => time()+365*24*60*60, "block" => true);
+		return $ret;
+	}
 
 
 	public static function installation() {
@@ -20,9 +42,7 @@ class menu extends modules {
 									"primary key `id`(`mId`)");
 	}
 
-	public static $version = "1.4";
-
-	public static function updater() {
+	public static function updater($version) {
 		self::add_fields("menu", array("mUId" => "int(11) not null"));
 		self::add_fields("menu", array("mName" => "varchar(255) not null"));
 	}
