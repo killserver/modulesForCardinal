@@ -6,17 +6,15 @@ class menu extends modules {
 
 	function __construct() {
 		if(defined("IS_ADMIN")) {
-			if($this->actived()===false || db::connected() || db::getTable("menu")) {
-				addEvent("admin_core_prints_info", array($this, "show"), $this->actived(), db::connected(), db::getTable("menu"));
-			}
+			addEvent("admin_core_prints_info", array($this, "show"));
 		}
 	}
 
 	function show($data, $ret) {
 		$mess = "";
-		if(db::connected() || db::getTable("menu")) {
+		if(!db::connected()) {
 			$mess = "Для корректной работы меню - установите подключение к базе данных";
-		} else if($this->actived()===false) {
+		} else if(!db::getTable("menu") || $this->actived()===false) {
 			$mess = "Для корректной работы меню - включите данную модификацию";
 		}
 		if($mess==="") {
