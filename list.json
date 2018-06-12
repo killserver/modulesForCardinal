@@ -96,7 +96,7 @@
 			"1.3": "Модуль обновлен до последней версии ядра",
 			"1.1": "Добавлен готовый пример использования установленного слайдера"
 		},
-		"afterInstall": "Для использования данного модуля пропишите в нужном месте шаблона {include templates='slider',true}.<br>Потом, зайдите в папку /skins/ и переименуйте файл slider.default.tpl в slider.tpl",
+		"afterInstall": "Для использования данного модуля пропишите в нужном месте шаблона &#123;include templates='slider',true&#125;.<br>Потом, зайдите в папку /skins/ и переименуйте файл slider.default.tpl в slider.tpl",
 		"download": "https://raw.githubusercontent.com/killserver/modulesForCardinal/master/slider.zip"
 	},
 	"faq": {
@@ -120,7 +120,7 @@
 	"menu": {
 		"name": "Редактор меню для Cardinal Engine",
 		"altName": "menu",
-		"description": "Позволяет создавать/редактировать/удалять разнообразные меню в сайтах, построенных на базе Cardinal Engine. Для использования в шаблоне пропишите: {include module='menus&id=1'} где '1' - это идентификатор меню",
+		"description": "Позволяет создавать/редактировать/удалять разнообразные меню в сайтах, построенных на базе Cardinal Engine. Для использования в шаблоне пропишите: &#123;include module='menus&id=1'&#125; где '1' - это идентификатор меню",
 		"author": "killserver",
 		"version": "1.5",
 		"image": "http://new-info.ucoz.net/_ld/10/1046.png",

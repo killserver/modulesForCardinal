@@ -139,14 +139,29 @@ class Creator extends Core {
 		return false;
 	}
 
-	function workInField(&$data, &$listShild, &$universalAttributesTakeAdd, &$universalAttributesTakeEdit, &$universalAttributes, &$createAutoField, &$exclude, &$fieldsForTranslate, $first, $i, $langSupport, $sufix = "", $ignoreNotFirst = true) {
+	function array_insert(&$array, $position, $insert_array) {
+		$first_array = array_splice ($array, 0, $position+1);
+		$array = array_merge ($first_array, $insert_array, $array);
+	}
+
+	function combineFields($data1, $data2) {
+		$count = 1;
+		foreach($data2 as $id => $v) {
+			$count += $id;
+			$this->array_insert($data1, $count, array($v));
+		}
+		return $data1;
+	}
+
+	function workInField(&$data, &$listShild, &$universalAttributesTakeAdd, &$universalAttributesTakeEdit, &$universalAttributes, &$createAutoField, &$exclude, &$fieldsForTranslate, $first, $i, $langSupport, $sufix = "", $ignoreNotFirst = true, $supportLang = false) {
 		$altNameField = nucfirst(ToTranslit($data[$i]['name']));
 		if(isset($data[$i]['supportLang'])) {
 			$fieldsForTranslate[] = $first.$altNameField.$sufix;
 			$upper = array_map("nucfirst", $langSupport);
+			$supportLang = true;
 			unset($data[$i]['supportLang']);
 			for($z=0;$z<sizeof($upper);$z++) {
-				$this->workInField($data, $listShild, $universalAttributesTakeAdd, $universalAttributesTakeEdit, $universalAttributes, $createAutoField, $exclude, $fieldsForTranslate, $first, $i, $langSupport, $upper[$z], ($z===0));
+				$this->workInField($data, $listShild, $universalAttributesTakeAdd, $universalAttributesTakeEdit, $universalAttributes, $createAutoField, $exclude, $fieldsForTranslate, $first, $i, $langSupport, $upper[$z], ($z===0), $supportLang);
 			}
 			return;
 		}
@@ -161,6 +176,10 @@ class Creator extends Core {
 		} else if(isset($data[$i]['name'])) {
 			$altName = $data[$i]['name'];
 			$altTranslateField = nucfirst(ToTranslit($data[$i]['name']));
+		}
+		if($supportLang === true) {
+			$universalAttributes .= '$model->setAttribute(\''.$first.$altNameField.$sufix.'\', \'Attr\', \'supportLang\');'.PHP_EOL;
+			$universalAttributes .= '$model->setAttribute(\''.$first.$altNameField.$sufix.'\', \'Lang\', \''.$sufix.'\');'.PHP_EOL;
 		}
 		if($data[$i]['type']=="systime") {
 			$universalAttributesTakeAdd .= 'if(isset($model->'.$first.$altNameField.$sufix.')) { $model->'.$first.$altNameField.$sufix.' = $model->Time(); }'.PHP_EOL;
@@ -179,12 +198,12 @@ class Creator extends Core {
 		if(isset($data[$i]['translate']) && $ignoreNotFirst===true) {
 			$universalAttributes .= '$model->setAttribute(\''.$first.$altTranslateField.'\', \'Type\', \'hidden\');'.PHP_EOL;
 			$universalAttributesTakeAdd .= 'if(isset($model->'.$first.$altTranslateField.')) { $model->'.$first.$altTranslateField.' = ToTranslit($model->'.$first.$altNameField.'); }'.PHP_EOL;
-			$createAutoField[] = array("altName" => $first.$altTranslateField, "name" => $altName, "type" => "hidden");//$data[$i]['type']
+			$createAutoField[$i] = array("altName" => $first.$altTranslateField, "name" => $altName, "type" => "hidden");//$data[$i]['type']
 			$exclude[$first.$altTranslateField] = "\"".$first.$altTranslateField."\"";
 		}
 		if($sufix!=="" && $ignoreNotFirst===true) {
 			$exclude[$first.$altNameField.$sufix] = "\"".$first.$altNameField.$sufix."\"";
-			$createAutoField[] = array("altName" => $first.$altNameField.$sufix, "name" => $altName.$sufix, "type" => $data[$i]['type']);
+			$createAutoField[$i] = array("altName" => $first.$altNameField.$sufix, "name" => $altName.$sufix, "type" => $data[$i]['type']);
 		}
 		for($l=0;$l<sizeof($langSupport);$l++) {
 			lang::Update($langSupport[$l], $first.$altNameField.$sufix, $data[$i]['name']."&nbsp;".$sufix);
@@ -312,7 +331,8 @@ class Creator extends Core {
 			$data[-1]['name'] = "id";
 			$data[-1]['auto_increment'] = true;
 			sortByKey($data);
-			$data = array_merge($data, $createAutoField);
+			$data = $this->combineFields($data, $createAutoField);
+			//$data = array_merge($data, $createAutoField);
 			$model = str_replace("{fields}", implode(PHP_EOL, array_map(array($this, "createFields"), $data)), $model);
 			if(!is_writeable(PATH_MODELS)) {
 				@chmod(PATH_MODELS, 077);
@@ -352,7 +372,7 @@ class Creator extends Core {
 				$groupFieldsForTranslate = array();
 				foreach($structClear as $k => $v) {
 					if(!isset($edit[$dbName][$k]) && isset($edit[$dbName][$v['orName']])) {
-						if(strpos($k, $firstLang)!==false) {
+						if(strrpos($k, $firstLang)!==false) {
 							if(!isset($groupFieldsForTranslate[$v['orName']])) {
 								$groupFieldsForTranslate[$v['orName']] = array();
 							}

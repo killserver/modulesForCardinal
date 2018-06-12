@@ -14,8 +14,10 @@ class menu extends modules {
 		$mess = "";
 		if(!db::connected()) {
 			$mess = "Для корректной работы меню - установите подключение к базе данных";
-		} else if(!db::getTable("menu") || $this->actived()===false) {
+		} else if($this->actived()===false) {
 			$mess = "Для корректной работы меню - включите данную модификацию";
+		} else if(!db::getTable("menu")) {
+			$mess = "Что-то пошло не так. Попробуйте переустановить модификацию \"Меню\". Если это сообщение останется - сообщите разработчику в телеграм <a href=\"https://t.me/killserver\" target=\"_blank\">killserver</a>";
 		}
 		if($mess==="") {
 			return $ret;
