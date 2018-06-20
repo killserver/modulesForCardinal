@@ -430,6 +430,7 @@ class Creator extends Core {
 					$fall = $this->getB($forUpdate['remove'], false);
 					$forUpdate['remove'] = array_map(array($this, "createFieldsDB"), $forUpdate['remove'], $fall);
 				}
+				$forUpdate = execEvent("creator_edit_append", $forUpdate, $altTitle);
 				$afterSQL = array();
 				$keys = array_keys($groupFieldsForTranslate);
 				for($i=0;$i<sizeof($keys);$i++) {
@@ -456,6 +457,7 @@ class Creator extends Core {
 			} else {
 				$db = implode(",".PHP_EOL, array_map(array($this, "createFieldsDB"), $data));
 				$db .= ",".PHP_EOL."primary key `id`(`".$dataFirst."`)";
+				execEvent("creator_new_section", $altTitle, $data, $db);
 				modules::create_table($altTitle, $db, true);
 			}
 

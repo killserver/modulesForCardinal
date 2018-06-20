@@ -115,6 +115,9 @@ class TinymceConfig extends Core {
 			$counter2 = $all*($i+1);
 			$name = "block".($i+1);
 			for($z=$counter1;$z<$counter2;$z++) {
+				if(!isset($keys[$z])) {
+					continue;
+				}
 				templates::assign_vars(array(
 					"name" => $keys[$z],
 					"val" => in_array($plugins[$keys[$z]], $file['plugins']),
