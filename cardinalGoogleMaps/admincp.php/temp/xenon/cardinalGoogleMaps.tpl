@@ -1,1 +1,0 @@
-<div style="display:inline-block;width:50%;">{L_"Google Maps"}:</div><div style="display:inline-block;"><input type="text" name="cardinalGoogleMaps" value="{C_cardinalGoogleMaps}" /></div>

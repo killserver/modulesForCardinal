@@ -2,7 +2,7 @@
 
 class menu extends modules {
 
-	public static $version = "1.5";
+	public static $version = "1.6";
 
 	function __construct() {
 		if(defined("IS_ADMIN")) {
@@ -30,7 +30,7 @@ class menu extends modules {
 	public static function installation() {
 		self::create_table("menu", "`mId` int not null auto_increment,".
 									"`mUId` int(11) not null,".
-									"`mName` int(11) not null,".
+									"`mName` varchar(255) not null,".
 									"`mMenu` varchar(255) not null,".
 									"`mLevel` int(11) not null,".
 									"`mIcon` varchar(255) not null,".

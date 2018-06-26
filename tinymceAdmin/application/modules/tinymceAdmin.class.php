@@ -1,7 +1,7 @@
 <?php
 /*
 Name: Точная настройка визуального редактора текста
-Version: 1.0
+Version: 1.1
 Author: killserver
 OnlyUse: true
  */
@@ -14,7 +14,7 @@ class tinymceAdmin extends modules {
 
 	function __construct() {}
 
-	public static $version = "1.0";
+	public static $version = "1.1";
 
 }
 

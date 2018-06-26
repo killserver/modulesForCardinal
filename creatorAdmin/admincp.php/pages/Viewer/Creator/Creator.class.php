@@ -184,6 +184,16 @@ class Creator extends Core {
 		if($data[$i]['type']=="systime") {
 			$universalAttributesTakeAdd .= 'if(isset($model->'.$first.$altNameField.$sufix.')) { $model->'.$first.$altNameField.$sufix.' = $model->Time(); }'.PHP_EOL;
 			$data[$i]['type'] = "hidden";
+		} else if($data[$i]['type']=="array" && $data[$i]['selectedData']=="dataOnTable") {
+			$name = $data[$i]['loadDB']['name'];
+			if(defined("PREFIX_DB") && PREFIX_DB!=="") {
+				$len = strlen(PREFIX_DB);
+				$name = substr($name, $len);
+			}
+			$universalAttributes .= 'if(isset($model->'.$first.$altTranslateField.$sufix.')) { $model->setAttribute("'.$first.$altTranslateField.$sufix.'", "Type", "array"); $category = array(); $db = self::init_db(); $db->doquery("SELECT * FROM {{'.$name.'}}", true); $default = ""; while($row = $db->fetch_assoc()) { if($model->'.$first.$altTranslateField.$sufix.' == $row[\''.$data[$i]['loadDB']['key'].'\']) { $default = $row[\''.$data[$i]['loadDB']['value'].'\']; } $category[] = $row[\''.$data[$i]['loadDB']['value'].'\']; } $category[\'default\'] = $default; $model->'.$first.$altTranslateField.$sufix.' = $category; }'.PHP_EOL;
+			$d = 'if(isset($model->'.$first.$altTranslateField.$sufix.') && isset($_POST[\''.$first.$altTranslateField.$sufix.'\'])) { $model->'.$first.$altTranslateField.$sufix.' = $_POST[\''.$first.$altTranslateField.$sufix.'\']; $db = self::init_db(); $db->doquery("SELECT * FROM {{'.$name.'}}", true); while($row = $db->fetch_assoc()) { if($model->'.$first.$altTranslateField.$sufix.' == $row[\''.$data[$i]['loadDB']['value'].'\']) { $model->'.$first.$altTranslateField.$sufix.' = $row[\''.$data[$i]['loadDB']['key'].'\']; } } }';
+			$universalAttributesTakeAdd .= $d.PHP_EOL;
+			$universalAttributesTakeEdit .= $d.PHP_EOL;
 		} else if($data[$i]['type']=="array" || $data[$i]['type']=="enum") {
 			$universalAttributes .= '$model->setAttribute(\''.$first.$altTranslateField.'\', \'Type\', \'enum\');'.PHP_EOL;
 			$universalAttributesTakeAdd .= '$model->setAttribute(\''.$first.$altNameField.$sufix.'\', \'Type\', \'enum\');'.PHP_EOL;
@@ -197,13 +207,18 @@ class Creator extends Core {
 		}
 		if(isset($data[$i]['translate']) && $ignoreNotFirst===true) {
 			$universalAttributes .= '$model->setAttribute(\''.$first.$altTranslateField.'\', \'Type\', \'hidden\');'.PHP_EOL;
-			$universalAttributesTakeAdd .= 'if(isset($model->'.$first.$altTranslateField.')) { $model->'.$first.$altTranslateField.' = ToTranslit($model->'.$first.$altNameField.'); }'.PHP_EOL;
+			$universalAttributesTakeAdd .= 'if(isset($model->'.$first.$altTranslateField.')) { $model->'.$first.$altTranslateField.' = ToTranslit($model->'.$first.$altNameField.$sufix.'); }'.PHP_EOL;
 			$createAutoField[$i] = array("altName" => $first.$altTranslateField, "name" => $altName, "type" => "hidden");//$data[$i]['type']
+			$i++;
 			$exclude[$first.$altTranslateField] = "\"".$first.$altTranslateField."\"";
 		}
 		if($sufix!=="" && $ignoreNotFirst===true) {
 			$exclude[$first.$altNameField.$sufix] = "\"".$first.$altNameField.$sufix."\"";
-			$createAutoField[$i] = array("altName" => $first.$altNameField.$sufix, "name" => $altName.$sufix, "type" => $data[$i]['type']);
+			if(isset($data[$i]['loadDB'])) {
+				$createAutoField[$i] = array("altName" => $first.$altNameField.$sufix, "name" => $altName.$sufix, "type" => $data[$i]['type'], "loadDB" => $data[$i]['loadDB'], "selectedData" => "dataOnTable");
+			} else {
+				$createAutoField[$i] = array("altName" => $first.$altNameField.$sufix, "name" => $altName.$sufix, "type" => $data[$i]['type']);
+			}
 		}
 		for($l=0;$l<sizeof($langSupport);$l++) {
 			lang::Update($langSupport[$l], $first.$altNameField.$sufix, $data[$i]['name']."&nbsp;".$sufix);
@@ -214,6 +229,7 @@ class Creator extends Core {
 	}
 
 	function Editor($name = "") {
+		$dev = false;
 		$pathForThisModule = PATH_CACHE_USERDATA."struct".DS;
 		$pathForReady = dirname(__FILE__).DS;
 		if(!file_exists($pathForThisModule)) {
@@ -259,8 +275,10 @@ class Creator extends Core {
 			}
 			$_POST['data'] = array_values($_POST['data']);
 			$_POST['data'] = array_merge($_POST['data'], array("title" => $title, "icon" => $icon));
-			if(file_exists($pathForThisModule."file_".$altTitle.".txt")) { unlink($pathForThisModule."file_".$altTitle.".txt"); }
-			file_put_contents($pathForThisModule."file_".$altTitle.".txt", json_encode($_POST));
+			if(!$dev) {
+				if(file_exists($pathForThisModule."file_".$altTitle.".txt")) { unlink($pathForThisModule."file_".$altTitle.".txt"); }
+				file_put_contents($pathForThisModule."file_".$altTitle.".txt", json_encode($_POST));
+			}
 			unset($_POST['data']['title']);
 			unset($_POST['data']['icon']);
 
@@ -286,40 +304,41 @@ class Creator extends Core {
 			if(!is_writeable(PATH_MODULES)) {
 				@chmod(PATH_MODULES, 077);
 			}
-			if(file_exists(PATH_MODULES.$altTitleUp."Archer.class.".ROOT_EX)) { unlink(PATH_MODULES.$altTitleUp."Archer.class.".ROOT_EX); }
-			file_put_contents(PATH_MODULES.$altTitleUp."Archer.class.".ROOT_EX, $archer);
+			if(!$dev) {
+				if(file_exists(PATH_MODULES.$altTitleUp."Archer.class.".ROOT_EX)) { unlink(PATH_MODULES.$altTitleUp."Archer.class.".ROOT_EX); }
+				file_put_contents(PATH_MODULES.$altTitleUp."Archer.class.".ROOT_EX, $archer);
 
-
-			// добавление модуля созданного ранее в загрузчик
-			$file = "";
-			if(file_exists(PATH_MODULES."loader.".ROOT_EX)) {
-				if(!is_writeable(PATH_MODULES)) {
-					@chmod(PATH_MODULES, 077);
+				// добавление модуля созданного ранее в загрузчик
+				$file = "";
+				if(file_exists(PATH_MODULES."loader.".ROOT_EX)) {
+					if(!is_writeable(PATH_MODULES)) {
+						@chmod(PATH_MODULES, 077);
+					}
+					if(!is_writeable(PATH_MODULES."loader.".ROOT_EX)) {
+						@chmod(PATH_MODULES."loader.".ROOT_EX, 077);
+					}
+					$file = PATH_MODULES."loader.".ROOT_EX;
+					$files = file_get_contents($file);
+					$add = '"application".DS."modules".DS."'.$altTitleUp.'Archer.class.".ROOT_EX';
+					if(strpos($files, $add)===false) {
+						$files = str_replace('$modulesLoad = array_merge($modulesLoad, array(', '$modulesLoad = array_merge($modulesLoad, array('.PHP_EOL.$add.' => true,', $files);
+						file_put_contents($file, $files);
+					}
 				}
-				if(!is_writeable(PATH_MODULES."loader.".ROOT_EX)) {
-					@chmod(PATH_MODULES."loader.".ROOT_EX, 077);
-				}
-				$file = PATH_MODULES."loader.".ROOT_EX;
-				$files = file_get_contents($file);
-				$add = '"application".DS."modules".DS."'.$altTitleUp.'Archer.class.".ROOT_EX';
-				if(strpos($files, $add)===false) {
-					$files = str_replace('$modulesLoad = array_merge($modulesLoad, array(', '$modulesLoad = array_merge($modulesLoad, array('.PHP_EOL.$add.' => true,', $files);
-					file_put_contents($file, $files);
-				}
-			}
-			if(file_exists(PATH_MODULES."loader.default.".ROOT_EX)) {
-				if(!is_writeable(PATH_MODULES)) {
-					@chmod(PATH_MODULES, 077);
-				}
-				if(!is_writeable(PATH_MODULES."loader.default.".ROOT_EX)) {
-					@chmod(PATH_MODULES."loader.default.".ROOT_EX, 077);
-				}
-				$file = PATH_MODULES."loader.default.".ROOT_EX;
-				$files = file_get_contents($file);
-				$add = '"application".DS."modules".DS."'.$altTitleUp.'Archer.class.".ROOT_EX';
-				if(strpos($files, $add)===false) {
-					$files = str_replace('$modulesLoad = array_merge($modulesLoad, array(', '$modulesLoad = array_merge($modulesLoad, array('.PHP_EOL.$add.' => true,', $files);
-					file_put_contents($file, $files);
+				if(file_exists(PATH_MODULES."loader.default.".ROOT_EX)) {
+					if(!is_writeable(PATH_MODULES)) {
+						@chmod(PATH_MODULES, 077);
+					}
+					if(!is_writeable(PATH_MODULES."loader.default.".ROOT_EX)) {
+						@chmod(PATH_MODULES."loader.default.".ROOT_EX, 077);
+					}
+					$file = PATH_MODULES."loader.default.".ROOT_EX;
+					$files = file_get_contents($file);
+					$add = '"application".DS."modules".DS."'.$altTitleUp.'Archer.class.".ROOT_EX';
+					if(strpos($files, $add)===false) {
+						$files = str_replace('$modulesLoad = array_merge($modulesLoad, array(', '$modulesLoad = array_merge($modulesLoad, array('.PHP_EOL.$add.' => true,', $files);
+						file_put_contents($file, $files);
+					}
 				}
 			}
 
@@ -337,8 +356,10 @@ class Creator extends Core {
 			if(!is_writeable(PATH_MODELS)) {
 				@chmod(PATH_MODELS, 077);
 			}
-			if(file_exists(PATH_MODELS."Model".$altTitleUp.".".ROOT_EX)) { unlink(PATH_MODELS."Model".$altTitleUp.".".ROOT_EX); }
-			file_put_contents(PATH_MODELS."Model".$altTitleUp.".".ROOT_EX, $model);
+			if(!$dev) {
+				if(file_exists(PATH_MODELS."Model".$altTitleUp.".".ROOT_EX)) { unlink(PATH_MODELS."Model".$altTitleUp.".".ROOT_EX); }
+				file_put_contents(PATH_MODELS."Model".$altTitleUp.".".ROOT_EX, $model);
+			}
 			$prefix = "";
 			if(defined("PREFIX_DB")) {
 				$pr = PREFIX_DB;
@@ -430,7 +451,6 @@ class Creator extends Core {
 					$fall = $this->getB($forUpdate['remove'], false);
 					$forUpdate['remove'] = array_map(array($this, "createFieldsDB"), $forUpdate['remove'], $fall);
 				}
-				$forUpdate = execEvent("creator_edit_append", $forUpdate, $altTitle);
 				$afterSQL = array();
 				$keys = array_keys($groupFieldsForTranslate);
 				for($i=0;$i<sizeof($keys);$i++) {
@@ -457,8 +477,8 @@ class Creator extends Core {
 			} else {
 				$db = implode(",".PHP_EOL, array_map(array($this, "createFieldsDB"), $data));
 				$db .= ",".PHP_EOL."primary key `id`(`".$dataFirst."`)";
-				execEvent("creator_new_section", $altTitle, $data, $db);
 				modules::create_table($altTitle, $db, true);
+				execEvent("creator_new_section", $altTitle, $data, $db);
 			}
 
 			if(!is_writeable(ADMIN_MENU)) {
@@ -493,7 +513,16 @@ class Creator extends Core {
 		$type = $struct['type'];
 		if($isDB && $type=="radio") {
 			$type = "enum".($isDB ? "(".implode(",", array_map(array($this, "addSlash"), $struct['field'])).")" : "");
-		} else if($type=="array" && $struct['selectedData']=="dataOnInput") {
+		} else if($type=="array" && $struct['selectedData']=="dataOnTable") {
+			$name = $struct['loadDB']['name'];
+			$key = $struct['loadDB']['key'];
+			$datas = db::getTables(true, true, true);
+			$type = false;
+			if(isset($datas[$name])) {
+				$datas = $datas[$name];
+				$type = (isset($datas[$key]) ? $datas[$key] : false);
+			}
+		} else if($type=="enum" || ($type=="array" && $struct['selectedData']=="dataOnInput")) {
 			$type = "enum".($isDB ? "(".implode(",", array_map(array($this, "addSlash"), $struct['field'])).")" : "");
 		} else if($type=="int") {
 			$type = "int".($isDB ? "(11)" : "");
@@ -537,7 +566,7 @@ class Creator extends Core {
 		if($isAdd === false && $withName===false) {
 			return array($struct['altName'] => (isset($struct['orName']) ? array("orName" => $struct['orName'], $type) : $type));
 		} else if($isAdd !== false && $withName===false) {
-			return array($struct['altName'] => $type);
+			return array($struct['altName'] => $type." COMMENT ".db::escape($struct['name']));
 		} else if($isDB) {
 			return '`'.$struct['altName'].'` '.$type.' not null'.$auto_increment." COMMENT ".db::escape($struct['name']);
 		} elseif($withName===true) {

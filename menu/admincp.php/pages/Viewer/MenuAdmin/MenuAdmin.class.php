@@ -114,8 +114,8 @@ class MenuAdmin extends Core {
 					array_pop($post);
 				}
 				if(isset($_GET['add'])) {
-					$id = db::doquery("SELECT DISTINCT MAX(`mMenu`) FROM {{menu}}");
-					$id = $id[0];
+					$id = db::doquery("SELECT DISTINCT MAX(`mMenu`) AS `id` FROM {{menu}}");
+					$id = $id['id'];
 					$id++;
 				} else if(isset($_GET['edit']) && is_numeric($_GET['edit']) && $_GET['edit']>0) {
 					$id = intval($_GET['edit']);

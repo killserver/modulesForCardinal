@@ -31,10 +31,17 @@ class menus {
 			if($v['mIcon']!=="") {
 				$countClass++;
 			}
+			$name = lang::get_lang($v['mContent']);
+			if($name==="") {
+				$name = $v['mContent'];
+			}
+			if($v['mPage']!=="" && substr($v['mPage'], 0, 1)==="/") {
+				$v['mPage'] = substr($v['mPage'], 1);
+			}
 			$ret .= (strpos($v['mPage'], "@")!==false ? "<!--email_off-->" : "").'<li'.($v['mClass']!=="" ? ' class="'.$v['mClass'].'"' : "").'>'.
 						'<a href="'.(strpos($v['mPage'], "@")!==false||strpos($v['mPage'], "http")!==false ? $v['mPage'] : '{C_default_http_local}'.($lang!==false ? $lang."/" : "").($v['mPage']!=="" ? $v['mPage'] : "#")).'"'.($v['mClass']!=="" ? ' class="'.$v['mClass'].'"' : "").''.($v['mOpened']!=="" ? ' target="'.$v['mOpened'].'"' : "").'>'.
 							($v['mIcon']!=="" ? '<i class="fa fa-'.$v['mIcon'].'"></i>' : "").
-							'<span>'.$v['mContent'].'</span>'.
+							'<span>'.$name.'</span>'.
 						'</a>';
 			if(isset($v['children'])) {
 				$ret .= $this->build($v['children'], $countClass, ($level+1));

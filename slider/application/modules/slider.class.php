@@ -4,7 +4,7 @@ class slider extends modules {
 
 	function __construct() {
 		$this->regCssJs("https://cdn.jsdelivr.net/bxslider/4.2.12/jquery.bxslider.css", "css");
-		$this->regCssJs(array("{C_default_http_local}js/jquery.bxslider.min.js", "{C_default_http_local}js/cardinalSlider.min.js"), "js");
+		//$this->regCssJs(array("{C_default_http_local}js/jquery.bxslider.min.js", "{C_default_http_local}js/cardinalSlider.min.js"), "js");
 		KernelArcher::excludeField("add", "Shield", array("slide_descr"));
 		KernelArcher::callback("Shield", "TraceOn", array(&$this, "RebuildShields"));
 		KernelArcher::callback("ShieldFunc", "slider::RebuildShield");
@@ -25,7 +25,7 @@ class slider extends modules {
 										" PRIMARY KEY `id` (`slide_id`)");
 	}
 
-	public static $version = "1.8";
+	public static $version = "1.7";
 
 	public static function updater($version) {
 		if($version=="1.0") {
@@ -46,7 +46,7 @@ class slider extends modules {
 		if(!defined("DisableSort")) {
 			define("DisableSort", "0");
 		}
-		return $tpl;
+		return array($table, $page, $model, $tpl);
 	}
 
 	public function RebuildShow($table, $tpl, $model) {
@@ -58,7 +58,7 @@ class slider extends modules {
 		if(isset($row['slide_img'])) {
 			$row['slide_img'] = "<img src=\"{C_default_http_local}".$row['slide_img']."\" width=\"200\">";
 		}
-		return $row;
+		return array($row);
 	}
 
 	public function RebuildTakeUpload($model, $field, $id, $file, $path, $type = "", $i = -1) {
@@ -71,7 +71,7 @@ class slider extends modules {
 			$model->setAttribute("slide_img", "Type", "image");
 			$model->setAttribute("slide_img", "allowUpload", "image");
 		}
-		return $model;
+		return array($model);
 	}
 
 	function RebuildAddModel($model, &$exc = array()) {
@@ -80,7 +80,7 @@ class slider extends modules {
 			$model->setAttribute("slide_img", "Type", "image");
 			$model->setAttribute("slide_img", "allowUpload", "image");
 		}
-		return $model;
+		return array($model);
 	}
 
 	function RebuildTakeAddModel($model, $id, $countCall) {
@@ -89,7 +89,7 @@ class slider extends modules {
 			$model->setAttribute("slide_img", "Type", "image");
 			$model->setAttribute("slide_img", "allowUpload", "image");
 		}
-		return $model;
+		return array($model, $id, $countCall);
 	}
 
 	function RebuildTakeEditModel($model, $id, $countCall) {
@@ -98,7 +98,7 @@ class slider extends modules {
 			$model->setAttribute("slide_img", "Type", "image");
 			$model->setAttribute("slide_img", "allowUpload", "image");
 		}
-		return $model;
+		return array($model, $id, $countCall);
 	}
 
 }

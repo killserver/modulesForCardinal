@@ -79,11 +79,11 @@
 	</li>
 </script>
 <script type="text/template" class="databaseSelectRadio">
-	<br><label><input type="radio" name="data[{id}][selectedData]" class="cbr cbr-primary" value="dataOnTable" onchange="selectedDatabaseChange(this);" disabled="disabled">Данные из базы данных (Скоро)</label><br>
+	<br><label><input type="radio" name="data[{id}][selectedData]" class="cbr cbr-primary" value="dataOnTable" onchange="selectedDatabaseChange(this);">Данные из базы данных</label><br>
 	<label><input type="radio" name="data[{id}][selectedData]" class="cbr cbr-primary" value="dataOnInput" onchange="selectedDatabaseChange(this);">Данные для ввода</label><br><br>
 </script>
 <script type="text/template" class="databaseTemplate">
-	<select class="form-control dataBaseLoad" name="data[{id}][loadDB]" required="required" data-selectInputedData="{id}"><option></option>{data}</select>
+	<select class="form-control dataBaseLoad" name="data[{id}][loadDB][name]" required="required" data-selectInputedData="{id}"><option></option>{data}</select>
 	<div class="col-sm-12 dataBaseSelect" data-selectInputedData="{id}">
 	</div>
 </script>
@@ -175,6 +175,42 @@
 							tpl = tpl.replace(/\{id\}/g, iInputDB);
 							tpl = tpl.replace(/\{val\}/g, dataField.field[key]);
 							jQuery(".inputedData[data-selectInputedData='"+i+"']").append(tpl);
+						});
+					}
+					if(typeof(dataField.selectedData)!=="undefined" && dataField.selectedData=="dataOnTable") {
+						var tmp = jQuery(".databaseSelectRadio").html();
+						tmp = tmp.replace(/\{id\}/g, i);
+						jQuery("[data-hideId='"+i+"']").removeClass('hide').html(tmp);
+						jQuery("[data-hideId='"+i+"'] input[value='dataOnTable']").attr("checked", "checked");
+
+						var idE = i;
+						
+						jQuery.post("./?pages=Creator&loadTables=1", function(d) {
+							tmp = jQuery(".databaseTemplate").html();
+							tmp = tmp.replace(/\{id\}/g, idE);
+							var datas = "";
+							selectedData = JSON.parse(d);
+							Object.keys(selectedData).forEach(function(k) {
+								datas += "<option value='"+selectedData[k].name+"'>"+selectedData[k].name+"</option>";
+							});
+							tmp = tmp.replace(/\{data\}/g, datas);
+							jQuery(".selectedInput[data-selectedInput='"+idE+"']").removeClass('hide').html(tmp);
+							jQuery(".dataBaseLoad[data-selectInputedData='"+idE+"']").val(dataField.loadDB.name);
+
+							console.log(".selectedInput[data-selectedInput='"+idE+"']");
+
+							var tmp = jQuery(".databaseTemplateSelect").html();
+							var datas = "";
+							var data = selectedData[dataField.loadDB.name].fields;
+							for(var i=0;i<data.length;i++) {
+								datas += "<option value='"+data[i]+"'>"+data[i]+"</option>";
+							}
+							tmp = tmp.replace(/\{data1\}/g, datas);
+							tmp = tmp.replace(/\{data2\}/g, datas);
+							tmp = tmp.replace(/\{id\}/g, idE);
+							jQuery(".dataBaseSelect[data-selectInputedData='"+idE+"']").html(tmp);
+							jQuery(".dataBaseSelect[data-selectInputedData='"+idE+"'] .dataBaseLoadKey").val(dataField.loadDB.key);
+							jQuery(".dataBaseSelect[data-selectInputedData='"+idE+"'] .dataBaseLoadValue").val(dataField.loadDB.value);
 						});
 					}
 					if(dataField.type=="radio") {
