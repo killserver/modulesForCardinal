@@ -4,7 +4,7 @@ class slider extends modules {
 
 	function __construct() {
 		$this->regCssJs("https://cdn.jsdelivr.net/bxslider/4.2.12/jquery.bxslider.css", "css");
-		//$this->regCssJs(array("{C_default_http_local}js/jquery.bxslider.min.js", "{C_default_http_local}js/cardinalSlider.min.js"), "js");
+		$this->regCssJs(array("{C_default_http_local}js/jquery.bxslider.min.js", "{C_default_http_local}js/cardinalSlider.min.js"), "js");
 		KernelArcher::excludeField("add", "Shield", array("slide_descr"));
 		KernelArcher::callback("Shield", "TraceOn", array(&$this, "RebuildShields"));
 		KernelArcher::callback("ShieldFunc", "slider::RebuildShield");

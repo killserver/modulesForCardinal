@@ -7,7 +7,7 @@ $links['cardinalEngineDocs']["cat"][] = array(
 'icon' => 'fa-folder-o',
 );
 $links['cardinalEngineDocs']["item"][] = array(
-'link' => "{C_default_http_host}{D_ADMINCP_DIRECTORY}/?pages=ATextAdmin",
+'link' => "{C_default_http_host}{D_ADMINCP_DIRECTORY}/?pages=Docs",
 'title' => "{L_\"Документация по движку \"Cardinal Engine\"\"}",
 'type' => "item",
 'access' => true,

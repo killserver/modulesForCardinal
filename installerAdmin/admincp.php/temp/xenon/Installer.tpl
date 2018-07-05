@@ -2,17 +2,17 @@
 	<div class="col-md-12">
 		<div class="panel panel-default panel-tabs">
 			<div class="panel-heading">
-				<h3 class="panel-title">Модули</h3>
+				<h3 class="panel-title">{L_"Модули"}</h3>
 				<div class="panel-options">
 					<ul class="nav nav-tabs">
 						<li class="active">
-							<a href="#tab-4" data-toggle="tab">Установленные</a>
+							<a href="#tab-4" data-toggle="tab">{L_"Установленные"}</a>
 						</li>
 						<li>
-							<a href="#tab-5" data-toggle="tab">Управление серверами</a>
+							<a href="#tab-5" data-toggle="tab">{L_"Управление серверами"}</a>
 						</li>
 						<li>
-							<a href="#tab-6" data-toggle="tab">Список модулей</a>
+							<a href="#tab-6" data-toggle="tab">{L_"Список модулей"}</a>
 						</li>
 					</ul>
 				</div>
@@ -24,9 +24,9 @@
 							<thead>
 								<tr>
 									<th>#</th>
-									<th width="200">Изображение</th>
-									<th>Название</th>
-									<th width="50%">Описание</th>
+									<th width="200">{L_"Изображение"}</th>
+									<th>{L_"Название"}</th>
+									<th width="50%">{L_"Описание"}</th>
 								</tr>
 							</thead>
 							<tbody id="accordion">
@@ -36,19 +36,19 @@
 									<td>
 										<b>{installed.name}</b><br>
 										<div class="btns" style="display: table-cell; vertical-align: bottom;">
-											[foreachif {installed.hasUpdate}==true]<a href="#" class="btn btn-purple btn-icon btn-icon-standalone btn-sm update" data-action="{installed.altName}"><i class="fa fa-refresh"></i><span>Обновить</span></a>[/foreachif {installed.hasUpdate}==true]
-											[foreachif {installed.active}=="active"&&{installed.OnlyUse}==false]<a href="#" class="btn btn-blue btn-sm action actived" data-action="{installed.altName}" data-status="{installed.active}" turquoise><span>Отключить</span></a>[/foreachif {installed.active}=="active"&&{installed.OnlyUse}==false]
-											[foreachif {installed.active}=="unactive"&&{installed.OnlyUse}==false]<a href="#" class="btn btn-turquoise btn-sm action actived" data-action="{installed.altName}" data-status="{installed.active}"><span>Включить</span></a>[/foreachif {installed.active}=="unactive"&&{installed.OnlyUse}==false]
-											<a href="#" class="btn btn-red btn-sm remove" data-action="{installed.altName}"><span>Удалить</span></a>
+											[foreachif {installed.hasUpdate}==true]<a href="#" class="btn btn-purple btn-icon btn-icon-standalone btn-sm update" data-action="{installed.altName}"><i class="fa fa-refresh"></i><span>{L_"Обновить"}</span></a>[/foreachif {installed.hasUpdate}==true]
+											[foreachif {installed.active}=="active"&&{installed.OnlyUse}==false]<a href="#" class="btn btn-blue btn-sm action actived" data-action="{installed.altName}" data-status="{installed.active}" turquoise><span>{L_"Отключить"}</span></a>[/foreachif {installed.active}=="active"&&{installed.OnlyUse}==false]
+											[foreachif {installed.active}=="unactive"&&{installed.OnlyUse}==false]<a href="#" class="btn btn-turquoise btn-sm action actived" data-action="{installed.altName}" data-status="{installed.active}"><span>{L_"Включить"}</span></a>[/foreachif {installed.active}=="unactive"&&{installed.OnlyUse}==false]
+											<a href="#" class="btn btn-red btn-sm remove" data-action="{installed.altName}"><span>{L_"Удалить"}</span></a>
 										</div>
 									</td>
-									<td width="50%">{installed.description}[foreachif {installed.noChangelog}==false]<br><a class="btn" data-toggle="collapse" data-parent="#accordion" href="#collapseOne-{installed.$id}">Список изменений</a><div id="collapseOne-{installed.$id}" class="collapse">{installed.changelog}</div>[/foreachif {installed.noChangelog}==false]</td>
+									<td width="50%">{installed.description}[foreachif {installed.noChangelog}==false]<br><a class="btn" data-toggle="collapse" data-parent="#accordion" href="#collapseOne-{installed.$id}">{L_"Список изменений"}</a><div id="collapseOne-{installed.$id}" class="collapse">{installed.changelog}</div>[/foreachif {installed.noChangelog}==false]</td>
 								</tr>[/foreach]
 							</tbody>
 						</table>
 					</div>
 					<div class="tab-pane" id="tab-5">
-						<textarea class="form-control" rows="15">{listServer}</textarea><br><a href="#" class="saveListModules btn btn-success pull-right">Сохранить</a>
+						<textarea class="form-control" rows="15">{listServer}</textarea><br><a href="#" class="saveListModules btn btn-success pull-right">{L_"Сохранить"}</a>
 					</div>
 					<div class="tab-pane moduleList" id="tab-6">
 					</div>
@@ -104,22 +104,23 @@
 	data-install="buy" class="btn buy"
 </script>
 <script type="text/template" id="templateItemInstalledFoot0">
-	<a href="#" class="btn btn-red btn-block disabled">Поддерживается на версии {version}</a>
+	<a href="#" class="btn btn-red btn-block disabled">{L_"Поддерживается на версии"} {version}</a>
 </script>
 <script type="text/template" id="templateItemInstalledFoot1">
-	<a href="#" class="btn btn-turquoise btn-block action install" data-action="{altName}">Установить</a>
+	<a href="#" class="btn btn-turquoise btn-block action install" data-action="{altName}">{L_"Установить"}</a>
 </script>
 <script type="text/template" id="templateItemInstalledFoot2">
-	<a href="#" class="btn btn-blue btn-block action update" data-action="{altName}">Обновить</a>
+	<a href="#" class="btn btn-blue btn-block action update" data-action="{altName}">{L_"Обновить"}</a>
 </script>
 <script type="text/template" id="templateItemInstalledFoot3">
-	<a href="#" class="btn btn-success btn-block action installed" style="cursor: not-allowed;" data-action="{altName}">Установлено</a>
+	<a href="#" class="btn btn-success btn-block action installed" style="cursor: not-allowed;" data-action="{altName}">{L_"Установлено"}</a>
 </script>
 <script type="text/template" id="templateItemInstalledFoot4">
-	<a href="#" class="btn btn-purple btn-block action buy" data-action="{altName}">Купить</a>
+	<a href="#" class="btn btn-purple btn-block action buy" data-action="{altName}">{L_"Купить"}</a>
 </script>
 <script type="text/javascript">
 	var cardinalVersionNow = "{D_VERSION}";
+	cardinalVersionNow = parseFloat(cardinalVersionNow);
 	var infoAll = '{infoAll}';
 	infoAll = JSON.parse(infoAll);
 	var test;
@@ -135,7 +136,9 @@
 				var tmpAll = jQuery("#templateItem").html();
 				var installedHead = "";
 				var installedFoot = "";
-				if(infoAll[key].cardinalVersion < cardinalVersionNow) {
+				var version = parseFloat(infoAll[key].cardinalVersion);
+				console.log(key, version, cardinalVersionNow, (version > cardinalVersionNow));
+				if(version > cardinalVersionNow) {
 					installedHead = "class=\"btn\"";
 					installedFoot = jQuery("#templateItemInstalledFoot0").html();
 					installedFoot = installedFoot.replace(/\{version\}/g, infoAll[key].cardinalVersion);
@@ -182,52 +185,52 @@
 			var action = this;
 			if(jQuery(this).hasClass("actived")) {
 				jQuery.post("./?pages=Installer&active="+jQuery(this).attr("data-action"), function(data) {
-					jQuery(action).html(jQuery(action).attr("data-status")=="active" ? "Включить" : "Отключить");
+					jQuery(action).html(jQuery(action).attr("data-status")=="active" ? "{L_"Включить"}" : "{L_"Отключить"}");
 					if(jQuery(action).attr("data-status")=="active") {
 						jQuery(action).removeClass("btn-blue").addClass('btn-turquoise');
 					} else {
 						jQuery(action).removeClass("btn-turquoise").addClass('btn-blue');
 					}
 					jQuery(action).attr("data-status", (jQuery(action).attr("data-status")=="active" ? "unactive" : "active"));
-					toastr.info("Переключён режим работы модуля");
+					toastr.info("{L_"Переключён режим работы модуля"}");
 				});
 			} else if(jQuery(this).hasClass('remove')) {
 				var th = this;
-				toastr.info("Удаление модуля");
+				toastr.info("{L_"Удаление модуля"}");
 				jQuery.post("./?pages=Installer&remove="+jQuery(th).attr("data-action"), function(data) {}).fail(function(data) {
-					toastr.error("Модуль не был удален, попробуйте позже");
+					toastr.error("{L_"Модуль не был удален, попробуйте позже"}");
 				}).done(function(data) {
 					jQuery(th).parent().parent().parent().remove(600);
-					toastr.info("Удален модуль \""+jQuery(th).attr("data-action")+"\"");
+					toastr.info("{L_"Удален модуль"} \""+jQuery(th).attr("data-action")+"\"");
 				});
 			} else if(jQuery(this).hasClass('install')) {
 				var th = this;
-				toastr.info("Скачивание модуля");
+				toastr.info("{L_"Скачивание модуля"}");
 				jQuery.post("./?pages=Installer&download="+jQuery(th).attr("data-action"), function(data) {}).fail(function(data) {
-					toastr.error("Модуль не был скачан, попробуйте позже");
+					toastr.error("{L_"Модуль не был скачан, попробуйте позже"}");
 				}).done(function(data) {
 					toastr.info("Установка нового модуля");
 					jQuery.post("./?pages=Installer&install="+jQuery(th).attr("data-action"), function(data) {}).fail(function(data) {
-						toastr.error("Модуль не был установлен, попробуйте позже");
+						toastr.error("{L_"Модуль не был установлен, попробуйте позже"}");
 					}).done(function(data) {
-						toastr.info("Установлен новый модуль");
+						toastr.info("{L_"Установлен новый модуль"}");
 					});
 				});
 			} else if(jQuery(this).hasClass('update')) {
 				var th = this;
-				toastr.info("Обновление модуля");
+				toastr.info("{L_"Обновление модуля"}");
 				jQuery.post("./?pages=Installer&download="+jQuery(th).attr("data-action"), function(data) {}).fail(function(data) {
-					toastr.error("Модуль не был скачан, попробуйте позже");
+					toastr.error("{L_"Модуль не был скачан, попробуйте позже"}");
 				}).done(function(data) {
-					toastr.info("Обновление модуля");
+					toastr.info("{L_"Обновление модуля"}");
 					jQuery.post("./?pages=Installer&install="+jQuery(th).attr("data-action"), function(data) {}).fail(function(data) {
-						toastr.error("Модуль не был обновлён, попробуйте позже");
+						toastr.error("{L_"Модуль не был обновлён, попробуйте позже"}");
 					}).done(function(data) {
-						toastr.info("Обновлён модуль");
+						toastr.info("{L_"Обновлён модуль"}");
 					});
 				});
 			} else if(jQuery(this).hasClass('installed')) {
-				toastr.info("Модуль успешно запущен и работает из нарицаний");
+				toastr.info("{L_"Модуль успешно запущен и работает из нарицаний"}");
 			} else if(jQuery(this).hasClass('buy')) {
 				jQuery("#modal-4 .modal-title").html("Приобретение "+jQuery(this).attr("data-action"));
 				var tmp = '<form class="Paymentform" method="POST" action="https://api.privatbank.ua/p24api/ishop"><input type="hidden" name="amt" value="{price}" /><input type="hidden" name="ccy" value="UAH" /><input type="hidden" name="merchant" value="1234567890" /><input type="hidden" name="order" value="'+jQuery(this).attr("data-action")+'" /><input type="hidden" name="details" value="'+jQuery(this).attr("data-action")+'" /><input type="hidden" name="ext_details" value="'+jQuery(this).attr("data-action")+'" /><input type="hidden" name="pay_way" value="privat24" /><input type="hidden" name="return_url" value="" /><input type="hidden" name="server_url" value="" /><button type="submit" class="Privat24">Приват 24</button></form>';
@@ -274,16 +277,17 @@
 			}
 			jQuery(".btn-copy").remove();
 			jQuery(".modal .modal-dialog .modal-content .modal-footer .btn").after('<a href="#" class="btn action btn-copy">Обновить</a>');
-			if(data.cardinalVersion < cardinalVersionNow) {
-				jQuery("#modal-3 .modal-footer a.btn.action").attr("class", "").addClass("btn btn-copy btn-red disabled").css("cursor", "").html("Поддерживается на версии "+data.cardinalVersion);
+			var version = parseFloat(data.cardinalVersion);
+			if(version > cardinalVersionNow) {
+				jQuery("#modal-3 .modal-footer a.btn.action").attr("class", "").addClass("btn btn-copy btn-red disabled").css("cursor", "").html("{L_"Поддерживается на версии"} "+data.cardinalVersion);
 			} else if(installation=="update") {
-				jQuery("#modal-3 .modal-footer a.btn.action").attr("class", "").addClass("btn btn-copy action btn-blue update").css("cursor", "").attr("data-action", data.altName).html("Обновить");
+				jQuery("#modal-3 .modal-footer a.btn.action").attr("class", "").addClass("btn btn-copy action btn-blue update").css("cursor", "").attr("data-action", data.altName).html("{L_"Обновить"}");
 			} else if(installation=="installed") {
-				jQuery("#modal-3 .modal-footer a.btn.action").attr("class", "").addClass("btn btn-copy action btn-success installed").css("cursor", "not-allowed").attr("data-action", data.altName).html("Установлено");
+				jQuery("#modal-3 .modal-footer a.btn.action").attr("class", "").addClass("btn btn-copy action btn-success installed").css("cursor", "not-allowed").attr("data-action", data.altName).html("{L_"Установлено"}");
 			} else if(installation=="install") {
-				jQuery("#modal-3 .modal-footer a.btn.action").attr("class", "").addClass("btn btn-copy action btn-turquoise install").attr("data-action", data.altName).html("Установить");
+				jQuery("#modal-3 .modal-footer a.btn.action").attr("class", "").addClass("btn btn-copy action btn-turquoise install").attr("data-action", data.altName).html("{L_"Установить"}");
 			} else if(installation=="buy") {
-				jQuery("#modal-3 .modal-footer a.btn.action").attr("class", "").addClass("btn btn-copy action btn-purple buy").attr("data-action", data.altName).html("Купить");
+				jQuery("#modal-3 .modal-footer a.btn.action").attr("class", "").addClass("btn btn-copy action btn-purple buy").attr("data-action", data.altName).html("{L_"Купить"}");
 			}
 			jQuery("#title_video").html(data.name);
 			jQuery(".modal .modal-dialog .modal-content .modal-body").css("overflow", "auto");
@@ -302,16 +306,16 @@
 			<div class="col-md-12">
 				<ul class="nav nav-tabs nav-tabs-justified">
 					<li class="active description">
-						<a href="#home-1" data-toggle="tab">Описание</a>
+						<a href="#home-1" data-toggle="tab">{L_"Описание"}</a>
 					</li>
 					<li class="screens">
-						<a href="#home-2" data-toggle="tab">Скриншоты</a>
+						<a href="#home-2" data-toggle="tab">{L_"Скриншоты"}</a>
 					</li>
 					<li class="changelog">
-						<a href="#home-3" data-toggle="tab">Список изменений</a>
+						<a href="#home-3" data-toggle="tab">{L_"Список изменений"}</a>
 					</li>
 					<li class="installation">
-						<a href="#home-4" data-toggle="tab">Установка</a>
+						<a href="#home-4" data-toggle="tab">{L_"Установка"}</a>
 					</li>
 				</ul>
 				<div class="tab-content">
@@ -333,10 +337,10 @@
 		<div class="col-sm-3">
 			<ul class="list-group list-group-minimal">
 				<li class="list-group-item version">
-					<span class="badge badge-roundless badge-primary" style="font-size: 12px; letter-spacing: 0.04em; font-weight: normal;"></span>Версия:
+					<span class="badge badge-roundless badge-primary" style="font-size: 12px; letter-spacing: 0.04em; font-weight: normal;"></span>{L_"Версия"}:
 				</li>
 				<li class="list-group-item author">
-					<span class="badge badge-roundless badge-info" style="font-size: 12px; letter-spacing: 0.04em; font-weight: normal;"></span>Автор:
+					<span class="badge badge-roundless badge-info" style="font-size: 12px; letter-spacing: 0.04em; font-weight: normal;"></span>{L_"Автор"}:
 				</li>
 			</ul>
 		</div>
