@@ -195,11 +195,12 @@
 		"altName": "installerAdmin",
 		"description": "Помогает в автоматизированном режиме устанавливать, обновлять, включать и выключать модули на сайте",
 		"author": "killserver",
-		"version": "1.6",
+		"version": "1.7",
 		"image": "https://cdn0.iconfinder.com/data/icons/web-development-2/512/clipboard_report_form_checklist_business_plan_sheet_file_note_pad_paper_page_document_planning_check_list_survey_questionnaire_flat_design_icon-128.png",
 		"type": "module",
-		"cardinalVersion": "10.0",
+		"cardinalVersion": "10.2",
 		"changelog": {
+			"1.7": "Модуль обновлён до оптимальной версии движка",
 			"1.6": "Модуль обновлён до оптимальной версии движка",
 			"1.5": "Произведена оптимизация скорости загрузки страницы с модулями",
 			"1.4": "Исправлены ошибки. Добавлена возможность удалять установленное прямо из админки",
@@ -332,11 +333,14 @@
 		"altName": "cardinalEngineDocs",
 		"description": "При помощи данной модификации Вы сможете узнать о каждой функции/методе/классе, которые есть внутри данного движка",
 		"author": "killserver",
-		"version": "1.0",
+		"version": "1.0.1",
 		"image": "http://waterenergy.com.ua/media/k2/categories/17.jpg",
 		"type": "module",
 		"cardinalVersion": "9.3",
-		"download": "https://raw.githubusercontent.com/killserver/modulesForCardinal/master/cardinalEngineDocs.zip"
+		"download": "https://raw.githubusercontent.com/killserver/modulesForCardinal/master/cardinalEngineDocs.zip",
+		"changelog": {
+			"1.0.1": "Исправлена не верная ссылка в админ-панели"
+		}
 	},
 	"brokenLink": {
 		"name": "Поломанные ссылки для Cardinal Engine",

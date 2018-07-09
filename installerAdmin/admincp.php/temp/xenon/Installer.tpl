@@ -59,25 +59,11 @@
 </div>
 <script type="text/template" id="templateCategory">
 	<div class="col-md-12">
-		<ul class="nav nav-tabs nav-tabs-justified">
-			<li class="active">
-				<a href="#module" data-toggle="tab"><span>{L_"Модули"}</span></a>
-			</li>
-			<li>
-				<a href="#theme" data-toggle="tab"><span>{L_"Шаблоны"}</span></a>
-			</li>
-			<li>
-				<a href="#plugins" data-toggle="tab"><span>{L_"Плагины"}</span></a>
-			</li>
-			<li>
-				<a href="#components" data-toggle="tab"><span>{L_"Разделы"}</span></a>
-			</li>
+		<ul class="nav nav-tabs nav-tabs-justified" data-item="true">
+			{head}
 		</ul>
-		<div class="tab-content">
-			<div class="tab-pane active" id="module"><div class="row">{modules}</div></div>
-			<div class="tab-pane" id="theme"><div class="row">{themes}</div></div>
-			<div class="tab-pane" id="plugins"><div class="row">{plugins}</div></div>
-			<div class="tab-pane" id="components"><div class="row">{components}</div></div>
+		<div class="tab-content" data-item="true">
+			{body}
 		</div>
 	</div>
 </script>
@@ -119,10 +105,11 @@
 	<a href="#" class="btn btn-purple btn-block action buy" data-action="{altName}">{L_"Купить"}</a>
 </script>
 <script type="text/javascript">
-	var cardinalVersionNow = "{D_VERSION}";
-	cardinalVersionNow = parseFloat(cardinalVersionNow);
+	var cardinalVersionNow = parseFloat("{D_VERSION}");
 	var infoAll = '{infoAll}';
 	infoAll = JSON.parse(infoAll);
+	var langName = '{langName}';
+	langName = JSON.parse(langName);
 	var test;
 	jQuery(document).ready(function($) {
 		if(Object.keys(infoAll).length==0) {
@@ -132,13 +119,18 @@
 			var themeAll = "";
 			var pluginAll = "";
 			var componentsAll = "";
+			var allTmp = jQuery("#templateCategory").html();
+			var tabs = {};
+			Object.keys(infoAll).forEach(function(key) {
+				tabs[infoAll[key].type] = infoAll[key].type;
+			});
+			var data = {};
 			Object.keys(infoAll).forEach(function(key) {
 				var tmpAll = jQuery("#templateItem").html();
 				var installedHead = "";
 				var installedFoot = "";
 				var version = parseFloat(infoAll[key].cardinalVersion);
-				console.log(key, version, cardinalVersionNow, (version > cardinalVersionNow));
-				if(version > cardinalVersionNow) {
+				if(cardinalVersionNow < version) {
 					installedHead = "class=\"btn\"";
 					installedFoot = jQuery("#templateItemInstalledFoot0").html();
 					installedFoot = installedFoot.replace(/\{version\}/g, infoAll[key].cardinalVersion);
@@ -160,22 +152,30 @@
 				tmpAll = tmpAll.replace(/\{altName\}/g, infoAll[key].altName);
 				tmpAll = tmpAll.replace(/\{image\}/g, infoAll[key].image);
 				tmpAll = tmpAll.replace(/\{name\}/g, infoAll[key].name);
-				if(infoAll[key].type=="module") {
-					moduleAll += tmpAll;
-				} else if(infoAll[key].type=="theme") {
-					themeAll += tmpAll;
-				} else if(infoAll[key].type=="plugins") {
-					pluginAll += tmpAll;
-				} else if(infoAll[key].type=="components") {
-					componentsAll += tmpAll;
+				var typeData = infoAll[key].type;
+				if(typeof(data[typeData])==="undefined") {
+					data[typeData] = [];
 				}
+				data[typeData][data[typeData].length] = tmpAll;
 			});
-			var allTmp = jQuery("#templateCategory").html();
-			allTmp = allTmp.replace(/\{modules\}/g, moduleAll);
-			allTmp = allTmp.replace(/\{themes\}/g, themeAll);
-			allTmp = allTmp.replace(/\{plugins\}/g, pluginAll);
-			allTmp = allTmp.replace(/\{components\}/g, componentsAll);
+			var head = "", body = "";
+			Object.keys(tabs).forEach(function(key) {
+				head += '<li><a href="#'+key+'" data-toggle="tab"><span>'+(typeof(langName[key])==="undefined" ? key : langName[key])+'</span></a></li>';
+				var dd = '';
+				if(typeof(data[key])==="undefined") {
+					return;
+				}
+				for(var i=0;i<data[key].length;i++) {
+					dd += data[key][i];
+				}
+				body += '<div class="tab-pane" id="'+key+'"><div class="row">'+dd+'</div></div>';
+			});
+			allTmp = allTmp.replace(/\{head\}/g, head);
+			allTmp = allTmp.replace(/\{body\}/g, body);
 			jQuery(".moduleList").html(allTmp);
+			jQuery(".moduleList").find("[data-item]").each(function(i, elem) {
+				$(elem).children().eq(0).addClass("active");
+			});
 		}
 		jQuery(".btns").each(function(i, elem) {
 			jQuery(elem).css("height", jQuery(elem).parent().outerHeight()-jQuery(elem).parent().find("b").outerHeight()*3);
@@ -209,7 +209,7 @@
 				jQuery.post("./?pages=Installer&download="+jQuery(th).attr("data-action"), function(data) {}).fail(function(data) {
 					toastr.error("{L_"Модуль не был скачан, попробуйте позже"}");
 				}).done(function(data) {
-					toastr.info("Установка нового модуля");
+					toastr.info("{L_"Установка нового модуля"}");
 					jQuery.post("./?pages=Installer&install="+jQuery(th).attr("data-action"), function(data) {}).fail(function(data) {
 						toastr.error("{L_"Модуль не был установлен, попробуйте позже"}");
 					}).done(function(data) {
@@ -276,9 +276,9 @@
 				jQuery("#modal-3 .modal-body .changelog").remove();
 			}
 			jQuery(".btn-copy").remove();
-			jQuery(".modal .modal-dialog .modal-content .modal-footer .btn").after('<a href="#" class="btn action btn-copy">Обновить</a>');
+			jQuery(".modal .modal-dialog .modal-content .modal-footer .btn").after('<a href="#" class="btn action btn-copy">{L_"Обновить"}</a>');
 			var version = parseFloat(data.cardinalVersion);
-			if(version > cardinalVersionNow) {
+			if(cardinalVersionNow < version) {
 				jQuery("#modal-3 .modal-footer a.btn.action").attr("class", "").addClass("btn btn-copy btn-red disabled").css("cursor", "").html("{L_"Поддерживается на версии"} "+data.cardinalVersion);
 			} else if(installation=="update") {
 				jQuery("#modal-3 .modal-footer a.btn.action").attr("class", "").addClass("btn btn-copy action btn-blue update").css("cursor", "").attr("data-action", data.altName).html("{L_"Обновить"}");

@@ -127,6 +127,7 @@ class Installer extends Core {
 			return false;
 		}
 		$configs = array("https://raw.githubusercontent.com/killserver/modulesForCardinal/master/list.min.json");
+		$configs = execEvent("installer_servers", $configs);
 		$paths = array();
 		$listAll = array();
 		for($i=0;$i<sizeof($configs);$i++) {
@@ -323,6 +324,16 @@ class Installer extends Core {
 			$listAll[$k]['description'] = $v['description'];
 			templates::assign_vars($v, "listAll", $k);
 		}
+		$langName = array(
+			"module" => "{L_'Модули'}",
+			"theme" => "{L_'Шаблоны'}",
+			"plugins" => "{L_'Плагины'}",
+			"components" => "{L_'Разделы'}",
+		);
+		$langName = execEvent("installer_lang_name", $langName);
+		$json = json_encode($langName);
+		$json = str_replace("'", "\\'", $json);
+		templates::assign_var("langName", $json);
 		$json = json_encode($listAll);
 		$json = str_replace("'", "\\'", $json);
 		templates::assign_var("infoAll", $json);
