@@ -163,6 +163,9 @@ class Creator extends Core {
 			$data2 = array_values($data2);
 			$all++;
 		}
+		for($i=0;$i<sizeof($data2);$i++) {
+			$res[] = $data2[$i];
+		}
 		$resC = array();
 		for($i=0;$i<sizeof($res);$i++) {
 			$resC[$res[$i]['altName']] = $res[$i];
