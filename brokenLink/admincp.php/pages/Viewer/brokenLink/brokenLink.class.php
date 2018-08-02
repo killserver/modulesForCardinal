@@ -721,7 +721,7 @@ class brokenLink extends Core {
 			$linkNow->OrderBy("cId", "ASC");
 			$linkNow->SetLimit(1);
 			$dataNow = $linkNow->Select();
-			if($dataNow->Exists()) {
+			if($linkNow->Exists()) {
 				$id = $dataNow->cId;
 				$mainLink = $dataNow->linkNow;
 			}
@@ -734,10 +734,10 @@ class brokenLink extends Core {
 						continue;
 					}
 					$model = $models->getInstance(true);
-					$modelSelect = $model;
-					$modelSelect->Where("linkNow", $link->href);
-					$modelSelect = $modelSelect->Select();
-					if(!$modelSelect->Exists()) {
+					$modelSelects = $model;
+					$modelSelects->Where("linkNow", $link->href);
+					$modelSelect = $modelSelects->Select();
+					if(!$modelSelects->Exists()) {
 						$modelInsert = $model;
 						$modelInsert->linkNow = $link->href;
 						$modelInsert->htmlOriginal = $link->{"#raw"};
@@ -751,18 +751,18 @@ class brokenLink extends Core {
 					}
 				}
 			}
-			$dataNow->statusCode = $data['http_code'];
-			$dataNow->broken = ($data['broken']===true ? "yes" : "no");
-			$dataNow->warning = ($data['warning']===true ? "yes" : "no");
-			$dataNow->status = $data['http_resp'];
-			$dataNow->timeResp = $data['request_duration'];
-			$dataNow->lastCheck = $models->Time();
+			$linkNow->statusCode = $data['http_code'];
+			$linkNow->broken = ($data['broken']===true ? "yes" : "no");
+			$linkNow->warning = ($data['warning']===true ? "yes" : "no");
+			$linkNow->status = $data['http_resp'];
+			$linkNow->timeResp = $data['request_duration'];
+			$linkNow->lastCheck = $models->Time();
 			if($id>0) {
-				$dataNow->Where($dataNow->cId);
-				$dataNow->Update();
+				$linkNow->Where($linkNow->cId);
+				$linkNow->Update();
 			} else {
-				$dataNow->linkNow = $mainLink;
-				$dataNow->Insert();
+				$linkNow->linkNow = $mainLink;
+				$linkNow->Insert();
 				$countLinks++;
 			}
 			$counter = $models->getInstance();
