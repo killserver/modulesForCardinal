@@ -2,7 +2,7 @@
 
 class menu extends modules {
 
-	public static $version = "1.6";
+	public static $version = "1.7";
 
 	function __construct() {
 		if(defined("IS_ADMIN")) {
@@ -10,7 +10,7 @@ class menu extends modules {
 		}
 	}
 
-	function show($data, $ret) {
+	function show($ret) {
 		$mess = "";
 		if(!db::connected()) {
 			$mess = "Для корректной работы меню - установите подключение к базе данных";

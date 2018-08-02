@@ -59,6 +59,7 @@ class MenuAdmin extends Core {
 										<div data-nestable-action="toggle"></div>
 										<div class="list-label">'.($v['mIcon']!=="" ? '<i class="fa-'.$v['mIcon'].'" style="width:2.5em;text-align:center;font-size:1.35em;"></i>' : "").'<span>'.($v['mContent']!=="" ? $v['mContent'] : '{L_"Не заданно"}').'</span></div>
 										<div class="btn btn-red btn-single pull-right remove">x</div>
+										<div class="btn btn-warning btn-single pull-right edit"><i class="fa fa-pencil"></i></div>
 									</div>
 									<div id="collapseTwo-'.$i.'" class="panel panel-collapse collapse">
 										<div class="panel-body">
@@ -85,7 +86,7 @@ class MenuAdmin extends Core {
 			$file = $file->get();
 			preg_match_all("#\.fa-(.+?)\:before#", $file, $arr);
 			$arr = $arr[1];
-			$ret = "";
+			$ret = "<input type=\"search\" class=\"form-control icon-find\" placeholder=\"input for quick search\">";
 			for($i=0;$i<sizeof($arr);$i++) {
 				$ret .= "<a href=\"#\" class=\"selectIcon pull-left\" data-icon=\"".$arr[$i]."\"><i class=\"fa fa-stack fa-fw fa-2x fa-".$arr[$i]."\"></i></a>";
 			}
@@ -114,8 +115,8 @@ class MenuAdmin extends Core {
 					array_pop($post);
 				}
 				if(isset($_GET['add'])) {
-					$id = db::doquery("SELECT DISTINCT MAX(`mMenu`) AS `id` FROM {{menu}}");
-					$id = $id['id'];
+					$id = db::doquery("SELECT DISTINCT MAX(`mMenu`) as `max` FROM {{menu}}");
+					$id = $id['max'];
 					$id++;
 				} else if(isset($_GET['edit']) && is_numeric($_GET['edit']) && $_GET['edit']>0) {
 					$id = intval($_GET['edit']);

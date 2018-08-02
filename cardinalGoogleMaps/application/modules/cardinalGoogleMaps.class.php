@@ -9,7 +9,7 @@ class cardinalGoogleMaps extends modules {
 		$this->regCssJs("{C_default_http_local}js/cardinalGoogleMaps.min.js", "js");
 	}
 
-	public static $version = "1.3";
+	public static $version = "1.4";
 
 	public static function installation() {
 		config::Update("cardinalGoogleMaps", " ");

@@ -1,7 +1,7 @@
 <?php
 /*
 Name: Установка модулей, плагинов, тем и разделов для движка CE
-Version: 1.7
+Version: 1.8
 Author: killserver
 OnlyUse: true
  */
@@ -14,7 +14,7 @@ class installerAdmin extends modules {
 
 	function __construct() {}
 
-	public static $version = "1.7";
+	public static $version = "1.8";
 
 }
 

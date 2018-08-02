@@ -4,7 +4,6 @@
 	<tr>
 		<th>ID</th>
 		<th>Page</th>
-		<th>Content</th>
 		<th>{L_options}</th>
 	</tr>
 </thead>
@@ -12,14 +11,12 @@
 	<tr>
 		<th>ID</th>
 		<th>Page</th>
-		<th>Content</th>
 		<th>{L_options}</th>
 	</tr>
 </tfoot>
 <tbody>
 [foreach block=menuTmp]<tr>
 	<td>{menuTmp.mMenu}</td>
-	<td>{menuTmp.mPage}</td>
 	<td>{menuTmp.mName}</td>
 	<td>
 		<a href="./?pages=MenuAdmin&edit={menuTmp.mMenu}" class="btn btn-turquoise btn-block">{L_edit}</a><br>

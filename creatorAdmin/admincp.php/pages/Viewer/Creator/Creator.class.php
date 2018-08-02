@@ -7,7 +7,8 @@ class Creator extends Core {
 			$file = file_get_contents(ROOT_PATH.ADMINCP_DIRECTORY.DS."assets".DS.config::Select("skins", "admincp").DS."css".DS."fonts".DS."fontawesome".DS."css".DS."font-awesome.css");
 			preg_match_all("#\.fa-(.+?)\:before#", $file, $arr);
 			$arr = $arr[1];
-			$ret = "<a href=\"#\" class=\"selectIcon pull-left\" data-icon=\"\"><i class=\"fa fa-stack fa-fw fa-2x\" style=\"font-size:2em!important;border:0.01em solid #333;width:1em;height:1em;margin:0px 0.5em;\"></i></a>";
+			$ret = "<input type=\"search\" class=\"form-control icon-find\" placeholder=\"input for quick search\">";
+			$ret .= "<a href=\"#\" class=\"selectIcon pull-left\" data-icon=\"\"><i class=\"fa fa-stack fa-fw fa-2x\" style=\"font-size:2em!important;border:0.01em solid #333;width:1em;height:1em;margin:0px 0.5em;\"></i></a>";
 			for($i=0;$i<sizeof($arr);$i++) {
 				$ret .= "<a href=\"#\" class=\"selectIcon pull-left\" data-icon=\"".$arr[$i]."\"><i class=\"fa fa-stack fa-fw fa-2x fa-".$arr[$i]."\" style=\"font-size:2em!important\"></i></a>";
 			}
@@ -139,29 +140,46 @@ class Creator extends Core {
 		return false;
 	}
 
-	function array_insert(&$array, $position, $insert_array) {
-		$first_array = array_splice ($array, 0, $position+1);
-		$array = array_merge ($first_array, $insert_array, $array);
-	}
-
 	function combineFields($data1, $data2) {
-		$count = 1;
-		foreach($data2 as $id => $v) {
-			$count += $id;
-			$this->array_insert($data1, $count, array($v));
+		$lang = lang::support(true);
+		$lang = array_map("nucfirst", $lang);
+		sortByValue($lang);
+		$res = array();
+		$data1 = array_values($data1);
+		$data2 = array_values($data2);
+		$all = 0;
+		for($i=0;$i<sizeof($data1);$i++) {
+			$title1 = str_replace($lang, "", $data1[$i]['altName']);
+			$res[$all] = $data1[$i];
+			for($z=0;$z<sizeof($data2);$z++) {
+				$title2 = str_replace($lang, "", $data2[$z]['altName']);
+				if($title2==$title1) {
+					$all++;
+					$res[$all] = $data2[$z];
+					unset($data2[$z]);
+					break;
+				}
+			}
+			$data2 = array_values($data2);
+			$all++;
 		}
-		return $data1;
+		$resC = array();
+		for($i=0;$i<sizeof($res);$i++) {
+			$resC[$res[$i]['altName']] = $res[$i];
+		}
+		$res = array_values($resC);
+		return $res;
 	}
 
-	function workInField(&$data, &$listShild, &$universalAttributesTakeAdd, &$universalAttributesTakeEdit, &$universalAttributes, &$createAutoField, &$exclude, &$fieldsForTranslate, $first, $i, $langSupport, $sufix = "", $ignoreNotFirst = true, $supportLang = false) {
-		$altNameField = nucfirst(ToTranslit($data[$i]['name']));
+	function workInField(&$data, &$listShild, &$universalAttributesTakeAdd, &$universalAttributesTakeEdit, &$universalAttributes, &$universalAttributesShow, &$createAutoField, &$exclude, &$fieldsForTranslate, $first, $i, $langSupport, $sufix = "", $ignoreNotFirst = true, $supportLang = false) {
+		$altNameField = nucfirst(ToTranslit($data[$i]['name'], false, false, true));
 		if(isset($data[$i]['supportLang'])) {
 			$fieldsForTranslate[] = $first.$altNameField.$sufix;
 			$upper = array_map("nucfirst", $langSupport);
 			$supportLang = true;
 			unset($data[$i]['supportLang']);
 			for($z=0;$z<sizeof($upper);$z++) {
-				$this->workInField($data, $listShild, $universalAttributesTakeAdd, $universalAttributesTakeEdit, $universalAttributes, $createAutoField, $exclude, $fieldsForTranslate, $first, $i, $langSupport, $upper[$z], ($z===0), $supportLang);
+				$this->workInField($data, $listShild, $universalAttributesTakeAdd, $universalAttributesTakeEdit, $universalAttributes, $universalAttributesShow, $createAutoField, $exclude, $fieldsForTranslate, $first, $i, $langSupport, $upper[$z], ($z===0), $supportLang);
 			}
 			return;
 		}
@@ -172,17 +190,25 @@ class Creator extends Core {
 		$altName = "";
 		if(isset($data[$i]['alttitle'])) {
 			$altName = $data[$i]['alttitle'];
-			$altTranslateField = nucfirst(ToTranslit($data[$i]['alttitle']));
+			$altTranslateField = nucfirst(ToTranslit($data[$i]['alttitle'], false, false, true));
 		} else if(isset($data[$i]['name'])) {
 			$altName = $data[$i]['name'];
-			$altTranslateField = nucfirst(ToTranslit($data[$i]['name']));
+			$altTranslateField = nucfirst(ToTranslit($data[$i]['name'], false, false, true));
 		}
 		if($supportLang === true) {
 			$universalAttributes .= '$model->setAttribute(\''.$first.$altNameField.$sufix.'\', \'Attr\', \'supportLang\');'.PHP_EOL;
 			$universalAttributes .= '$model->setAttribute(\''.$first.$altNameField.$sufix.'\', \'Lang\', \''.$sufix.'\');'.PHP_EOL;
 		}
-		if($data[$i]['type']=="systime") {
+		if(isset($data[$i]['placeholder']) && !empty($data[$i]['placeholder'])) {
+			$universalAttributes .= '$model->setAttribute(\''.$first.$altNameField.$sufix.'\', \'placeholder\', \''.$data[$i]['placeholder'].'\');'.PHP_EOL;
+		}
+		if($data[$i]['type']=="linkToAdmin") {
+			$universalAttributes .= '$model->setAttribute(\''.$first.$altNameField.$sufix.'\', \'Type\', \'linkToAdmin\');'.PHP_EOL;
+			$universalAttributes .= '$model->setAttribute(\''.$first.$altNameField.$sufix.'\', \'linkLink\', \''.$data[$i]['field']['link'].'\');'.PHP_EOL;
+			$universalAttributes .= '$model->setAttribute(\''.$first.$altNameField.$sufix.'\', \'titleLink\', \''.$data[$i]['field']['title'].'\');'.PHP_EOL;
+		} else if($data[$i]['type']=="systime") {
 			$universalAttributesTakeAdd .= 'if(isset($model->'.$first.$altNameField.$sufix.')) { $model->'.$first.$altNameField.$sufix.' = $model->Time(); }'.PHP_EOL;
+			$universalAttributesShow .= '$model->setAttribute(\''.$first.$altNameField.$sufix.'\', \'Type\', \'datetime\');'.PHP_EOL;
 			$data[$i]['type'] = "hidden";
 		} else if($data[$i]['type']=="array" && $data[$i]['selectedData']=="dataOnTable") {
 			$name = $data[$i]['loadDB']['name'];
@@ -201,6 +227,7 @@ class Creator extends Core {
 		} else {
 			$universalAttributesTakeAdd .= '$model->setAttribute(\''.$first.$altNameField.$sufix.'\', \'Type\', \''.$data[$i]['type'].'\');'.PHP_EOL;
 			$universalAttributesTakeEdit .= '$model->setAttribute(\''.$first.$altNameField.$sufix.'\', \'Type\', \''.$data[$i]['type'].'\');'.PHP_EOL;
+			$universalAttributesShow .= '$model->setAttribute(\''.$first.$altNameField.$sufix.'\', \'Type\', \''.$data[$i]['type'].'\');'.PHP_EOL;
 		}
 		if($data[$i]['type']!="array" && $data[$i]['type']!="enum") {
 			$universalAttributes .= '$model->setAttribute(\''.$first.$altNameField.$sufix.'\', \'Type\', \''.$data[$i]['type'].'\');'.PHP_EOL;
@@ -208,6 +235,7 @@ class Creator extends Core {
 		if(isset($data[$i]['translate']) && $ignoreNotFirst===true) {
 			$universalAttributes .= '$model->setAttribute(\''.$first.$altTranslateField.'\', \'Type\', \'hidden\');'.PHP_EOL;
 			$universalAttributesTakeAdd .= 'if(isset($model->'.$first.$altTranslateField.')) { $model->'.$first.$altTranslateField.' = ToTranslit($model->'.$first.$altNameField.$sufix.'); }'.PHP_EOL;
+			$universalAttributesTakeEdit .= 'if(isset($model->'.$first.$altTranslateField.') && empty($model->'.$first.$altTranslateField.')) { $model->'.$first.$altTranslateField.' = ToTranslit($model->'.$first.$altNameField.$sufix.'); }'.PHP_EOL;
 			$createAutoField[$i] = array("altName" => $first.$altTranslateField, "name" => $altName, "type" => "hidden");//$data[$i]['type']
 			$i++;
 			$exclude[$first.$altTranslateField] = "\"".$first.$altTranslateField."\"";
@@ -285,17 +313,18 @@ class Creator extends Core {
 			// создание управляющего модуля для указанного раздела
 			$data = $_POST['data'];
 			$data = array_values($data);
-			$listShild = $universalAttributes = $universalAttributesTakeAdd = $universalAttributesTakeEdit = "";
+			$listShild = $universalAttributes = $universalAttributesShow = $universalAttributesTakeAdd = $universalAttributesTakeEdit = "";
 			$exclude = array();
 			$createAutoField = array();
 			$fieldsForTranslate = array();
 			$data = array_values($data);
 			for($i=0;$i<sizeof($data);$i++) {
-				$this->workInField($data, $listShild, $universalAttributesTakeAdd, $universalAttributesTakeEdit, $universalAttributes, $createAutoField, $exclude, $fieldsForTranslate, $first, $i, $langSupport);
+				$this->workInField($data, $listShild, $universalAttributesTakeAdd, $universalAttributesTakeEdit, $universalAttributes, $universalAttributesShow, $createAutoField, $exclude, $fieldsForTranslate, $first, $i, $langSupport);
 			}
 			$exclude = array_unique($exclude);
 			$exclude = array_values($exclude);
 			$archer = str_replace("{universalAttributes}", trim($universalAttributes), $archer);
+			$archer = str_replace("{universalAttributesShow}", trim($universalAttributesShow), $archer);
 			$archer = str_replace("{universalAttributesTakeAdd}", trim($universalAttributesTakeAdd), $archer);
 			$archer = str_replace("{universalAttributesTakeEdit}", trim($universalAttributesTakeEdit), $archer);
 			$archer = str_replace("{listShild}", trim($listShild), $archer);
@@ -385,6 +414,7 @@ class Creator extends Core {
 					$structClearForRemove[$k] = true;
 					$structClearForRemove[$ks] = true;
 				}
+				execEvent("creator_get_clear_struct", $dbName, $structClear);
 				$forUpdate = array("add" => array(), "edit" => array(), "remove" => array());
 
 				$firstLang = lang::get_lg();
@@ -474,6 +504,7 @@ class Creator extends Core {
 						db::doquery($afterSQL[$i], true);
 					}
 				}
+				execEvent("creator_alter_section", $altTitle, $forUpdate);
 			} else {
 				$db = implode(",".PHP_EOL, array_map(array($this, "createFieldsDB"), $data));
 				$db .= ",".PHP_EOL."primary key `id`(`".$dataFirst."`)";
@@ -511,7 +542,9 @@ class Creator extends Core {
 
 	function createFieldsDB($struct, $isDB = true, $withName = true, $isAdd = false) {
 		$type = $struct['type'];
-		if($isDB && $type=="radio") {
+		if($type=="linkToAdmin") {
+			$type = "int".($isDB ? "(1)" : "");
+		} else if($isDB && $type=="radio") {
 			$type = "enum".($isDB ? "(".implode(",", array_map(array($this, "addSlash"), $struct['field'])).")" : "");
 		} else if($type=="array" && $struct['selectedData']=="dataOnTable") {
 			$name = $struct['loadDB']['name'];

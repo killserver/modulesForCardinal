@@ -58,7 +58,12 @@
 	</div>
 </div>
 <script type="text/template" id="templateCategory">
-	<div class="col-md-12">
+	<div class="col-xs-12">
+		<input type="search" class="form-control quickSearch" placeholder="{L_"Быстрый поиск"}">
+		<br><br>
+		<div class="searched"></div>
+	</div>
+	<div class="col-md-12 allItems">
 		<ul class="nav nav-tabs nav-tabs-justified" data-item="true">
 			{head}
 		</ul>
@@ -104,11 +109,12 @@
 <script type="text/template" id="templateItemInstalledFoot4">
 	<a href="#" class="btn btn-purple btn-block action buy" data-action="{altName}">{L_"Купить"}</a>
 </script>
+<script type="text/template" class="langName">{langName}</script>
 <script type="text/javascript">
 	var cardinalVersionNow = parseFloat("{D_VERSION}");
 	var infoAll = '{infoAll}';
 	infoAll = JSON.parse(infoAll);
-	var langName = '{langName}';
+	var langName = $(".langName").html();
 	langName = JSON.parse(langName);
 	var test;
 	jQuery(document).ready(function($) {
@@ -293,6 +299,60 @@
 			jQuery(".modal .modal-dialog .modal-content .modal-body").css("overflow", "auto");
 			jQuery('#modal-3').modal('show');
 			return false;
+		});
+		jQuery("body").on("input", ".quickSearch", function() {
+			var v = $(this).val();
+			if(v.length==0) {
+				jQuery(".allItems").removeClass("hide");
+				jQuery(".searched").html("");
+			} else {
+				var ds = [];
+				Object.keys(infoAll).forEach(function(key) {
+					if(new RegExp(v, "ig").test(key)) {
+						ds[ds.length] = infoAll[key];
+					} else if(new RegExp(v, "ig").test(infoAll[key].name)) {
+						ds[ds.length] = infoAll[key];
+					} else if(typeof(infoAll[key].tags)!=="undefined" && new RegExp(v, "ig").test(infoAll[key].tags)) {
+						ds[ds.length] = infoAll[key];
+					}
+				});
+				var res = "";
+				var data = {};
+				for(var i=0;i<ds.length;i++) {
+					var tmpAll = jQuery("#templateItem").html();
+					var installedHead = "";
+					var installedFoot = "";
+					var version = parseFloat(ds[i].cardinalVersion);
+					if(cardinalVersionNow < version) {
+						installedHead = "class=\"btn\"";
+						installedFoot = jQuery("#templateItemInstalledFoot0").html();
+						installedFoot = installedFoot.replace(/\{version\}/g, ds[i].cardinalVersion);
+					} else if(ds[i].installed==1) {
+						installedHead = jQuery("#templateItemInstalledHead1").html();
+						installedFoot = jQuery("#templateItemInstalledFoot1").html();
+					} else if(ds[i].installed==2) {
+						installedHead = jQuery("#templateItemInstalledHead2").html();
+						installedFoot = jQuery("#templateItemInstalledFoot2").html();
+					} else if(ds[i].installed==3) {
+						installedHead = jQuery("#templateItemInstalledHead3").html();
+						installedFoot = jQuery("#templateItemInstalledFoot3").html();
+					} else if(ds[i].installed==4) {
+						installedHead = jQuery("#templateItemInstalledHead4").html();
+						installedFoot = jQuery("#templateItemInstalledFoot4").html();
+					}
+					tmpAll = tmpAll.replace(/\{installedHead\}/g, installedHead);
+					tmpAll = tmpAll.replace(/\{installedFoot\}/g, installedFoot);
+					tmpAll = tmpAll.replace(/\{altName\}/g, ds[i].altName);
+					tmpAll = tmpAll.replace(/\{image\}/g, ds[i].image);
+					tmpAll = tmpAll.replace(/\{name\}/g, ds[i].name);
+					res += tmpAll;
+				}
+				if(res.length==0) {
+					res = "{L_"По Вашему запросу - ничего не найдено"}";
+				}
+				jQuery(".allItems").addClass("hide");
+				jQuery(".searched").html(res);
+			}
 		});
 	});
 	var disableAllEditors = true;

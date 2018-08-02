@@ -191,6 +191,50 @@ class Installer extends Core {
 				@chmod(PATH_CACHE_USERDATA."Installer".DS, 0777);
 			}
 			@file_put_contents(PATH_CACHE_USERDATA."Installer".DS.$path.".json", json_encode($listFiles));
+
+			$oldPath = array(
+				ROOT_PATH."core".DS."class".DS."system".DS => PATH_SYSTEM,
+				ROOT_PATH."core".DS."class".DS."system".DS."DBDrivers".DS => PATH_DB_DRIVERS,
+				ROOT_PATH."core".DS."class".DS => PATH_CLASS,
+				ROOT_PATH."core".DS."cache".DS."page".DS => PATH_CACHE_PAGE,
+				ROOT_PATH.'core'.DS.'cache'.DS.'system'.DS => PATH_CACHE_SYSTEM,
+				ROOT_PATH.'core'.DS.'cache'.DS.'system'.DS => PATH_LOGS,
+				ROOT_PATH."core".DS."cache".DS."tmp".DS => PATH_CACHE_TEMP,
+				ROOT_PATH.'core'.DS.'cache'.DS.'lang'.DS => PATH_CACHE_LANGS,
+				ROOT_PATH."core".DS."cache".DS."session".DS => PATH_CACHE_SESSION,
+				ROOT_PATH."core".DS."functions".DS => PATH_FUNCTIONS,
+				ROOT_PATH."core".DS."media".DS => PATH_MEDIA,
+				ROOT_PATH."core".DS."lang".DS => PATH_LANGS,
+				ROOT_PATH."core".DS."cache".DS => PATH_CACHE,
+				ROOT_PATH."core".DS."pages".DS => PATH_PAGES,
+				ROOT_PATH."application".DS."cache".DS => PATH_CACHE_USERDATA,
+				ROOT_PATH."application".DS."modules".DS => PATH_MODULES,
+				ROOT_PATH."application".DS."global".DS => PATH_GLOBAL,
+				ROOT_PATH."application".DS."autoload".DS => PATH_AUTOLOADS,
+				ROOT_PATH."application".DS."library".DS => PATH_LOAD_LIBRARY,
+				ROOT_PATH."application".DS."models".DS => PATH_MODELS,
+				ROOT_PATH."application".DS."cron".DS => PATH_CRON_FILES,
+				ROOT_PATH."application".DS => PATH_LOADED_CONTENT,
+				ROOT_PATH."skins".DS => PATH_SKINS,
+				ROOT_PATH."uploads".DS."manifest".DS => PATH_MANIFEST,
+				ROOT_PATH."uploads".DS => PATH_UPLOADS,
+				ROOT_PATH."admincp.php" => ADMINCP_DIRECTORY,
+			);
+			for($i=0;$i<$tar_object->numFiles;$i++) {
+				$fileName = $tar_object->getNameIndex($i);
+				if(nsubstr($fileName, -1) == '/') {
+					continue; // skip directories
+				}
+				$fileName = str_replace(array("\\", "/"), DS, ROOT_PATH.$fileName);
+				$fileName = iconv("cp866", "windows-1251//IGNORE", $fileName);
+				$fileName = str_replace(array_keys($oldPath), array_values($oldPath), $fileName);
+				$fileName = $this->mkNotDir($fileName);
+
+				$file = $tar_object->getFromIndex($i);
+				file_put_contents($fileName, $file);
+			}
+
+
 			$tr = $tar_object->extractTo(ROOT_PATH);
 			$this->rcopyModules(ROOT_PATH.$_GET['install'], ROOT_PATH);
 			cardinal::RegAction("Установка модуля ".$_GET['install']);
@@ -332,12 +376,21 @@ class Installer extends Core {
 		);
 		$langName = execEvent("installer_lang_name", $langName);
 		$json = json_encode($langName);
-		$json = str_replace("'", "\\'", $json);
 		templates::assign_var("langName", $json);
 		$json = json_encode($listAll);
 		$json = str_replace("'", "\\'", $json);
 		templates::assign_var("infoAll", $json);
 		$this->Prints("Installer");
+	}
+
+	function mkNotDir($file) {
+		$dir = pathinfo($file);
+		if(isset($dir['dirname'])) {
+			if(!file_exists($dir['dirname'])) {
+				mkdir($dir['dirname'], 0777, true);
+			}
+		}
+		return $file;
 	}
 	
 }

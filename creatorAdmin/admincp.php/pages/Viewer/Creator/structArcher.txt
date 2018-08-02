@@ -7,20 +7,22 @@ Hide: yes
 class {altTitle}Archer extends modules {
 	
 	function __construct() {
-		KernelArcher::excludeField("add", "Shield", array({exclude}));
-		KernelArcher::excludeField("add", "Edit", array());
-		KernelArcher::excludeField("add", "TakeDelete", array());
-		KernelArcher::excludeField("add", "Show", array());
-		KernelArcher::excludeField("add", "Sorting", array());
-		KernelArcher::callback("Shield", "TraceOn", array(&$this, "RebuildShields"));
-		KernelArcher::callback("ShieldFunc", "{altTitle}Archer::RebuildShield");
-		KernelArcher::callback("AddModel", array(&$this, "RebuildAddModel"));
-		KernelArcher::callback("Show", array(&$this, "RebuildShow"));
-		KernelArcher::callback("EditModel", array(&$this, "RebuildEditModel"));
-		KernelArcher::callback("TakeUpload", array(&$this, "RebuildTakeUpload"));
-		KernelArcher::callback("TakeDelete", array(&$this, "RebuildTakeDelete"));
-		KernelArcher::callback("TakeAddModel", array(&$this, "RebuildTakeAddModel"));
-		KernelArcher::callback("TakeEditModel", array(&$this, "RebuildTakeEditModel"));
+		if(defined("IS_ADMINCP")) {
+			KernelArcher::excludeField("add", "Shield", array({exclude}));
+			KernelArcher::excludeField("add", "Edit", array());
+			KernelArcher::excludeField("add", "TakeDelete", array());
+			KernelArcher::excludeField("add", "Show", array());
+			KernelArcher::excludeField("add", "Sorting", array());
+			KernelArcher::callback("Shield", "TraceOn", array(&$this, "RebuildShields"));
+			KernelArcher::callback("ShieldFunc", "{altTitle}Archer::RebuildShield");
+			KernelArcher::callback("AddModel", array(&$this, "RebuildAddModel"));
+			KernelArcher::callback("Show", array(&$this, "RebuildShow"));
+			KernelArcher::callback("EditModel", array(&$this, "RebuildEditModel"));
+			KernelArcher::callback("TakeUpload", array(&$this, "RebuildTakeUpload"));
+			KernelArcher::callback("TakeDelete", array(&$this, "RebuildTakeDelete"));
+			KernelArcher::callback("TakeAddModel", array(&$this, "RebuildTakeAddModel"));
+			KernelArcher::callback("TakeEditModel", array(&$this, "RebuildTakeEditModel"));
+		}
 	}
 
 	public function RebuildTakeDelete($model, $models) {
@@ -28,6 +30,7 @@ class {altTitle}Archer extends modules {
 	}
 
 	public function RebuildShields($table, $page, $model, $tpl) {
+		{universalAttributesShow}
 		return array($table, $page, $model, $tpl);
 	}
 

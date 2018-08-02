@@ -13,15 +13,15 @@
 					<ul id="nestable-list-1" class="uk-nestable" style="margin-bottom:0px;" data-uk-nestable><!-- ="{maxDepth:1}" -->
 						{menuBuilder}
 					</ul>
-					<a href="#" class="btn btn-blue pull-right add">{L_add}</a>
 				</div>
-				<div class="col-sm-12"><input type="submit" class="btn btn-success"></div>
+				<div class="col-sm-12"><input type="submit" class="btn btn-success"><a href="#" class="btn btn-blue pull-right add">{L_add}</a></div>
 			</form>
 		</div>
 	</div>
 </div>
 <style>
-.uk-nestable-empty {min-height:auto !important;}
+.uk-nestable-empty { min-height: auto !important; }
+.uk-nestable-item { cursor: pointer; }
 </style>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet">
 <script type="text/template" id="tmpItems">
@@ -31,6 +31,7 @@
 			<div data-nestable-action="toggle"></div>
 			<div class="list-label"><i class="" style="width:2.5em;text-align:center;font-size:1.35em;"></i><span>{L_"Не заданно"}</span></div>
 			<div class="btn btn-red btn-single pull-right remove">x</div>
+			<div class="btn btn-warning btn-single pull-right edit"><i class="fa fa-pencil"></i></div>
 		</div>
 		<div id="collapseTwo-{uid}" class="panel panel-collapse collapse">
 			<div class="panel-body">
@@ -100,7 +101,7 @@
 		jQuery("#nestable-list-1").append(tmps);
 		return false;
 	});
-	jQuery("#nestable-list-1").on("click", ".remove", function() {
+	jQuery("body").on("click", ".remove", function() {
 		jQuery(this).parent().parent().remove();
 		return false;
 	});
@@ -126,8 +127,10 @@
 		});
 		return false;
 	});
-	jQuery("#nestable-list-1").on("click", '.addIcon', function() {
-		var elem = this;
+	var elem, uid;
+	jQuery("body").on("click", '.addIcon', function() {
+		elem = this;
+		uid = jQuery(this).parent().find("input").attr("data-id");
 		jQuery.post("./?pages=MenuAdmin&list", function(data) {
 			jQuery("#modal-3 .modal-body").html(data);
 			jQuery('#modal-3').modal('show', {backdrop: 'fade'});
@@ -136,16 +139,24 @@
 				jQuery(elem).parent().children("input").val(jQuery(this).attr("data-icon"));
 				jQuery(elem).children("i").children("b").remove();
 				jQuery(elem).children("i").attr("class", "").addClass("fa-"+jQuery(this).attr("data-icon"));
-				jQuery(elem).parent().parent().parent().parent().parent().parent().data("icon", jQuery(this).attr("data-icon"));
-				jQuery(elem).parent().parent().parent().parent().parent().parent().data("icon", jQuery(this).attr("data-icon"));
-				jQuery(elem).parent().parent().parent().parent().parent().parent().find(".list-label").children('i').attr("class", "fa-"+jQuery(this).attr("data-icon"));
+				jQuery("li[data-uid='"+uid+"']").attr("data-icon", jQuery(this).attr("data-icon"));
+				jQuery("li[data-uid='"+uid+"'] .list-label").children('i').attr("class", "fa-"+jQuery(this).attr("data-icon"));
 				jQuery('#modal-3').modal('hide');
+				jQuery('#modal-3').off("input").on("input", ".icon-find", function() {
+					var val = jQuery(this).val();
+					jQuery(".modal-body a").each(function(i, elem) {
+						jQuery(elem).removeClass("hide");
+						if(!(new RegExp(val, "g").test(jQuery(elem).attr("data-icon")))) {
+							jQuery(elem).addClass("hide");
+						}
+					});
+				});
 				return false;
 			});
 		});
 		return false;
 	});
-	jQuery("#nestable-list-1").on("click", '[data-toggle="collapse"]', function() {
+	jQuery("body").on("click", '[data-toggle="collapse"]', function() {
 		if(!jQuery(this).hasClass('selected')) {
 			var tmp = $("#template").html();
 			tmp = tmp.replace("{linker}", jQuery(this).parent().attr("data-page"));
@@ -158,21 +169,21 @@
 				vt = '<i class="fa fa-'+vt+'"></i>';
 			}
 			tmp = tmp.replace("{iconer}", vt);
-			tmp = tmp.replace(/{uid}/g, isz);
+			tmp = tmp.replace(/{uid}/g, iszt);
 			jQuery(jQuery(this).attr("href")).find(".panel-body").html(tmp);
 			jQuery(this).addClass("selected");
-			isz++;
+			iszt++;
 		}
 	});
-	jQuery("#nestable-list-1").on("keyup", "input", function(e) {
+	jQuery("body").on("keyup", "input", function(e) {
 		jQuery("div[data-uid='"+jQuery(this).attr("data-id")+"']").parent().parent().parent().data(jQuery(this).attr("data-name"), jQuery(this).val());
 		jQuery("div[data-uid='"+jQuery(this).attr("data-id")+"']").parent().parent().parent().attr("data-"+jQuery(this).attr("data-name"), jQuery(this).val());
 	});
-	jQuery("#nestable-list-1").on("change", "input,select", function(e) {
+	jQuery("body").on("change", "input,select", function(e) {
 		jQuery("div[data-uid='"+jQuery(this).attr("data-id")+"']").parent().parent().parent().data(jQuery(this).attr("data-name"), jQuery(this).val());
 		jQuery("div[data-uid='"+jQuery(this).attr("data-id")+"']").parent().parent().parent().attr("data-"+jQuery(this).attr("data-name"), jQuery(this).val());
 	});
-	jQuery("#nestable-list-1").on("keyup", "#field-2", function(e) {
+	jQuery("body").on("keyup", "#field-2", function(e) {
 		jQuery('[data-toggle="collapse"][href="#'+jQuery(this).parent().parent().parent().parent().parent().attr("id")+'"]').find(".list-label").children("span").html(jQuery(this).val());
 	});
 	var disableAllEditors = true;
