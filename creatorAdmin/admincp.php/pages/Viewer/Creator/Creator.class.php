@@ -177,12 +177,16 @@ class Creator extends Core {
 	function workInField(&$data, &$listShild, &$universalAttributesTakeAdd, &$universalAttributesTakeEdit, &$universalAttributes, &$universalAttributesShow, &$createAutoField, &$exclude, &$fieldsForTranslate, $first, $i, $langSupport, $sufix = "", $ignoreNotFirst = true, $supportLang = false) {
 		$altNameField = nucfirst(ToTranslit($data[$i]['name'], false, false, true));
 		if(isset($data[$i]['supportLang'])) {
-			$fieldsForTranslate[] = $first.$altNameField.$sufix;
 			$upper = array_map("nucfirst", $langSupport);
-			$supportLang = true;
 			unset($data[$i]['supportLang']);
-			for($z=0;$z<sizeof($upper);$z++) {
-				$this->workInField($data, $listShild, $universalAttributesTakeAdd, $universalAttributesTakeEdit, $universalAttributes, $universalAttributesShow, $createAutoField, $exclude, $fieldsForTranslate, $first, $i, $langSupport, $upper[$z], ($z===0), $supportLang);
+			if(sizeof($upper)>1) {
+				$supportLang = true;
+				$fieldsForTranslate[] = $first.$altNameField.$sufix;
+				for($z=0;$z<sizeof($upper);$z++) {
+					$this->workInField($data, $listShild, $universalAttributesTakeAdd, $universalAttributesTakeEdit, $universalAttributes, $universalAttributesShow, $createAutoField, $exclude, $fieldsForTranslate, $first, $i, $langSupport, $upper[$z], ($z===0), $supportLang);
+				}
+			} else {
+				$this->workInField($data, $listShild, $universalAttributesTakeAdd, $universalAttributesTakeEdit, $universalAttributes, $universalAttributesShow, $createAutoField, $exclude, $fieldsForTranslate, $first, $i, $langSupport, "", true, $supportLang);
 			}
 			return;
 		}
@@ -193,7 +197,14 @@ class Creator extends Core {
 		$altName = "";
 		if(isset($data[$i]['alttitle'])) {
 			$altName = $data[$i]['alttitle'];
-			$altTranslateField = nucfirst(ToTranslit($data[$i]['alttitle'], false, false, true));
+			$altTranslateField = nucfirst(ToTranslit($data[$i]['name'], false, false, true));
+			$datas = $data[$i];
+			$datas['name'] = $datas['alttitle'];
+			$datas['altName'] = nucfirst(ToTranslit($data[$i]['alttitle'], false, false, true));
+			$datas['litter'] = nucfirst(ToTranslit($data[$i]['name'], false, false, true));
+			unset($datas['alttitle']);
+			$data[] = $datas;
+			unset($data[$i]['translate']);
 		} else if(isset($data[$i]['name'])) {
 			$altName = $data[$i]['name'];
 			$altTranslateField = nucfirst(ToTranslit($data[$i]['name'], false, false, true));
@@ -235,10 +246,13 @@ class Creator extends Core {
 		if($data[$i]['type']!="array" && $data[$i]['type']!="enum") {
 			$universalAttributes .= '$model->setAttribute(\''.$first.$altNameField.$sufix.'\', \'Type\', \''.$data[$i]['type'].'\');'.PHP_EOL;
 		}
+		for($l=0;$l<sizeof($langSupport);$l++) {
+			lang::Update($langSupport[$l], $first.$altNameField.$sufix, $data[$i]['name']."&nbsp;".$sufix);
+		}
 		if(isset($data[$i]['translate']) && $ignoreNotFirst===true) {
 			$universalAttributes .= '$model->setAttribute(\''.$first.$altTranslateField.'\', \'Type\', \'hidden\');'.PHP_EOL;
-			$universalAttributesTakeAdd .= 'if(isset($model->'.$first.$altTranslateField.')) { $model->'.$first.$altTranslateField.' = ToTranslit($model->'.$first.$altNameField.$sufix.'); }'.PHP_EOL;
-			$universalAttributesTakeEdit .= 'if(isset($model->'.$first.$altTranslateField.') && empty($model->'.$first.$altTranslateField.')) { $model->'.$first.$altTranslateField.' = ToTranslit($model->'.$first.$altNameField.$sufix.'); }'.PHP_EOL;
+			$universalAttributesTakeAdd .= 'if(isset($model->'.$first.$altTranslateField.')) { $model->'.$first.$altTranslateField.' = ToTranslit($model->'.$first.$data[$i]['litter'].'); }'.PHP_EOL;
+			$universalAttributesTakeEdit .= 'if(isset($model->'.$first.$altTranslateField.') && empty($model->'.$first.$altTranslateField.')) { $model->'.$first.$altTranslateField.' = ToTranslit($model->'.$first.$data[$i]['litter'].'); }'.PHP_EOL;
 			$createAutoField[$i] = array("altName" => $first.$altTranslateField, "name" => $altName, "type" => "hidden");//$data[$i]['type']
 			$i++;
 			$exclude[$first.$altTranslateField] = "\"".$first.$altTranslateField."\"";
@@ -250,9 +264,6 @@ class Creator extends Core {
 			} else {
 				$createAutoField[$i] = array("altName" => $first.$altNameField.$sufix, "name" => $altName.$sufix, "type" => $data[$i]['type']);
 			}
-		}
-		for($l=0;$l<sizeof($langSupport);$l++) {
-			lang::Update($langSupport[$l], $first.$altNameField.$sufix, $data[$i]['name']."&nbsp;".$sufix);
 		}
 		if(isset($data[$i]['hideOnMain'])) {
 			$exclude[$first.$altNameField] = "\"".$first.$altNameField.$sufix."\"";
