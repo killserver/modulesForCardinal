@@ -423,5 +423,18 @@
 		"tested": "10.5",
 		"download": "https://raw.githubusercontent.com/killserver/modulesForCardinal/master/translator.zip",
 		"tags": "разработчикам,переводчик,сео"
+	},
+	"consoleLogError": {
+		"name": "Отслеживание ошибок скриптов с сайта для Cardinal Engine",
+		"altName": "consoleLogError",
+		"description": "Данная модификация позволяет отслеживать ошибки скриптов на которые происходят на сайте и/или админ-панели",
+		"author": "killserver",
+		"version": "1.0",
+		"image": "https://raw.githubusercontent.com/hcodes/show-js-error/gh-pages/images/detailed.png",
+		"type": "module",
+		"cardinalVersion": "10.5",
+		"tested": "10.5",
+		"download": "https://raw.githubusercontent.com/killserver/modulesForCardinal/master/consoleLogError.zip",
+		"tags": "разработчикам,ошибки"
 	}
 }
