@@ -1,7 +1,7 @@
 <?php
 /*
 Name: Быстрое создание разделов
-Version: 1.6
+Version: 1.6.1
 Author: killserver
  */
 if(!defined("IS_CORE")) {
@@ -13,7 +13,7 @@ class creatorAdmin extends modules {
 
 	function __construct() {}
 
-	public static $version = "1.6";
+	public static $version = "1.6.1";
 
 }
 
