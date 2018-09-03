@@ -39,6 +39,7 @@ class {altTitle}Archer extends modules {
 		return array($table, $tpl, $model);
 	}
 
+	private static $cache = array();
 	public static function RebuildShield($row) {
 		{listShild}
 		return array($row);

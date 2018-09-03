@@ -7,8 +7,7 @@ class Creator extends Core {
 			$file = file_get_contents(ROOT_PATH.ADMINCP_DIRECTORY.DS."assets".DS.config::Select("skins", "admincp").DS."css".DS."fonts".DS."fontawesome".DS."css".DS."font-awesome.css");
 			preg_match_all("#\.fa-(.+?)\:before#", $file, $arr);
 			$arr = $arr[1];
-			$ret = "<input type=\"search\" class=\"form-control icon-find\" placeholder=\"input for quick search\">";
-			$ret .= "<a href=\"#\" class=\"selectIcon pull-left\" data-icon=\"\"><i class=\"fa fa-stack fa-fw fa-2x\" style=\"font-size:2em!important;border:0.01em solid #333;width:1em;height:1em;margin:0px 0.5em;\"></i></a>";
+			$ret = "<a href=\"#\" class=\"selectIcon pull-left\" data-icon=\"\"><i class=\"fa fa-stack fa-fw fa-2x\" style=\"font-size:2em!important;border:0.01em solid #333;width:1em;height:1em;margin:0px 0.5em;\"></i></a>";
 			for($i=0;$i<sizeof($arr);$i++) {
 				$ret .= "<a href=\"#\" class=\"selectIcon pull-left\" data-icon=\"".$arr[$i]."\"><i class=\"fa fa-stack fa-fw fa-2x fa-".$arr[$i]."\" style=\"font-size:2em!important\"></i></a>";
 			}
@@ -163,9 +162,6 @@ class Creator extends Core {
 			$data2 = array_values($data2);
 			$all++;
 		}
-		for($i=0;$i<sizeof($data2);$i++) {
-			$res[] = $data2[$i];
-		}
 		$resC = array();
 		for($i=0;$i<sizeof($res);$i++) {
 			$resC[$res[$i]['altName']] = $res[$i];
@@ -177,34 +173,24 @@ class Creator extends Core {
 	function workInField(&$data, &$listShild, &$universalAttributesTakeAdd, &$universalAttributesTakeEdit, &$universalAttributes, &$universalAttributesShow, &$createAutoField, &$exclude, &$fieldsForTranslate, $first, $i, $langSupport, $sufix = "", $ignoreNotFirst = true, $supportLang = false) {
 		$altNameField = nucfirst(ToTranslit($data[$i]['name'], false, false, true));
 		if(isset($data[$i]['supportLang'])) {
+			$fieldsForTranslate[] = $first.$altNameField.$sufix;
 			$upper = array_map("nucfirst", $langSupport);
+			$supportLang = true;
 			unset($data[$i]['supportLang']);
-			if(sizeof($upper)>1) {
-				$supportLang = true;
-				$fieldsForTranslate[] = $first.$altNameField.$sufix;
-				for($z=0;$z<sizeof($upper);$z++) {
-					$this->workInField($data, $listShild, $universalAttributesTakeAdd, $universalAttributesTakeEdit, $universalAttributes, $universalAttributesShow, $createAutoField, $exclude, $fieldsForTranslate, $first, $i, $langSupport, $upper[$z], ($z===0), $supportLang);
-				}
-			} else {
-				$this->workInField($data, $listShild, $universalAttributesTakeAdd, $universalAttributesTakeEdit, $universalAttributes, $universalAttributesShow, $createAutoField, $exclude, $fieldsForTranslate, $first, $i, $langSupport, "", true, $supportLang);
+			for($z=0;$z<sizeof($upper);$z++) {
+				$this->workInField($data, $listShild, $universalAttributesTakeAdd, $universalAttributesTakeEdit, $universalAttributes, $universalAttributesShow, $createAutoField, $exclude, $fieldsForTranslate, $first, $i, $langSupport, $upper[$z], ($z===0), $supportLang);
 			}
 			return;
 		}
 		$data[$i]['altName'] = $first.$altNameField.$sufix;
+		execEventRef("creator_work_in_field", $data, $listShild, $universalAttributesTakeAdd, $universalAttributesTakeEdit, $universalAttributes, $universalAttributesShow, $createAutoField, $exclude, $fieldsForTranslate, $first, $i, $langSupport, $sufix, $ignoreNotFirst, $supportLang);
 		if($data[$i]['type']=="image") {
-			$listShild .= 'if(isset($row[\''.$first.$altNameField.$sufix.'\'])) { $row[\''.$first.$altNameField.'\'] = "<img src=\"{C_default_http_local}".$row[\''.$first.$altNameField.$sufix.'\']."\" width=\"200\">"; }';
+			$listShild .= 'if(isset($row[\''.$first.$altNameField.$sufix.'\'])) { $row[\''.$first.$altNameField.'\'] = "<img src=\"{C_default_http_local}".$row[\''.$first.$altNameField.$sufix.'\']."\" width=\"200\">"; }'.PHP_EOL;
 		}
 		$altName = "";
 		if(isset($data[$i]['alttitle'])) {
 			$altName = $data[$i]['alttitle'];
-			$altTranslateField = nucfirst(ToTranslit($data[$i]['name'], false, false, true));
-			$datas = $data[$i];
-			$datas['name'] = $datas['alttitle'];
-			$datas['altName'] = nucfirst(ToTranslit($data[$i]['alttitle'], false, false, true));
-			$datas['litter'] = nucfirst(ToTranslit($data[$i]['name'], false, false, true));
-			unset($datas['alttitle']);
-			$data[] = $datas;
-			unset($data[$i]['translate']);
+			$altTranslateField = nucfirst(ToTranslit($data[$i]['alttitle'], false, false, true));
 		} else if(isset($data[$i]['name'])) {
 			$altName = $data[$i]['name'];
 			$altTranslateField = nucfirst(ToTranslit($data[$i]['name'], false, false, true));
@@ -230,6 +216,7 @@ class Creator extends Core {
 				$len = strlen(PREFIX_DB);
 				$name = substr($name, $len);
 			}
+			$listShild .= 'if(isset($row[\''.$first.$altTranslateField.$sufix.'\'])) { $db = self::init_db(); $find = false; if(!isset(self::$cache[\''.$name.'\']) || !is_array(self::$cache[\''.$name.'\']) || sizeof(self::$cache[\''.$name.'\'])==0) { self::$cache[\''.$name.'\'] = array(); $db->doquery("SELECT `'.$data[$i]['loadDB']['key'].'`, `'.$data[$i]['loadDB']['value'].'` FROM {{'.$name.'}}", true); while($rows = $db->fetch_assoc()) { self::$cache[\''.$name.'\'][$rows[\''.$data[$i]['loadDB']['key'].'\']] = $rows[\''.$data[$i]['loadDB']['value'].'\']; } } if(isset(self::$cache[\''.$name.'\']) && isset(self::$cache[\''.$name.'\'][$row[\''.$first.$altTranslateField.$sufix.'\']])) { $find = true; $row[\''.$first.$altTranslateField.$sufix.'\'] = self::$cache[\''.$name.'\'][$row[\''.$first.$altTranslateField.$sufix.'\']]; } if($find===false) { $row[\''.$first.$altTranslateField.$sufix.'\'] = "{L_\"Не найдено\"}"; } }'.PHP_EOL;
 			$universalAttributes .= 'if(isset($model->'.$first.$altTranslateField.$sufix.')) { $model->setAttribute("'.$first.$altTranslateField.$sufix.'", "Type", "array"); $category = array(); $db = self::init_db(); $db->doquery("SELECT * FROM {{'.$name.'}}", true); $default = ""; while($row = $db->fetch_assoc()) { if($model->'.$first.$altTranslateField.$sufix.' == $row[\''.$data[$i]['loadDB']['key'].'\']) { $default = $row[\''.$data[$i]['loadDB']['value'].'\']; } $category[] = $row[\''.$data[$i]['loadDB']['value'].'\']; } $category[\'default\'] = $default; $model->'.$first.$altTranslateField.$sufix.' = $category; }'.PHP_EOL;
 			$d = 'if(isset($model->'.$first.$altTranslateField.$sufix.') && isset($_POST[\''.$first.$altTranslateField.$sufix.'\'])) { $model->'.$first.$altTranslateField.$sufix.' = $_POST[\''.$first.$altTranslateField.$sufix.'\']; $db = self::init_db(); $db->doquery("SELECT * FROM {{'.$name.'}}", true); while($row = $db->fetch_assoc()) { if($model->'.$first.$altTranslateField.$sufix.' == $row[\''.$data[$i]['loadDB']['value'].'\']) { $model->'.$first.$altTranslateField.$sufix.' = $row[\''.$data[$i]['loadDB']['key'].'\']; } } }';
 			$universalAttributesTakeAdd .= $d.PHP_EOL;
@@ -246,13 +233,10 @@ class Creator extends Core {
 		if($data[$i]['type']!="array" && $data[$i]['type']!="enum") {
 			$universalAttributes .= '$model->setAttribute(\''.$first.$altNameField.$sufix.'\', \'Type\', \''.$data[$i]['type'].'\');'.PHP_EOL;
 		}
-		for($l=0;$l<sizeof($langSupport);$l++) {
-			lang::Update($langSupport[$l], $first.$altNameField.$sufix, $data[$i]['name']."&nbsp;".$sufix);
-		}
 		if(isset($data[$i]['translate']) && $ignoreNotFirst===true) {
 			$universalAttributes .= '$model->setAttribute(\''.$first.$altTranslateField.'\', \'Type\', \'hidden\');'.PHP_EOL;
-			$universalAttributesTakeAdd .= 'if(isset($model->'.$first.$altTranslateField.')) { $model->'.$first.$altTranslateField.' = ToTranslit($model->'.$first.$data[$i]['litter'].'); }'.PHP_EOL;
-			$universalAttributesTakeEdit .= 'if(isset($model->'.$first.$altTranslateField.') && empty($model->'.$first.$altTranslateField.')) { $model->'.$first.$altTranslateField.' = ToTranslit($model->'.$first.$data[$i]['litter'].'); }'.PHP_EOL;
+			$universalAttributesTakeAdd .= 'if(isset($model->'.$first.$altTranslateField.')) { $model->'.$first.$altTranslateField.' = ToTranslit($model->'.$first.$altNameField.$sufix.'); }'.PHP_EOL;
+			$universalAttributesTakeEdit .= 'if(isset($model->'.$first.$altTranslateField.') && empty($model->'.$first.$altTranslateField.')) { $model->'.$first.$altTranslateField.' = ToTranslit($model->'.$first.$altNameField.$sufix.'); }'.PHP_EOL;
 			$createAutoField[$i] = array("altName" => $first.$altTranslateField, "name" => $altName, "type" => "hidden");//$data[$i]['type']
 			$i++;
 			$exclude[$first.$altTranslateField] = "\"".$first.$altTranslateField."\"";
@@ -264,6 +248,9 @@ class Creator extends Core {
 			} else {
 				$createAutoField[$i] = array("altName" => $first.$altNameField.$sufix, "name" => $altName.$sufix, "type" => $data[$i]['type']);
 			}
+		}
+		for($l=0;$l<sizeof($langSupport);$l++) {
+			lang::Update($langSupport[$l], $first.$altNameField.$sufix, $data[$i]['name']."&nbsp;".$sufix);
 		}
 		if(isset($data[$i]['hideOnMain'])) {
 			$exclude[$first.$altNameField] = "\"".$first.$altNameField.$sufix."\"";
@@ -556,7 +543,10 @@ class Creator extends Core {
 
 	function createFieldsDB($struct, $isDB = true, $withName = true, $isAdd = false) {
 		$type = $struct['type'];
-		if($type=="linkToAdmin") {
+		$event = execEvent("creator_create_fields_db", false, $type, $struct, $isDB, $withName, $isAdd);
+		if($event!==false) {
+			$type = $event;
+		} else if($type=="linkToAdmin") {
 			$type = "int".($isDB ? "(1)" : "");
 		} else if($isDB && $type=="radio") {
 			$type = "enum".($isDB ? "(".implode(",", array_map(array($this, "addSlash"), $struct['field'])).")" : "");
