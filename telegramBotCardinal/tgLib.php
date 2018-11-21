@@ -197,7 +197,7 @@ if(isset($_GET['start'])) {
 		$arr = file($file);
 		$arr = array_map("trim", $arr);
 		$arr = rebuildArrTG($arr);
-		if(!isset($arr[$chat_id])) {
+		if(!in_array($chat_id, $arr)) {
 			$arr[] = $chat_id;
 			$save = true;
 			// sends an action 'typing'
@@ -212,7 +212,7 @@ if(isset($_GET['start'])) {
 			$tg->sendMessage($chat_id, "Вы уже подписанны на уведомления с сайта <b>".$hostname."</b>\nДля отписки - перейдите по <a href=\"".$host.$tgUnsubscribe."?id=".$chat_id."\">ссылке</a>", "HTML");
 			file_put_contents($file."_wait", "Вы уже подписанны на уведомления с сайта <b>".$hostname."</b>\nДля отписки - перейдите по <a href=\"".$host.$tgUnsubscribe."?id=".$chat_id."\">ссылке</a>");
 		}
-	} else {
+	} else if(!in_array($chat_id, $arr)) {
 		$arr[] = $chat_id;
 		$save = true;
 		// sends an action 'typing'

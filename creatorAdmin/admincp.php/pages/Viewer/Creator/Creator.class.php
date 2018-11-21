@@ -69,10 +69,16 @@ class Creator extends Core {
 		$dbs = array_map(array($this, "removePrefix"), $dbs, $prefix);
 		for($i=0;$i<sizeof($dbs);$i++) {
 			if(file_exists($pathForThisModule."file_".$dbs[$i].".txt")) {
-				templates::assign_vars(array("table" => $dbs[$i]), "creator", "c".$i);
+				$showMe[] = "file_".$dbs[$i].".txt";
+				templates::assign_vars(array("table" => $dbs[$i], "created" => "true"), "creator");
 			}
 		}
-		//vdebug($showMe);die();
+		$dir = read_dir($pathForThisModule, ".txt");
+		for($i=0;$i<sizeof($dir);$i++) {
+			if(!in_array($dir[$i], $showMe)) {
+				templates::assign_vars(array("table" => str_replace(array("file_", ".txt"), "", $dir[$i]), "created" => "false"), "creator");
+			}
+		}
 		$this->Prints("Creator/CreatorMain");
 	}
 

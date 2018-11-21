@@ -1,7 +1,7 @@
 <?php
 /*
 Name: Быстрое создание разделов
-Version: 1.6.1
+Version: 1.6.2
 Author: killserver
  */
 if(!defined("IS_CORE")) {
@@ -11,9 +11,18 @@ if(!defined("IS_CORE")) {
 
 class creatorAdmin extends modules {
 
-	function __construct() {}
+	function __construct() {
+		addEvent("loadUserLevels", array($this, "addLevel"));
+	}
 
-	public static $version = "1.6.1";
+	function addLevel($levels) {
+		$levels[LEVEL_CREATOR]['access_creator'] = "yes";
+		$levels[LEVEL_CUSTOMER]['access_creator'] = "yes";
+		$levels[LEVEL_ADMIN]['access_creator'] = "yes";
+		return $levels;
+	}
+
+	public static $version = "1.6.2";
 
 }
 

@@ -21,7 +21,8 @@
 			<td><label class="checkbox"><input type="checkbox" class="cbr" name="delete[]" value="{creator.table}"></label></td>
 			<td>{L_"{creator.table}"}</td>
 			<td width="15%">
-				<a href="./?pages=Creator&mod=Edit&name={creator.table}" class="btn btn-turquoise btn-block">{L_edit}</a><br>
+				[foreachif {creator.created}==true]<a href="./?pages=Creator&mod=Edit&name={creator.table}" class="btn btn-turquoise btn-block">{L_edit}</a>[/foreachif {creator.created}==true]
+				[foreachif {creator.created}==false]<a href="./?pages=Creator&mod=Edit&name={creator.table}" class="btn btn-success btn-block">{L_"Создать"}</a>[/foreachif {creator.created}==false]<br>
 				<a href="./?pages=Creator&mod=Delete&name={creator.table}" onclick="return confirmDelete();" class="btn btn-red btn-block">{L_delete}</a>
 			</td>
 		</tr>[/foreach]

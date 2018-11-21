@@ -1,7 +1,7 @@
 <?php
 /*
 Name: Установка модулей, плагинов, тем и разделов для движка CE
-Version: 1.8.1
+Version: 1.9.0
 Author: killserver
 OnlyUse: true
  */
@@ -12,9 +12,16 @@ if(!defined("IS_CORE")) {
 
 class installerAdmin extends modules {
 
-	function __construct() {}
+	function __construct() {
+		addEvent("loadUserLevels", array($this, "installerLevel"));
+	}
 
-	public static $version = "1.8.1";
+	function installerLevel($levels) {
+		$levels[LEVEL_CREATOR]['access_installer'] = "yes";
+		return $levels;
+	}
+
+	public static $version = "1.9.0";
 
 }
 

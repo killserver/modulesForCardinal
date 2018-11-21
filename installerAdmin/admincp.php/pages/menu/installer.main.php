@@ -1,10 +1,12 @@
 <?php
 $arr = array();
-function getVersionForModule($module) {
-	if(file_exists(PATH_MODULES.$module.".class.".ROOT_EX)) {
-		include_once(PATH_MODULES.$module.".class.".ROOT_EX);
+if(!function_exists("getVersionForModule")) {
+	function getVersionForModule($module) {
+		if(file_exists(PATH_MODULES.$module.".class.".ROOT_EX)) {
+			include_once(PATH_MODULES.$module.".class.".ROOT_EX);
+		}
+		return (class_exists($module) && property_exists($module, "version") ? $module::$version : "0.0");
 	}
-	return (class_exists($module) && property_exists($module, "version") ? $module::$version : "0.0");
 }
 $configs = array("https://raw.githubusercontent.com/killserver/modulesForCardinal/master/list.min.json");
 $configs = execEvent("installer_servers", $configs);
@@ -39,14 +41,14 @@ $links['Installer']["cat"][] = array(
 'link' => "{C_default_http_host}{D_ADMINCP_DIRECTORY}/?pages=Installer",
 'title' => ($size>0 ? "<span class=\"badge pull-right badge-red\">".$size."</span>" : "")."{L_'Установщик модулей'}",
 'type' => "cat",
-'access' => userlevel::is(LEVEL_CREATOR),
+'access' => userlevel::get("installer"),
 'icon' => 'fa-list-alt',
 );
 $links['Installer']["item"][] = array(
 'link' => "{C_default_http_host}{D_ADMINCP_DIRECTORY}/?pages=Installer",
 'title' => ($size>0 ? "<span class=\"badge pull-right badge-red\">".$size."</span>" : "")."{L_'Установщик модулей'}",
 'type' => "item",
-'access' => userlevel::is(LEVEL_CREATOR),
+'access' => userlevel::get("installer"),
 'icon' => '',
 );
 ?>

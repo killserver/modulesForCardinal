@@ -1,0 +1,121 @@
+.adminCoreCardinal > .elems > .items a {
+	-webkit-transition:all .2s ease-in-out;
+	-o-transition:all .2s ease-in-out;
+	-moz-transition:all .2s ease-in-out;
+	transition:all .2s ease-in-out;
+}
+.adminCoreCardinal > .elems > .items a.activeLang {
+    background: #6ebf41!important;
+}
+.adminCoreCardinal > .elems > .items a.editLang i {
+    padding: 0.1em!important;
+}
+custom-lang.active {
+	position:relative;
+	-webkit-box-sizing:border-box;
+	   -moz-box-sizing:border-box;
+	        box-sizing:border-box;
+	display:inline-block;
+	-webkit-transition:all .2s ease-in-out;
+	-o-transition:all .2s ease-in-out;
+	-moz-transition:all .2s ease-in-out;
+	transition:all .2s ease-in-out;
+	padding-bottom: 60px;
+	margin-bottom: -60px;
+}
+custom-lang.active custom-text{
+	display:block;
+	position:relative
+}
+custom-lang.active custom-text:after{
+	content:'';
+	position:absolute;
+	bottom:0;
+	left:0;
+	border-bottom:1px dotted red;
+	width:100%
+}
+custom-lang .close-lang,
+custom-lang .done-lang {
+	display:none;
+}
+custom-lang.active .close-lang,
+custom-lang.active .done-lang{
+	display:block;
+	position:absolute;
+	bottom: 0px;
+	left: 49px;
+	width:40px;
+	height:40px;
+	padding:.1em;
+	-webkit-box-sizing:content-box;
+	   -moz-box-sizing:content-box;
+	        box-sizing:content-box;
+	float:none;
+	font-size:inherit;
+	line-height:normal;
+	letter-spacing:normal;
+	text-transform:initial;
+	-webkit-box-shadow:0 2px 12px -3px #333;
+	   -moz-box-shadow:0 2px 12px -3px #333;
+	        box-shadow:0 2px 12px -3px #333;
+	-webkit-border-radius:50%;
+	   -moz-border-radius:50%;
+	        border-radius:50%;
+	cursor:pointer;
+	-webkit-transition:all .2s ease-in-out;
+	-o-transition:all .2s ease-in-out;
+	-moz-transition:all .2s ease-in-out;
+	transition:all .2s ease-in-out;
+	-webkit-transition-delay: 600ms;
+	   -moz-transition-delay: 600ms;
+	     -o-transition-delay: 600ms;
+	        transition-delay: 600ms;
+	opacity:0;
+	visibility:hidden;
+	z-index: -99999999;
+}
+custom-lang.active .done-lang{
+	left: 0px;
+}
+custom-lang.active:hover .close-lang,
+custom-lang.active:hover .done-lang{
+	-webkit-transition-delay:.2s;
+	   -moz-transition-delay:.2s;
+	     -o-transition-delay:.2s;
+	        transition-delay:.2s;
+	opacity:1;
+	visibility:visible;
+	z-index: 99999999;
+}
+custom-lang.active .close-lang:after,
+custom-lang.active .done-lang:after{
+	position:absolute;
+	top:0;
+	left:0;
+	width:100%;
+	height:100%;
+	display:block;
+    -webkit-transition: all 300ms ease-in-out;
+    -o-transition: all 300ms ease-in-out;
+    -moz-transition: all 300ms ease-in-out;
+    transition: all 300ms ease-in-out;
+    background-repeat: no-repeat;
+    background-position: 50%;
+    background-size: cover;
+}
+custom-lang.active .done-lang:after{
+	content:'';
+	background-image:url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzOC45NSAzOC45NDkiPjxjaXJjbGUgY3g9IjE5LjQ3NSIgY3k9IjE5LjQ3NSIgcj0iMTkuNDc1IiBmaWxsPSIjNkVCRjQxIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIvPjxwYXRoIGZpbGw9IiNGRkYiIGZpbGwtcnVsZT0iZXZlbm9kZCIgZD0iTTI5LjQyIDEyLjQ5M2ExLjkgMS45IDAgMCAwLTIuNjg2IDBMMTUuNzMgMjMuNDk5bC00LjAyNy00LjAyN2ExLjg5OSAxLjg5OSAwIDEgMC0yLjY4NiAyLjY4N2w1LjM3IDUuMzdhMS44OTQgMS44OTQgMCAwIDAgMi42ODYgMEwyOS40MiAxNS4xODFhMS45IDEuOSAwIDAgMCAwLTIuNjg4eiIgY2xpcC1ydWxlPSJldmVub2RkIi8+PC9zdmc+')
+}
+custom-lang.active .close-lang:after {
+	content:'';
+	background-image:url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzOC45NSAzOC45NDkiPjxjaXJjbGUgZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGZpbGw9IiNFQTJGMTYiIGN4PSIxOS40NzUiIGN5PSIxOS40NzUiIHI9IjE5LjQ3NSIvPjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBmaWxsPSIjRkZGIiBkPSJNMjIuNTY3IDE5LjAzN2w0Ljg1NC00Ljg1NmExLjkwMSAxLjkwMSAwIDAgMC0yLjY4Ni0yLjY4OGwtNC44NTQgNC44NTYtNC44NTMtNC44NTZhMS45MDEgMS45MDEgMCAwIDAtMi42ODcgMi42ODhsNC44NTQgNC44NTYtNC44NTQgNC44NTZhMS45MDEgMS45MDEgMCAwIDAgMi42ODcgMi42ODhsNC44NTMtNC44NTYgNC44NTQgNC44NTZhMS45IDEuOSAwIDAgMCAyLjY4Ni0yLjY4OGwtNC44NTQtNC44NTZ6Ii8+PC9zdmc+')
+}
+custom-lang.active .close-lang:hover:after, custom-lang.active .done-lang:hover:after {
+	-webkit-filter: brightness(90%) contrast(150%);
+	        filter: brightness(90%) contrast(150%);
+}
+.noty_theme__sunset.noty_type__success {
+    background-color: #4db413 !important;
+}

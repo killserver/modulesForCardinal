@@ -210,10 +210,11 @@
 		</div>
 	</div>
 </script>
+<script type="application/json" id="json">{struct}</script>
 <script type="text/javascript">
 	var selectedData = {};
 	var arrTranslate = {};
-	var struct = '{struct}';
+	var struct = document.getElementById("json").innerHTML;
 	var iInputDB = 0;
 	var i = 0;
 	jQuery(document).ready(function($) {
