@@ -11,12 +11,12 @@ window.addEventListener("DOMContentLoaded", function(){
 					var btn = elem.closest("button");
 					if(a!==null) {
 						a.addEventListener("click", function(e) {
-							e.stopPropagation();
+							e.preventDefault();
 						}, true);
 					}
 					if(btn!==null) {
 						btn.addEventListener("click", function(e) {
-							e.stopPropagation();
+							e.preventDefault();
 						}, true);
 					}
 				});
@@ -34,12 +34,12 @@ window.addEventListener("DOMContentLoaded", function(){
 					var btn = elem.closest("button");
 					if(a!==null) {
 						a.removeEventListener("click", function(e) {
-							e.stopPropagation();
+							e.preventDefault();
 						}, true);
 					}
 					if(btn!==null) {
 						btn.removeEventListener("click", function(e) {
-							e.stopPropagation();
+							e.preventDefault();
 						}, true);
 					}
 				});
@@ -51,8 +51,8 @@ window.addEventListener("DOMContentLoaded", function(){
 				e.target.closest(".adminCoreCardinal a.editLang").querySelector("span").innerHTML = "Редактировать текст";
 			}
 			e.preventDefault();
-			ret = false;
 		}
+		console.log(e.target);
 		if(e.target.closest("custom-lang.active .done-lang")) {
 			var or = e.target.closest("custom-lang").getAttribute("data-ortext");
 			var translate = e.target.closest("custom-lang").querySelector("custom-text").innerHTML;

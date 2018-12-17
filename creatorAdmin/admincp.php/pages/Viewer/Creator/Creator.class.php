@@ -176,22 +176,32 @@ class Creator extends Core {
 		return $res;
 	}
 
-	function workInField(&$data, &$listShild, &$universalAttributesTakeAdd, &$universalAttributesTakeEdit, &$universalAttributes, &$universalAttributesShow, &$createAutoField, &$exclude, &$fieldsForTranslate, $first, $i, $langSupport, $sufix = "", $ignoreNotFirst = true, $supportLang = false) {
-		$altNameField = nucfirst(ToTranslit($data[$i]['name'], false, false, true));
+	function workInField(&$data, &$listShild, &$universalAttributesTakeAdd, &$universalAttributesTakeEdit, &$universalAttributes, &$universalAttributesShow, &$createAutoField, &$exclude, &$excludeLang, &$fieldsForTranslate, $first, $i, $langSupport, $sufix = "", $ignoreNotFirst = true, $supportLang = false) {
+		if(isset($data[$i]['altName']) && !empty($data[$i]['altName'])) {
+			$altNameField = nucfirst($data[$i]['altName']);
+		} else {
+			$altNameField = nucfirst(ToTranslit($data[$i]['name'], false, false, true));
+		}
 		if(isset($data[$i]['supportLang'])) {
 			$fieldsForTranslate[] = $first.$altNameField.$sufix;
 			$upper = array_map("nucfirst", $langSupport);
 			$supportLang = true;
 			unset($data[$i]['supportLang']);
 			for($z=0;$z<sizeof($upper);$z++) {
-				$this->workInField($data, $listShild, $universalAttributesTakeAdd, $universalAttributesTakeEdit, $universalAttributes, $universalAttributesShow, $createAutoField, $exclude, $fieldsForTranslate, $first, $i, $langSupport, $upper[$z], ($z===0), $supportLang);
+				$this->workInField($data, $listShild, $universalAttributesTakeAdd, $universalAttributesTakeEdit, $universalAttributes, $universalAttributesShow, $createAutoField, $exclude, $excludeLang, $fieldsForTranslate, $first, $i, $langSupport, $upper[$z], ($z===0), $supportLang);
 			}
 			return;
 		}
-		$data[$i]['altName'] = $first.$altNameField.$sufix;
+		if(!(isset($data[$i]['altName']) && !empty($data[$i]['altName']))) {
+			$data[$i]['altName'] = $first.$altNameField;
+		}
+		$data[$i]['orAltName'] = $data[$i]['altName'];
+		$data[$i]['altName'] .= $sufix;
+		$altNamer = $data[$i]['altName'];
+		$forAutoField = ($i);
 		execEventRef("creator_work_in_field", $data, $listShild, $universalAttributesTakeAdd, $universalAttributesTakeEdit, $universalAttributes, $universalAttributesShow, $createAutoField, $exclude, $fieldsForTranslate, $first, $i, $langSupport, $sufix, $ignoreNotFirst, $supportLang);
 		if($data[$i]['type']=="image") {
-			$listShild .= 'if(isset($row[\''.$first.$altNameField.$sufix.'\'])) { $row[\''.$first.$altNameField.'\'] = "<img src=\"{C_default_http_local}".$row[\''.$first.$altNameField.$sufix.'\']."\" width=\"200\">"; }'.PHP_EOL;
+			$listShild .= 'if(isset($row[\''.$altNamer.'\'])) { $row[\''.$altNamer.'\'] = "<img src=\"{C_default_http_local}".$row[\''.$altNamer.'\']."\" width=\"200\">"; }'.PHP_EOL;
 		}
 		$altName = "";
 		if(isset($data[$i]['alttitle'])) {
@@ -201,65 +211,85 @@ class Creator extends Core {
 			$altName = $data[$i]['name'];
 			$altTranslateField = nucfirst(ToTranslit($data[$i]['name'], false, false, true));
 		}
+		$translatedFieldWithSx = $first.$altTranslateField.$sufix;
 		if($supportLang === true) {
-			$universalAttributes .= '$model->setAttribute(\''.$first.$altNameField.$sufix.'\', \'Attr\', \'supportLang\');'.PHP_EOL;
-			$universalAttributes .= '$model->setAttribute(\''.$first.$altNameField.$sufix.'\', \'Lang\', \''.$sufix.'\');'.PHP_EOL;
+			$universalAttributes .= '$model->setAttribute(\''.$altNamer.'\', \'Attr\', \'supportLang\');'.PHP_EOL;
+			$universalAttributes .= '$model->setAttribute(\''.$altNamer.'\', \'Lang\', \''.$sufix.'\');'.PHP_EOL;
 		}
 		if(isset($data[$i]['placeholder']) && !empty($data[$i]['placeholder'])) {
-			$universalAttributes .= '$model->setAttribute(\''.$first.$altNameField.$sufix.'\', \'placeholder\', \''.$data[$i]['placeholder'].'\');'.PHP_EOL;
+			$universalAttributes .= '$model->setAttribute(\''.$altNamer.'\', \'placeholder\', \''.$data[$i]['placeholder'].'\');'.PHP_EOL;
+		}
+		if(isset($data[$i]['required']) && !empty($data[$i]['required'])) {
+			$universalAttributes .= '$model->setAttribute(\''.$altNamer.'\', \'required\', \''.$data[$i]['required'].'\');'.PHP_EOL;
 		}
 		if($data[$i]['type']=="linkToAdmin") {
-			$universalAttributes .= '$model->setAttribute(\''.$first.$altNameField.$sufix.'\', \'Type\', \'linkToAdmin\');'.PHP_EOL;
-			$universalAttributes .= '$model->setAttribute(\''.$first.$altNameField.$sufix.'\', \'linkLink\', \''.$data[$i]['field']['link'].'\');'.PHP_EOL;
-			$universalAttributes .= '$model->setAttribute(\''.$first.$altNameField.$sufix.'\', \'titleLink\', \''.$data[$i]['field']['title'].'\');'.PHP_EOL;
+			$universalAttributes .= '$model->setAttribute(\''.$altNamer.'\', \'Type\', \'linkToAdmin\');'.PHP_EOL;
+			$universalAttributes .= '$model->setAttribute(\''.$altNamer.'\', \'linkLink\', \''.$data[$i]['field']['link'].'\');'.PHP_EOL;
+			$universalAttributes .= '$model->setAttribute(\''.$altNamer.'\', \'titleLink\', \''.$data[$i]['field']['title'].'\');'.PHP_EOL;
 		} else if($data[$i]['type']=="systime") {
-			$universalAttributesTakeAdd .= 'if(isset($model->'.$first.$altNameField.$sufix.')) { $model->'.$first.$altNameField.$sufix.' = $model->Time(); }'.PHP_EOL;
-			$universalAttributesShow .= '$model->setAttribute(\''.$first.$altNameField.$sufix.'\', \'Type\', \'datetime\');'.PHP_EOL;
+			$universalAttributesTakeAdd .= 'if(isset($model->'.$altNamer.')) { $model->'.$altNamer.' = $model->Time(); }'.PHP_EOL;
+			$universalAttributesShow .= '$model->setAttribute(\''.$altNamer.'\', \'Type\', \'datetime\');'.PHP_EOL;
 			$data[$i]['type'] = "hidden";
+		} else if($data[$i]['type']=="multiple-array" && $data[$i]['selectedData']=="dataOnTable") {
+			$name = $data[$i]['loadDB']['name'];
+			if(defined("PREFIX_DB") && PREFIX_DB!=="") {
+				$len = strlen(PREFIX_DB);
+				$name = substr($name, $len);
+			}
+			$listShild .= 'if(isset($row[\''.$altNamer.'\'])) { $db = self::init_db(); $find = false; if(!isset(self::$cache[\''.$name.'\']) || !is_array(self::$cache[\''.$name.'\']) || sizeof(self::$cache[\''.$name.'\'])==0) { self::$cache[\''.$name.'\'] = array(); $db->doquery("SELECT `'.$data[$i]['loadDB']['key'].'`, `'.$data[$i]['loadDB']['value'].'` FROM {{'.$name.'}}", true); while($rows = $db->fetch_assoc()) { self::$cache[\''.$name.'\'][$rows[\''.$data[$i]['loadDB']['key'].'\']] = $rows[\''.$data[$i]['loadDB']['value'].'\']; } } if(isset(self::$cache[\''.$name.'\']) && isset(self::$cache[\''.$name.'\'][$row[\''.$altNamer.'\']])) { $find = true; $row[\''.$altNamer.'\'] = self::$cache[\''.$name.'\'][$row[\''.$altNamer.'\']]; } if($find===false) { $row[\''.$altNamer.'\'] = "{L_\"Не найдено\"}"; } }'.PHP_EOL;
+
+
+			$universalAttributes .= 'if(property_exists($model, "'.$altNamer.'")) { $model->setAttribute("'.$altNamer.'", "Type", "multiple-array"); $model->'.$altNamer.' = explode(",", $model->'.$altNamer.'); $default = array(); $category = array(); $db = self::init_db(); $db->doquery("SELECT * FROM {{'.$name.'}}", true); while($row = $db->fetch_assoc()) { if(in_array($row[\''.$data[$i]['loadDB']['key'].'\'], $model->'.$altNamer.')) { $default[] = $row[\''.$data[$i]['loadDB']['value'].'\']; } $category[] = $row[\''.$data[$i]['loadDB']['value'].'\']; } $category[\'default\'] = $default; $model->'.$altNamer.' = $category; }'.PHP_EOL;
+			$d = 'if(property_exists($model, "'.$altNamer.'") && isset($_POST[\''.$altNamer.'\'])) { $model->'.$altNamer.' = $_POST[\''.$altNamer.'\']; $db = self::init_db(); $cats = array(); $db->doquery("SELECT * FROM {{'.$name.'}}", true); while($row = $db->fetch_assoc()) { if(in_array($row[\''.$data[$i]['loadDB']['value'].'\'], $model->'.$altNamer.')) { $cats[] = $row[\''.$data[$i]['loadDB']['key'].'\']; } } $model->'.$altNamer.' = implode(",", $cats); }';
+			$universalAttributesTakeAdd .= $d.PHP_EOL;
+			$universalAttributesTakeEdit .= $d.PHP_EOL;
 		} else if($data[$i]['type']=="array" && $data[$i]['selectedData']=="dataOnTable") {
 			$name = $data[$i]['loadDB']['name'];
 			if(defined("PREFIX_DB") && PREFIX_DB!=="") {
 				$len = strlen(PREFIX_DB);
 				$name = substr($name, $len);
 			}
-			$listShild .= 'if(isset($row[\''.$first.$altTranslateField.$sufix.'\'])) { $db = self::init_db(); $find = false; if(!isset(self::$cache[\''.$name.'\']) || !is_array(self::$cache[\''.$name.'\']) || sizeof(self::$cache[\''.$name.'\'])==0) { self::$cache[\''.$name.'\'] = array(); $db->doquery("SELECT `'.$data[$i]['loadDB']['key'].'`, `'.$data[$i]['loadDB']['value'].'` FROM {{'.$name.'}}", true); while($rows = $db->fetch_assoc()) { self::$cache[\''.$name.'\'][$rows[\''.$data[$i]['loadDB']['key'].'\']] = $rows[\''.$data[$i]['loadDB']['value'].'\']; } } if(isset(self::$cache[\''.$name.'\']) && isset(self::$cache[\''.$name.'\'][$row[\''.$first.$altTranslateField.$sufix.'\']])) { $find = true; $row[\''.$first.$altTranslateField.$sufix.'\'] = self::$cache[\''.$name.'\'][$row[\''.$first.$altTranslateField.$sufix.'\']]; } if($find===false) { $row[\''.$first.$altTranslateField.$sufix.'\'] = "{L_\"Не найдено\"}"; } }'.PHP_EOL;
-			$universalAttributes .= 'if(isset($model->'.$first.$altTranslateField.$sufix.')) { $model->setAttribute("'.$first.$altTranslateField.$sufix.'", "Type", "array"); $category = array(); $db = self::init_db(); $db->doquery("SELECT * FROM {{'.$name.'}}", true); $default = ""; while($row = $db->fetch_assoc()) { if($model->'.$first.$altTranslateField.$sufix.' == $row[\''.$data[$i]['loadDB']['key'].'\']) { $default = $row[\''.$data[$i]['loadDB']['value'].'\']; } $category[] = $row[\''.$data[$i]['loadDB']['value'].'\']; } $category[\'default\'] = $default; $model->'.$first.$altTranslateField.$sufix.' = $category; }'.PHP_EOL;
-			$d = 'if(isset($model->'.$first.$altTranslateField.$sufix.') && isset($_POST[\''.$first.$altTranslateField.$sufix.'\'])) { $model->'.$first.$altTranslateField.$sufix.' = $_POST[\''.$first.$altTranslateField.$sufix.'\']; $db = self::init_db(); $db->doquery("SELECT * FROM {{'.$name.'}}", true); while($row = $db->fetch_assoc()) { if($model->'.$first.$altTranslateField.$sufix.' == $row[\''.$data[$i]['loadDB']['value'].'\']) { $model->'.$first.$altTranslateField.$sufix.' = $row[\''.$data[$i]['loadDB']['key'].'\']; } } }';
+			$listShild .= 'if(isset($row[\''.$altNamer.'\'])) { $db = self::init_db(); $find = false; if(!isset(self::$cache[\''.$name.'\']) || !is_array(self::$cache[\''.$name.'\']) || sizeof(self::$cache[\''.$name.'\'])==0) { self::$cache[\''.$name.'\'] = array(); $db->doquery("SELECT `'.$data[$i]['loadDB']['key'].'`, `'.$data[$i]['loadDB']['value'].'` FROM {{'.$name.'}}", true); while($rows = $db->fetch_assoc()) { self::$cache[\''.$name.'\'][$rows[\''.$data[$i]['loadDB']['key'].'\']] = $rows[\''.$data[$i]['loadDB']['value'].'\']; } } if(isset(self::$cache[\''.$name.'\']) && isset(self::$cache[\''.$name.'\'][$row[\''.$altNamer.'\']])) { $find = true; $row[\''.$altNamer.'\'] = self::$cache[\''.$name.'\'][$row[\''.$altNamer.'\']]; } if($find===false) { $row[\''.$altNamer.'\'] = "{L_\"Не найдено\"}"; } }'.PHP_EOL;
+			$universalAttributes .= 'if(property_exists($model, "'.$altNamer.'")) { $model->setAttribute("'.$altNamer.'", "Type", "array"); $category = array(); $db = self::init_db(); $db->doquery("SELECT * FROM {{'.$name.'}}", true); $default = ""; while($row = $db->fetch_assoc()) { if($model->'.$altNamer.' == $row[\''.$data[$i]['loadDB']['key'].'\']) { $default = $row[\''.$data[$i]['loadDB']['value'].'\']; } $category[] = $row[\''.$data[$i]['loadDB']['value'].'\']; } $category[\'default\'] = $default; $model->'.$altNamer.' = $category; }'.PHP_EOL;
+			$d = 'if(property_exists($model, "'.$altNamer.'") && isset($_POST[\''.$altNamer.'\'])) { $model->'.$altNamer.' = $_POST[\''.$altNamer.'\']; $db = self::init_db(); $db->doquery("SELECT * FROM {{'.$name.'}}", true); while($row = $db->fetch_assoc()) { if($model->'.$altNamer.' == $row[\''.$data[$i]['loadDB']['value'].'\']) { $model->'.$altNamer.' = $row[\''.$data[$i]['loadDB']['key'].'\']; } } }';
 			$universalAttributesTakeAdd .= $d.PHP_EOL;
 			$universalAttributesTakeEdit .= $d.PHP_EOL;
 		} else if($data[$i]['type']=="array" || $data[$i]['type']=="enum") {
-			$universalAttributes .= '$model->setAttribute(\''.$first.$altTranslateField.'\', \'Type\', \'enum\');'.PHP_EOL;
-			$universalAttributesTakeAdd .= '$model->setAttribute(\''.$first.$altNameField.$sufix.'\', \'Type\', \'enum\');'.PHP_EOL;
-			$universalAttributesTakeEdit .= '$model->setAttribute(\''.$first.$altNameField.$sufix.'\', \'Type\', \'enum\');'.PHP_EOL;
+			$universalAttributes .= '$model->setAttribute(\''.$altNamer.'\', \'Type\', \'enum\');'.PHP_EOL;
+			$universalAttributesTakeAdd .= '$model->setAttribute(\''.$altNamer.'\', \'Type\', \'enum\');'.PHP_EOL;
+			$universalAttributesTakeEdit .= '$model->setAttribute(\''.$altNamer.'\', \'Type\', \'enum\');'.PHP_EOL;
 		} else {
-			$universalAttributesTakeAdd .= '$model->setAttribute(\''.$first.$altNameField.$sufix.'\', \'Type\', \''.$data[$i]['type'].'\');'.PHP_EOL;
-			$universalAttributesTakeEdit .= '$model->setAttribute(\''.$first.$altNameField.$sufix.'\', \'Type\', \''.$data[$i]['type'].'\');'.PHP_EOL;
-			$universalAttributesShow .= '$model->setAttribute(\''.$first.$altNameField.$sufix.'\', \'Type\', \''.$data[$i]['type'].'\');'.PHP_EOL;
+			$universalAttributesTakeAdd .= '$model->setAttribute(\''.$altNamer.'\', \'Type\', \''.$data[$i]['type'].'\');'.PHP_EOL;
+			$universalAttributesTakeEdit .= '$model->setAttribute(\''.$altNamer.'\', \'Type\', \''.$data[$i]['type'].'\');'.PHP_EOL;
+			$universalAttributesShow .= '$model->setAttribute(\''.$altNamer.'\', \'Type\', \''.$data[$i]['type'].'\');'.PHP_EOL;
 		}
 		if($data[$i]['type']!="array" && $data[$i]['type']!="enum") {
-			$universalAttributes .= '$model->setAttribute(\''.$first.$altNameField.$sufix.'\', \'Type\', \''.$data[$i]['type'].'\');'.PHP_EOL;
+			$universalAttributes .= '$model->setAttribute(\''.$altNamer.'\', \'Type\', \''.$data[$i]['type'].'\');'.PHP_EOL;
 		}
 		if(isset($data[$i]['translate']) && $ignoreNotFirst===true) {
 			$universalAttributes .= '$model->setAttribute(\''.$first.$altTranslateField.'\', \'Type\', \'hidden\');'.PHP_EOL;
-			$universalAttributesTakeAdd .= 'if(isset($model->'.$first.$altTranslateField.')) { $model->'.$first.$altTranslateField.' = ToTranslit($model->'.$first.$altNameField.$sufix.'); }'.PHP_EOL;
-			$universalAttributesTakeEdit .= 'if(isset($model->'.$first.$altTranslateField.') && empty($model->'.$first.$altTranslateField.')) { $model->'.$first.$altTranslateField.' = ToTranslit($model->'.$first.$altNameField.$sufix.'); }'.PHP_EOL;
-			$createAutoField[$i] = array("altName" => $first.$altTranslateField, "name" => $altName, "type" => "hidden");//$data[$i]['type']
-			$i++;
+			$universalAttributesTakeAdd .= 'if(property_exists($model, "'.$first.$altTranslateField.'")) { $model->'.$first.$altTranslateField.' = ToTranslit($model->'.$altNamer.'); }'.PHP_EOL;
+			$universalAttributesTakeEdit .= 'if(property_exists($model, "'.$first.$altTranslateField.'") && empty($model->'.$first.$altTranslateField.')) { $model->'.$first.$altTranslateField.' = ToTranslit($model->'.$altNamer.'); }'.PHP_EOL;
+			$createAutoField[$forAutoField] = array("altName" => $first.$altTranslateField, "name" => $altName, "type" => "hidden");//$data[$i]['type']
+			$forAutoField++;
 			$exclude[$first.$altTranslateField] = "\"".$first.$altTranslateField."\"";
+		} else if(isset($data[$i]['hideOnMain'])) {
+			$exclude[$first.$altNameField] = "\"".$altNamer."\"";
 		}
 		if($sufix!=="" && $ignoreNotFirst===true) {
-			$exclude[$first.$altNameField.$sufix] = "\"".$first.$altNameField.$sufix."\"";
-			if(isset($data[$i]['loadDB'])) {
-				$createAutoField[$i] = array("altName" => $first.$altNameField.$sufix, "name" => $altName.$sufix, "type" => $data[$i]['type'], "loadDB" => $data[$i]['loadDB'], "selectedData" => "dataOnTable");
+			if(isset($data[$i]['hideOnMain'])) {
+				$exclude[$altNamer] = "\"".$altNamer."\"";
 			} else {
-				$createAutoField[$i] = array("altName" => $first.$altNameField.$sufix, "name" => $altName.$sufix, "type" => $data[$i]['type']);
+				$excludeLang[$altNamer] = "\"".$data[$i]['orAltName'].'".lang::get_lg()';
+			}
+			if(isset($data[$forAutoField]['loadDB'])) {
+				$createAutoField[$forAutoField] = array("altName" => $altNamer, "name" => $altName.$sufix, "type" => $data[$i]['type'], "loadDB" => $data[$i]['loadDB'], "selectedData" => "dataOnTable");
+			} else {
+				$createAutoField[$forAutoField] = array("altName" => $altNamer, "name" => $altName.$sufix, "type" => $data[$i]['type']);
 			}
 		}
 		for($l=0;$l<sizeof($langSupport);$l++) {
-			lang::Update($langSupport[$l], $first.$altNameField.$sufix, $data[$i]['name']."&nbsp;".$sufix);
-		}
-		if(isset($data[$i]['hideOnMain'])) {
-			$exclude[$first.$altNameField] = "\"".$first.$altNameField.$sufix."\"";
+			lang::Update($langSupport[$l], $altNamer, $data[$i]['name']."&nbsp;".$sufix);
 		}
 	}
 
@@ -322,14 +352,25 @@ class Creator extends Core {
 			$data = array_values($data);
 			$listShild = $universalAttributes = $universalAttributesShow = $universalAttributesTakeAdd = $universalAttributesTakeEdit = "";
 			$exclude = array();
+			$excludeLang = array();
 			$createAutoField = array();
 			$fieldsForTranslate = array();
 			$data = array_values($data);
 			for($i=0;$i<sizeof($data);$i++) {
-				$this->workInField($data, $listShild, $universalAttributesTakeAdd, $universalAttributesTakeEdit, $universalAttributes, $universalAttributesShow, $createAutoField, $exclude, $fieldsForTranslate, $first, $i, $langSupport);
+				$this->workInField($data, $listShild, $universalAttributesTakeAdd, $universalAttributesTakeEdit, $universalAttributes, $universalAttributesShow, $createAutoField, $exclude, $excludeLang, $fieldsForTranslate, $first, $i, $langSupport);
+			}
+			$prefix = "";
+			if(defined("PREFIX_DB")) {
+				$pr = PREFIX_DB;
+				if(!empty($pr)) {
+					$prefix = PREFIX_DB;
+				}
 			}
 			$exclude = array_unique($exclude);
 			$exclude = array_values($exclude);
+			$excludeLang = array_unique($excludeLang);
+			$excludeLang = array_values($excludeLang);
+			$exclude = array_merge($exclude, $excludeLang);
 			$archer = str_replace("{universalAttributes}", trim($universalAttributes), $archer);
 			$archer = str_replace("{universalAttributesShow}", trim($universalAttributesShow), $archer);
 			$archer = str_replace("{universalAttributesTakeAdd}", trim($universalAttributesTakeAdd), $archer);
@@ -337,6 +378,7 @@ class Creator extends Core {
 			$archer = str_replace("{listShild}", trim($listShild), $archer);
 			$archer = str_replace("{exclude}", implode(", ", $exclude), $archer);
 			$archer = str_replace("{altTitle}", $altTitleUp, $archer);
+			$archer = str_replace("{title}", (!empty($prefix) ? $prefix : "").$altTitle, $archer);
 			if(!is_writeable(PATH_MODULES)) {
 				@chmod(PATH_MODULES, 077);
 			}
@@ -395,13 +437,6 @@ class Creator extends Core {
 			if(!$dev) {
 				if(file_exists(PATH_MODELS."Model".$altTitleUp.".".ROOT_EX)) { unlink(PATH_MODELS."Model".$altTitleUp.".".ROOT_EX); }
 				file_put_contents(PATH_MODELS."Model".$altTitleUp.".".ROOT_EX, $model);
-			}
-			$prefix = "";
-			if(defined("PREFIX_DB")) {
-				$pr = PREFIX_DB;
-				if(!empty($pr)) {
-					$prefix = PREFIX_DB;
-				}
 			}
 			$edit = db::getTables(true, true);
 			$dbName = $prefix.$altTitle;
@@ -474,6 +509,20 @@ class Creator extends Core {
 						}
 					}
 				}
+				$rename = $this->changeFieldByName($data);
+				foreach($forUpdate['add'] as $k => $v) {
+					if(isset($rename[$k])) {
+						$v['orName'] = $rename[$k];
+						$forUpdate['edit'][$rename[$k]] = $v;
+						unset($forUpdate['add'][$k]);
+					}
+				}
+				$rename = array_flip($rename);
+				foreach($forUpdate['remove'] as $k => $v) {
+					if(isset($rename[$v['altName']])) {
+						unset($forUpdate['remove'][$v['altName']]);
+					}
+				}
 				if(sizeof($forUpdate['add'])>0) {
 					$fall = $this->getB($forUpdate['add'], false);
 					$true = $this->getB($forUpdate['add'], true);
@@ -535,6 +584,16 @@ class Creator extends Core {
 		$this->Prints("Creator/CreatorEdit");
 	}
 
+	function changeFieldByName($data) {
+		$rename = array();
+		for($i=1;$i<sizeof($data);$i++) {
+			if(isset($data[$i]['beforeAltName']) && $data[$i]['beforeAltName']!=$data[$i]['altName']) {
+				$rename[$data[$i]['altName']] = $data[$i]['beforeAltName'];
+			}
+		}
+		return $rename;
+	}
+
 	function removePrefix($data, $prefix) {
 		return str_replace($prefix, "", $data);
 	}
@@ -565,6 +624,14 @@ class Creator extends Core {
 				$datas = $datas[$name];
 				$type = (isset($datas[$key]) ? $datas[$key] : false);
 			}
+		} else if($type=="multiple-array" && $struct['selectedData']=="dataOnTable") {
+			$name = $struct['loadDB']['name'];
+			$key = $struct['loadDB']['key'];
+			$datas = db::getTables(true, true, true);
+			$type = false;
+			if(isset($datas[$name])) {
+				$type = "varchar".($isDB ? "(255)" : "");
+			}
 		} else if($type=="enum" || ($type=="array" && $struct['selectedData']=="dataOnInput")) {
 			$type = "enum".($isDB ? "(".implode(",", array_map(array($this, "addSlash"), $struct['field'])).")" : "");
 		} else if($type=="int") {
@@ -582,6 +649,10 @@ class Creator extends Core {
 		} else if($type=="image") {
 			$type = "varchar".($isDB ? "(255)" : "");
 		} else if($type=="imageArray") {
+			$type = "longtext";
+		} else if($type=="imageAccess") {
+			$type = "varchar".($isDB ? "(255)" : "");
+		} else if($type=="imageArrayAccess") {
 			$type = "longtext";
 		} else if($type=="file") {
 			$type = "varchar".($isDB ? "(255)" : "");

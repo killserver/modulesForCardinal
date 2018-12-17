@@ -27,8 +27,9 @@
 }
 .uk-nestable-placeholder { float: left; float: left; width: 97%; margin-left: 15px; margin-right: 15px; }
 .collapse { margin-top: 2rem; margin-bottom: 2rem; }
-.togglePanel { cursor: pointer; background: #eeeeee; padding: 0px; margin-left: 15px; margin-right: 15px; width: 96.5%; }
+.togglePanel { cursor: pointer; background: #eeeeee; padding: 0px; margin-left: 15px; margin-right: 0; width: calc(100% - 30px); }
 .errorInput { border: 1px solid red; animation: errorInput 300ms ease-in-out 1500ms infinite; }
+.removeBtn { position: absolute; top: 0px; right: 15px; z-index: 10; padding-top: 3.5px; padding-bottom: 3.5px; }
 @keyframes errorInput {
     0% {
         border-color: rgba(255,0,0,0);
@@ -50,17 +51,21 @@
 				<div class="col-xs-12 togglePanel" data-toggle="{id}">
 					<div class="uk-nestable-handle"></div>
 					<div data-nestable-action="toggle"></div>
-					<div class="list-label hereTitle" data-hereTitle-id="{id}">Undefined</div>
-					<div class="pull-right">
-						<a href="#" class="btn btn-icon btn-red btn-single btn-sm" data-id="{id}" tabindex="-1"><i class="fa-remove"></i></a>
-					</div>
+					<div class="list-label hereTitle" data-hereTitle-id="{id}">{L_"Не введено"}</div>
 				</div>
+				<a href="#" class="btn btn-icon btn-red btn-single btn-sm removeBtn remove" data-id="{id}" tabindex="-1"><i class="fa-remove"></i></a>
 				<div class="col-xs-12 collapse form-horizontal" data-panel="{id}">
 					<div class="col-xs-12">
 						<div class="form-group">
 							<label class="col-xs-12 col-md-3 control-label">Название поля</label>
 							<div class="col-xs-12 col-md-9">
 								<input type="text" class="form-control title" name="data[{id}][name]" placeholder="Введите название" required="required" data-input-id="{id}">
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-xs-12 col-md-3 control-label">Альтернативное название поля</label>
+							<div class="col-xs-12 col-md-9">
+								<input type="text" class="form-control altName" name="data[{id}][altName]" placeholder="Введите альтернативное название" required="required" data-needTranslate="true">
 							</div>
 						</div>
 						<br>
@@ -84,11 +89,15 @@
 									</optgroup>
 									<optgroup label="Картинки">
 										<option value="image">Загрузка картинки</option>
+										<option value="imageAccess">Загрузка картинки (с доступом к библиотеке)</option>
 										<option value="imageArray">Загрузка нескольких картинок</option>
+										<option value="imageArrayAccess">Загрузка нескольких картинок (с доступом к библиотеке)</option>
 									</optgroup>
 									<optgroup label="Файлы">
 										<option value="file">Загрузка файла</option>
+										<option value="fileAccess">Загрузка файла (с доступом к библиотеке)</option>
 										<option value="fileArray">Загрузка нескольких файлов</option>
+										<option value="fileArrayAccess">Загрузка нескольких файлов (с доступом к библиотеке)</option>
 									</optgroup>
 									<optgroup label="Дата/время">
 										<option value="date">Поле для ввода даты</option>
@@ -98,6 +107,7 @@
 									</optgroup>
 									<optgroup label="Разное">
 										<option value="array">Массив данных</option>
+										<option value="multiple-array">Массив данных с возможностью выбора нескольких значений</option>
 										<option value="hidden">Скрытое поле</option>
 										<option value="radio">Радио-группа</option>
 										<option value="linkToAdmin">Ссылка на другой раздел</option>
@@ -106,6 +116,7 @@
 							</div>
 						</div>
 						<div class="createAltName" data-altname="{id}"></div>
+						<div class="col-xs-12 databased hide" data-hideId="{id}"></div>
 						<div class="col-xs-12 selectedInput hide" data-selectedInput="{id}"></div>
 						<div class="form-group">
 							<label class="col-xs-12 col-md-3 control-label">Подсказка</label>
@@ -123,13 +134,18 @@
 									</label>
 								</div>
 								<div class="checkbox">
+									<label class="supportLang">
+										<input type="checkbox" name="data[{id}][supportLang]" class="cbr cbr-primary" value="yes" data-id="{id}">Поддержка мультиязычности
+									</label>
+								</div>
+								<div class="checkbox">
 									<label class="altname">
 										<input type="checkbox" name="data[{id}][translate]" class="cbr cbr-primary" value="yes" data-id="{id}">Создать альтернативное имя
 									</label>
 								</div>
 								<div class="checkbox">
-									<label class="supportLang">
-										<input type="checkbox" name="data[{id}][supportLang]" class="cbr cbr-primary" value="yes" data-id="{id}">Поддержка мультиязычности
+									<label class="required">
+										<input type="checkbox" name="data[{id}][required]" class="cbr cbr-primary" value="yes" data-id="{id}">Обязательное поле
 									</label>
 								</div>
 								<div class="checkbox">
@@ -139,7 +155,6 @@
 								</div>
 							</div>
 						</div>
-						<div class="col-xs-12 databased hide" data-hideId="{id}"></div>
 						<div class="col-xs-12 col-md-2">
 							<a href="#" class="btn btn-red remove" data-id="{id}" tabindex="-1">{L_"Удалить"}</a>
 						</div>
@@ -217,6 +232,94 @@
 	var struct = document.getElementById("json").innerHTML;
 	var iInputDB = 0;
 	var i = 0;
+	function translater(val) {
+		"function"!=typeof Object.assign&&(Object.assign=function(n){if(null==n)throw new TypeError("Cannot convert undefined or null to object");for(var r=Object(n),t=1;t<arguments.length;t++){var e=arguments[t];if(null!=e)for(var o in e)e.hasOwnProperty(o)&&(r[o]=e[o])}return r});
+		var _preset = "{C_lang}";
+		var _firstLetterAssociations = {
+			"а": "a",
+			"б": "b",
+			"в": "v",
+			"ґ": "g",
+			"г": "g",
+			"д": "d",
+			"е": "e",
+			"ё": "e",
+			"є": "ye",
+			"ж": "zh",
+			"з": "z",
+			"и": "i",
+			"і": "i",
+			"ї": "yi",
+			"й": "i",
+			"к": "k",
+			"л": "l",
+			"м": "m",
+			"н": "n",
+			"о": "o",
+			"п": "p",
+			"р": "r",
+			"с": "s",
+			"т": "t",
+			"у": "u",
+			"ф": "f",
+			"х": "h",
+			"ц": "c",
+			"ч": "ch",
+			"ш": "sh",
+			"щ": "sh'",
+			"ъ": "",
+			"ы": "i",
+			"ь": "",
+			"э": "e",
+			"ю": "yu",
+			"я": "ya",
+		};
+		if(_preset === "uk") {
+			Object.assign(_firstLetterAssociations, {
+				"г": "h",
+				"и": "y",
+				"й": "y",
+				"х": "kh",
+				"ц": "ts",
+				"щ": "shch",
+				"'": "",
+				"’": "",
+				"ʼ": "",
+			});
+		}
+		var _associations = Object.assign({}, _firstLetterAssociations);
+		if(_preset === "uk") {
+			Object.assign(_associations, {
+				"є": "ie",
+				"ї": "i",
+				"й": "i",
+				"ю": "iu",
+				"я": "ia",
+			});
+		}
+		function transform(input, spaceReplacement) {
+			if(!input) {
+				return "";
+			}
+			var newStr = "";
+			for(var i=0;i<input.length;i++) {
+				var isUpperCaseOrWhatever = input[i] === input[i].toUpperCase();
+				var strLowerCase = input[i].toLowerCase();
+				if(strLowerCase === " ") {
+					newStr += spaceReplacement;
+					continue;
+				}
+				var newLetter = _preset === "uk" && strLowerCase === "г" && i > 0 && input[i - 1].toLowerCase() === "з" ? "gh" : (i === 0 ? _firstLetterAssociations : _associations)[strLowerCase];
+				if("undefined" === typeof newLetter) {
+					newStr += isUpperCaseOrWhatever ? strLowerCase.toUpperCase() : strLowerCase;
+				} else {
+					newStr += isUpperCaseOrWhatever ? newLetter.toUpperCase() : newLetter;
+				}
+			}
+			return newStr;
+		}
+		return transform(val, "");
+	}
 	jQuery(document).ready(function($) {
 		if(struct.length>0) {
 			struct = JSON.parse(struct);
@@ -241,7 +344,10 @@
 					tpl = tpl.replace(/\{depth\}/g, (typeof(dataField.depth)==="undefined" ? "0" : dataField.depth));
 					jQuery(".creator").append(tpl);
 					jQuery("[data-field='"+i+"'] .hereTitle").html(dataField.name);
+					jQuery("[data-field='"+i+"']").prepend("<input type=\"hidden\" name=\"data["+i+"][beforeAltName]\" value=\""+dataField.altName+"\">");
 					jQuery("[data-field='"+i+"']").find(".title").val(dataField.name);
+					jQuery("[data-field='"+i+"']").find(".altName").val(dataField.altName);
+					jQuery("[data-field='"+i+"']").find(".altName").attr("data-needTranslate", "false");
 					jQuery("[data-field='"+i+"']").find(".placeholder").val(dataField.placeholder);
 					jQuery("[data-field='"+i+"']").find("select").val(dataField.type);
 					if(typeof(dataField.hideOnMain)!=="undefined" && dataField.hideOnMain=="yes") {
@@ -249,6 +355,9 @@
 					}
 					if(typeof(dataField.supportLang)!=="undefined" && dataField.supportLang=="yes") {
 						jQuery("[data-field='"+i+"']").find("label.supportLang input[type='checkbox']").attr("checked", "checked");
+					}
+					if(typeof(dataField.required)!=="undefined" && dataField.required=="yes") {
+						jQuery("[data-field='"+i+"']").find("label.required input[type='checkbox']").attr("checked", "checked");
 					}
 					if(typeof(dataField.selectedData)!=="undefined" && dataField.selectedData=="dataOnInput") {
 						var tmp = jQuery(".databaseSelectRadio").html();
@@ -340,6 +449,26 @@
 				});
 			}
 		}
+		$("body").on("input", ".altName", function() {
+			var regexp = /[^a-zA-Z0-9]/g;
+			if($(this).val().match(regexp)) {
+				$(this).val($(this).val().replace(regexp, ''));
+			}
+		});
+		$("body").on("input", ".altName", function() {
+			$(this).attr("data-needTranslate", "false");
+		});
+		$("body").on("input", ".title", function() {
+			if($(this).parents(".col-xs-12").find(".altName").attr("data-needTranslate")=="true") {
+				$(this).parents(".col-xs-12").find(".altName").val(translater(this.value));
+			}
+		});
+		$("input[required],textarea[required],select[required]").each(function(i, elem) {
+			if($(elem).val()==null || $(elem).val().length==0) {
+				$(elem).parent().parent().parent().parent().addClass("in");
+				$(elem).addClass("errorInput");
+			}
+		});
 	});
 	function selectedDatabaseChange(th) {
 		var id = jQuery(th).parent().parent().parent().parent().attr("data-hideId");
@@ -400,7 +529,12 @@
 	});
 	jQuery(".creator").on("change", ".selected", function() {
 		var id = jQuery(this).attr("data-selectId");
-		if(this.value=="array") {
+		if(this.value=="multiple-array") {
+			var tmp = jQuery(".databaseSelectRadio").html();
+			tmp = tmp.replace(/\{id\}/g, id);
+			jQuery("[data-hideId='"+id+"']").removeClass('hide').html(tmp);
+			cbr_replace();
+		} else if(this.value=="array") {
 			var tmp = jQuery(".databaseSelectRadio").html();
 			tmp = tmp.replace(/\{id\}/g, id);
 			jQuery("[data-hideId='"+id+"']").removeClass('hide').html(tmp);
@@ -436,6 +570,7 @@
 		jQuery(".creator").append(tpl);
 		cbr_replace();
 		jQuery("input[type='submit']").removeAttr("disabled");
+		
 		return false;
 	});
 	jQuery("body").on("click", '.iconSelect', function() {
@@ -502,12 +637,6 @@
 	jQuery("body").on("input change insert", "[data-input-id]", function() {
 		var id = jQuery(this).attr("data-input-id");
 		jQuery("[data-hereTitle-id='"+id+"']").html(this.value);
-	});
-	jQuery("input[required],textarea[required],select[required]").each(function(i, elem) {
-		if(jQuery(elem).val()==null) {
-			jQuery(elem).parent().parent().parent().parent().addClass("in");
-			jQuery(elem).addClass("errorInput");
-		}
 	});
 	jQuery("body").on("click", "input.errorInput,textarea.errorInput,select.errorInput", function() {
 		jQuery(this).removeClass("errorInput");

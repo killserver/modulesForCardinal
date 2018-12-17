@@ -30,7 +30,9 @@ class {altTitle}Archer extends modules {
 	}
 
 	public function RebuildShields($table, $page, $model, $tpl) {
-		{universalAttributesShow}
+		if($model->loadedTable=="{title}") {
+			{universalAttributesShow}
+		}
 		return array($table, $page, $model, $tpl);
 	}
 
@@ -41,7 +43,9 @@ class {altTitle}Archer extends modules {
 
 	private static $cache = array();
 	public static function RebuildShield($row) {
-		{listShild}
+		if($model->loadedTable=="{title}") {
+			{listShild}
+		}
 		return array($row);
 	}
 
@@ -50,22 +54,30 @@ class {altTitle}Archer extends modules {
 	}
 
 	public static function RebuildEditModel($model, &$exc = array()) {
-		{universalAttributes}
+		if($model->loadedTable=="{title}") {
+			{universalAttributes}
+		}
 		return array($model);
 	}
 
 	function RebuildAddModel($model, &$exc = array()) {
-		{universalAttributes}
+		if($model->loadedTable=="{title}") {
+			{universalAttributes}
+		}
 		return array($model);
 	}
 
 	function RebuildTakeAddModel($model, $id, $countCall) {
-		{universalAttributesTakeAdd}
+		if($model->loadedTable=="{title}") {
+			{universalAttributesTakeAdd}
+		}
 		return array($model, $id, $countCall);
 	}
 
 	function RebuildTakeEditModel($model, $id, $countCall) {
-		{universalAttributesTakeEdit}
+		if($model->loadedTable=="{title}") {
+			{universalAttributesTakeEdit}
+		}
 		return array($model, $id, $countCall);
 	}
 	
