@@ -1,0 +1,18 @@
+function {method}($lang, $langDB) {
+	$tmp = $this->init_templates();
+	$model = $this->loadModel("{method}");
+	$model->Where("{id}", Route::param("item"));
+	$model = execEvent("detail_{method}", $model);
+	$model = $model->Select();
+	$model = $model->getArray();
+	$model = $this->getLangData($model, $langDB);
+	$tmp->assign_vars($model);
+	if($tmp->check_exists("{method}_detail.default")) {
+		$tpl = "{method}_detail.default";
+	} else {
+		$tpl = "{method}_detail";
+	}
+	$tpl = $tmp->completed_assign_vars($tpl);
+	$tmp->completed($tpl);
+	$tmp->display();
+}

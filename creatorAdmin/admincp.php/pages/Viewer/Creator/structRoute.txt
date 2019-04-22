@@ -1,0 +1,5 @@
+Route::set("{name}", "(<lang>/){route}")->defaults(array(
+	"class" => __CLASS__,
+	"method" => "{method}",
+	"lang" => lang::get_lg(),
+));

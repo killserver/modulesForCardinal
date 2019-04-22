@@ -1,3 +1,6 @@
+[if {db_connected}==false]<p class="well text-center">
+	<span class="text-primary">Внимание! Подключение к базе данных не обнаружено. Все действия будут иметь подготовительный характер!</span>
+</p>[/if {db_connected}==false]
 <center><a href="./?pages=Creator&mod=Add" class="btn btn-secondary">{L_add}</a></center>
 <form method="post" action="./?pages=Creator&mod=MultiAction">
 	<table id="example-1" class="table table-striped table-bordered" cellspacing="0" width="100%">
@@ -54,6 +57,7 @@ jQuery(document).ready(function() {
 				"sortDescending": ": {L_"активировать для сортировки столбца по убыванию"}"
 			}
 		},
+		responsive: true,
 		aLengthMenu: [
 			[10, 25, 50, 100, -1], [10, 25, 50, 100, "{L_"Всё"}"]
 		],
@@ -104,3 +108,19 @@ function confirmDelete() {
 	}
 }
 </script>
+<style type="text/css">
+.well {
+	background-color: #ffffff;
+	box-shadow: none;
+	position: relative;
+}
+.well:before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 100%;
+	width: 4px;
+	background: #e7bb1a;
+}
+</style>

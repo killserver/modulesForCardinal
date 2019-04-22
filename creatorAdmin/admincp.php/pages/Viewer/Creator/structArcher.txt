@@ -22,30 +22,34 @@ class {altTitle}Archer extends modules {
 			KernelArcher::callback("TakeDelete", array(&$this, "RebuildTakeDelete"));
 			KernelArcher::callback("TakeAddModel", array(&$this, "RebuildTakeAddModel"));
 			KernelArcher::callback("TakeEditModel", array(&$this, "RebuildTakeEditModel"));
+		} else {
+			{router}
 		}
 	}
+
+	{router_method}
 
 	public function RebuildTakeDelete($model, $models) {
 		return array("model" => $model, "models" => $models);
 	}
 
 	public function RebuildShields($table, $page, $model, $tpl) {
-		if($model->loadedTable=="{title}") {
+		if($model->loadedTable()=="{title}") {
 			{universalAttributesShow}
 		}
 		return array($table, $page, $model, $tpl);
 	}
 
 	public function RebuildShow($table, $tpl, $model) {
-		$model->SetTable($table);
+		if($model->loadedTable()=="{title}") {
+			$model->SetTable($table);
+		}
 		return array($table, $tpl, $model);
 	}
 
 	private static $cache = array();
 	public static function RebuildShield($row) {
-		if($model->loadedTable=="{title}") {
-			{listShild}
-		}
+		{listShild}
 		return array($row);
 	}
 
@@ -54,28 +58,28 @@ class {altTitle}Archer extends modules {
 	}
 
 	public static function RebuildEditModel($model, &$exc = array()) {
-		if($model->loadedTable=="{title}") {
+		if($model->loadedTable()=="{title}") {
 			{universalAttributes}
 		}
 		return array($model);
 	}
 
 	function RebuildAddModel($model, &$exc = array()) {
-		if($model->loadedTable=="{title}") {
+		if($model->loadedTable()=="{title}") {
 			{universalAttributes}
 		}
 		return array($model);
 	}
 
 	function RebuildTakeAddModel($model, $id, $countCall) {
-		if($model->loadedTable=="{title}") {
+		if($model->loadedTable()=="{title}") {
 			{universalAttributesTakeAdd}
 		}
 		return array($model, $id, $countCall);
 	}
 
 	function RebuildTakeEditModel($model, $id, $countCall) {
-		if($model->loadedTable=="{title}") {
+		if($model->loadedTable()=="{title}") {
 			{universalAttributesTakeEdit}
 		}
 		return array($model, $id, $countCall);

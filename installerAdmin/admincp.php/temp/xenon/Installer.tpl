@@ -207,7 +207,10 @@
 					toastr.error("{L_"Модуль не был удален, попробуйте позже"}");
 				}).done(function(data) {
 					jQuery(th).parent().parent().parent().remove(600);
-					toastr.info("{L_"Удален модуль"} \""+jQuery(th).attr("data-action")+"\"");
+					toastr.info("{L_"Удален модуль"} \""+jQuery(th).attr("data-action")+"\". {L_"Через 3 секунды произойдёт обновление страницы"}");
+					setTimeout(function() {
+						window.location.reload();
+					}, 3000);
 				});
 			} else if(jQuery(this).hasClass('install')) {
 				var th = this;
@@ -219,7 +222,10 @@
 					jQuery.post("./?pages=Installer&install="+jQuery(th).attr("data-action"), function(data) {}).fail(function(data) {
 						toastr.error("{L_"Модуль не был установлен, попробуйте позже"}");
 					}).done(function(data) {
-						toastr.info("{L_"Установлен новый модуль"}");
+						toastr.info("{L_"Установлен новый модуль"}. {L_"Через 3 секунды произойдёт обновление страницы"}");
+						setTimeout(function() {
+							window.location.reload();
+						}, 3000);
 					});
 				});
 			} else if(jQuery(this).hasClass('update')) {
@@ -236,7 +242,7 @@
 					});
 				});
 			} else if(jQuery(this).hasClass('installed')) {
-				toastr.info("{L_"Модуль успешно запущен и работает из нарицаний"}");
+				toastr.info("{L_"Модуль успешно запущен и работает без нарицаний"}");
 			} else if(jQuery(this).hasClass('buy')) {
 				jQuery("#modal-4 .modal-title").html("Приобретение "+jQuery(this).attr("data-action"));
 				var tmp = '<form class="Paymentform" method="POST" action="https://api.privatbank.ua/p24api/ishop"><input type="hidden" name="amt" value="{price}" /><input type="hidden" name="ccy" value="UAH" /><input type="hidden" name="merchant" value="1234567890" /><input type="hidden" name="order" value="'+jQuery(this).attr("data-action")+'" /><input type="hidden" name="details" value="'+jQuery(this).attr("data-action")+'" /><input type="hidden" name="ext_details" value="'+jQuery(this).attr("data-action")+'" /><input type="hidden" name="pay_way" value="privat24" /><input type="hidden" name="return_url" value="" /><input type="hidden" name="server_url" value="" /><button type="submit" class="Privat24">Приват 24</button></form>';

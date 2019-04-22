@@ -3,6 +3,7 @@
 class Creator extends Core {
 
 	function __construct() {
+		templates::assign_var("db_connected", db::connected());
 		if(isset($_GET['list'])) {
 			$file = file_get_contents(ROOT_PATH.ADMINCP_DIRECTORY.DS."assets".DS.config::Select("skins", "admincp").DS."css".DS."fonts".DS."fontawesome".DS."css".DS."font-awesome.css");
 			preg_match_all("#\.fa-(.+?)\:before#", $file, $arr);
@@ -168,6 +169,9 @@ class Creator extends Core {
 			$data2 = array_values($data2);
 			$all++;
 		}
+		if(sizeof($data2)>0) {
+			$res = array_merge($res, $data2);
+		}
 		$resC = array();
 		for($i=0;$i<sizeof($res);$i++) {
 			$resC[$res[$i]['altName']] = $res[$i];
@@ -176,7 +180,7 @@ class Creator extends Core {
 		return $res;
 	}
 
-	function workInField(&$data, &$listShild, &$universalAttributesTakeAdd, &$universalAttributesTakeEdit, &$universalAttributes, &$universalAttributesShow, &$createAutoField, &$exclude, &$excludeLang, &$fieldsForTranslate, $first, $i, $langSupport, $sufix = "", $ignoreNotFirst = true, $supportLang = false) {
+	function workInField(&$data, &$listShild, &$universalAttributesTakeAdd, &$universalAttributesTakeEdit, &$universalAttributes, &$universalAttributesShow, &$createAutoField, &$exclude, &$excludeLang, &$fieldsForTranslate, &$altTranslateField, $first, $i, $langSupport, $sufix = "", $ignoreNotFirst = true, $supportLang = false, $z = 0) {
 		if(isset($data[$i]['altName']) && !empty($data[$i]['altName'])) {
 			$altNameField = nucfirst($data[$i]['altName']);
 		} else {
@@ -188,30 +192,51 @@ class Creator extends Core {
 			$supportLang = true;
 			unset($data[$i]['supportLang']);
 			for($z=0;$z<sizeof($upper);$z++) {
-				$this->workInField($data, $listShild, $universalAttributesTakeAdd, $universalAttributesTakeEdit, $universalAttributes, $universalAttributesShow, $createAutoField, $exclude, $excludeLang, $fieldsForTranslate, $first, $i, $langSupport, $upper[$z], ($z===0), $supportLang);
+				$this->workInField($data, $listShild, $universalAttributesTakeAdd, $universalAttributesTakeEdit, $universalAttributes, $universalAttributesShow, $createAutoField, $exclude, $excludeLang, $fieldsForTranslate, $altTranslateField, $first, $i, $langSupport, $upper[$z], ($z===0), $supportLang, $z);
 			}
 			return;
+		}
+		if(!isset($data[$i]['orAltName'])) {
+			$data[$i]['orAltName'] = $data[$i]['altName'];
+		} else {
+			$data[$i]['altName'] = $data[$i]['orAltName'];
 		}
 		if(!(isset($data[$i]['altName']) && !empty($data[$i]['altName']))) {
 			$data[$i]['altName'] = $first.$altNameField;
 		}
-		$data[$i]['orAltName'] = $data[$i]['altName'];
 		$data[$i]['altName'] .= $sufix;
 		$altNamer = $data[$i]['altName'];
 		$forAutoField = ($i);
-		execEventRef("creator_work_in_field", $data, $listShild, $universalAttributesTakeAdd, $universalAttributesTakeEdit, $universalAttributes, $universalAttributesShow, $createAutoField, $exclude, $fieldsForTranslate, $first, $i, $langSupport, $sufix, $ignoreNotFirst, $supportLang);
+		if(!empty($sufix) && $z>0) {
+			$forAutoField += $z;
+		}
+		execEventRef("creator_work_in_field", $data, $listShild, $universalAttributesTakeAdd, $universalAttributesTakeEdit, $universalAttributes, $universalAttributesShow, $createAutoField, $exclude, $fieldsForTranslate, $altTranslateField, $first, $i, $langSupport, $sufix, $ignoreNotFirst, $supportLang);
+		if(!isset($data[$i]['type'])) {
+			$data[$i]['type'] = "varchar";
+		}
 		if($data[$i]['type']=="image") {
 			$listShild .= 'if(isset($row[\''.$altNamer.'\'])) { $row[\''.$altNamer.'\'] = "<img src=\"{C_default_http_local}".$row[\''.$altNamer.'\']."\" width=\"200\">"; }'.PHP_EOL;
 		}
 		$altName = "";
 		if(isset($data[$i]['alttitle'])) {
 			$altName = $data[$i]['alttitle'];
-			$altTranslateField = nucfirst(ToTranslit($data[$i]['alttitle'], false, false, true));
-		} else if(isset($data[$i]['name'])) {
+			$altTranslateField = ToTranslit($data[$i]['alttitle'], false, false, true);
+
+
+			$universalAttributes .= '$model->setAttribute(\''.$altTranslateField.'\', \'Type\', \'hidden\');'.PHP_EOL;
+			$universalAttributesTakeAdd .= 'if(property_exists($model, "'.$altTranslateField.'")) { $model->'.$altTranslateField.' = ToTranslit($model->'.$altNamer.'); }'.PHP_EOL;
+			$universalAttributesTakeEdit .= 'if(property_exists($model, "'.$altTranslateField.'") && empty($model->'.$altTranslateField.')) { $model->'.$altTranslateField.' = ToTranslit($model->'.$altNamer.'); }'.PHP_EOL;
+			$createAutoField[$forAutoField] = array("altName" => $altTranslateField, "name" => $altName, "type" => "hidden");//$data[$i]['type']
+			$forAutoField++;
+			$exclude[$altTranslateField] = "\"".$altTranslateField."\"";
+			unset($data[$i]['alttitle']);
+		}
+		if(isset($data[$i]['name'])) {
 			$altName = $data[$i]['name'];
 			$altTranslateField = nucfirst(ToTranslit($data[$i]['name'], false, false, true));
 		}
 		$translatedFieldWithSx = $first.$altTranslateField.$sufix;
+		$universalAttributes .= '$model->setAttribute(\''.$altNamer.'\', \'default\', \''.htmlspecialchars($data[$i]['default']).'\');'.PHP_EOL;
 		if($supportLang === true) {
 			$universalAttributes .= '$model->setAttribute(\''.$altNamer.'\', \'Attr\', \'supportLang\');'.PHP_EOL;
 			$universalAttributes .= '$model->setAttribute(\''.$altNamer.'\', \'Lang\', \''.$sufix.'\');'.PHP_EOL;
@@ -266,7 +291,7 @@ class Creator extends Core {
 		if($data[$i]['type']!="array" && $data[$i]['type']!="enum") {
 			$universalAttributes .= '$model->setAttribute(\''.$altNamer.'\', \'Type\', \''.$data[$i]['type'].'\');'.PHP_EOL;
 		}
-		if(isset($data[$i]['translate']) && $ignoreNotFirst===true) {
+		if(isset($data[$i]['translate'])) {
 			$universalAttributes .= '$model->setAttribute(\''.$first.$altTranslateField.'\', \'Type\', \'hidden\');'.PHP_EOL;
 			$universalAttributesTakeAdd .= 'if(property_exists($model, "'.$first.$altTranslateField.'")) { $model->'.$first.$altTranslateField.' = ToTranslit($model->'.$altNamer.'); }'.PHP_EOL;
 			$universalAttributesTakeEdit .= 'if(property_exists($model, "'.$first.$altTranslateField.'") && empty($model->'.$first.$altTranslateField.')) { $model->'.$first.$altTranslateField.' = ToTranslit($model->'.$altNamer.'); }'.PHP_EOL;
@@ -276,13 +301,13 @@ class Creator extends Core {
 		} else if(isset($data[$i]['hideOnMain'])) {
 			$exclude[$first.$altNameField] = "\"".$altNamer."\"";
 		}
-		if($sufix!=="" && $ignoreNotFirst===true) {
-			if(isset($data[$i]['hideOnMain'])) {
+		if($sufix!=="") {
+			if(isset($data[$i]['hideOnMain']) || $ignoreNotFirst!==true) {
 				$exclude[$altNamer] = "\"".$altNamer."\"";
 			} else {
 				$excludeLang[$altNamer] = "\"".$data[$i]['orAltName'].'".lang::get_lg()';
 			}
-			if(isset($data[$forAutoField]['loadDB'])) {
+			if(isset($data[$i]['loadDB'])) {
 				$createAutoField[$forAutoField] = array("altName" => $altNamer, "name" => $altName.$sufix, "type" => $data[$i]['type'], "loadDB" => $data[$i]['loadDB'], "selectedData" => "dataOnTable");
 			} else {
 				$createAutoField[$forAutoField] = array("altName" => $altNamer, "name" => $altName.$sufix, "type" => $data[$i]['type']);
@@ -329,7 +354,7 @@ class Creator extends Core {
 			if(!is_writeable(PATH_MODULES)) {
 				@chmod(PATH_MODULES, 077);
 			}
-			$title = $icon = "";
+			$title = $icon = $type_module = $router = $router_method = $route_link = $route_main = $route_sub = "";
 			if(isset($_POST['data']['title'])) {
 				$title = $_POST['data']['title'];
 				unset($_POST['data']['title']);
@@ -338,14 +363,37 @@ class Creator extends Core {
 				$icon = $_POST['data']['icon'];
 				unset($_POST['data']['icon']);
 			}
+			if(isset($_POST['data']['type_module'])) {
+				$type_module = $_POST['data']['type_module'];
+				unset($_POST['data']['type_module']);
+			}
+			if(isset($_POST['data']['route_link'])) {
+				$route_link = $_POST['data']['route_link'];
+				if(isset($_POST['data'][$route_link])) {
+					$_POST['data'][$route_link]['translate'] = "1";
+				}
+				unset($_POST['data']['route_link']);
+			}
+			if(isset($_POST['data']['route_main'])) {
+				$route_main = $_POST['data']['route_main'];
+				unset($_POST['data']['route_main']);
+			}
+			if(isset($_POST['data']['route_sub'])) {
+				$route_sub = $_POST['data']['route_sub'];
+				unset($_POST['data']['route_sub']);
+			}
 			$_POST['data'] = array_values($_POST['data']);
-			$_POST['data'] = array_merge($_POST['data'], array("title" => $title, "icon" => $icon));
+			$_POST['data'] = array_merge($_POST['data'], array("title" => $title, "icon" => $icon, "type_module" => $type_module, "route_link" => $route_link, "route_main" => $route_main, "route_sub" => $route_sub));
 			if(!$dev) {
 				if(file_exists($pathForThisModule."file_".$altTitle.".txt")) { unlink($pathForThisModule."file_".$altTitle.".txt"); }
 				file_put_contents($pathForThisModule."file_".$altTitle.".txt", json_encode($_POST));
 			}
 			unset($_POST['data']['title']);
 			unset($_POST['data']['icon']);
+			unset($_POST['data']['type_module']);
+			unset($_POST['data']['route_link']);
+			unset($_POST['data']['route_main']);
+			unset($_POST['data']['route_sub']);
 
 			// создание управляющего модуля для указанного раздела
 			$data = $_POST['data'];
@@ -356,8 +404,9 @@ class Creator extends Core {
 			$createAutoField = array();
 			$fieldsForTranslate = array();
 			$data = array_values($data);
+			$altTranslateField = "";
 			for($i=0;$i<sizeof($data);$i++) {
-				$this->workInField($data, $listShild, $universalAttributesTakeAdd, $universalAttributesTakeEdit, $universalAttributes, $universalAttributesShow, $createAutoField, $exclude, $excludeLang, $fieldsForTranslate, $first, $i, $langSupport);
+				$this->workInField($data, $listShild, $universalAttributesTakeAdd, $universalAttributesTakeEdit, $universalAttributes, $universalAttributesShow, $createAutoField, $exclude, $excludeLang, $fieldsForTranslate, $altTranslateField, $first, $i, $langSupport);
 			}
 			$prefix = "";
 			if(defined("PREFIX_DB")) {
@@ -366,11 +415,39 @@ class Creator extends Core {
 					$prefix = PREFIX_DB;
 				}
 			}
+
+			if(!empty($route_main)) {
+				$routers = file_get_contents($pathForReady."structRoute.txt");
+				$routers = str_replace("{name}", "main_".$altTitle, $routers);
+				$route_main = str_replace("%category%", strtolower($altTitle), $route_main);
+				$routers = str_replace("{route}", $route_main, $routers);
+				$routers = str_replace("{method}", "list_".$altTitle, $routers);
+				$router .= $routers;
+				$routers = file_get_contents($pathForReady."structMethodMain.txt");
+				$routers = str_replace("{method}", "list_".$altTitle, $routers);
+				$router_method .= $routers;
+			}
+			if(!empty($route_main)) {
+				$routers = file_get_contents($pathForReady."structRoute.txt");
+				$routers = str_replace("{name}", "sub_".$altTitle, $routers);
+				$route_sub = str_replace("%category%", strtolower($altTitle), $route_sub);
+				$route_sub = str_replace("%item%", "<item>", $route_sub);
+				$routers = str_replace("{route}", $route_sub, $routers);
+				$routers = str_replace("{method}", "details_".$altTitle, $routers);
+				$router .= $routers;
+				$routers = file_get_contents($pathForReady."structMethodDetail.txt");
+				$routers = str_replace("{id}", $altTranslateField, $routers);
+				$routers = str_replace("{method}", "details_".$altTitle, $routers);
+				$router_method .= $routers;
+			}
+
 			$exclude = array_unique($exclude);
 			$exclude = array_values($exclude);
 			$excludeLang = array_unique($excludeLang);
 			$excludeLang = array_values($excludeLang);
 			$exclude = array_merge($exclude, $excludeLang);
+			$archer = str_replace("{router}", trim($router), $archer);
+			$archer = str_replace("{router_method}", trim($router_method), $archer);
 			$archer = str_replace("{universalAttributes}", trim($universalAttributes), $archer);
 			$archer = str_replace("{universalAttributesShow}", trim($universalAttributesShow), $archer);
 			$archer = str_replace("{universalAttributesTakeAdd}", trim($universalAttributesTakeAdd), $archer);

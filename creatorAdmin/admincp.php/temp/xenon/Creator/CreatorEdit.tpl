@@ -1,9 +1,52 @@
+[if {db_connected}==false]<p class="well text-center">
+	<span class="text-primary">Внимание! Подключение к базе данных не обнаружено. Все действия будут иметь подготовительный характер!</span>
+</p>[/if {db_connected}==false]
 <div class="row">
 	<div class="col-md-12">
-		<form role="form" class="form-horizontal formCreator" method="post">
+		<form role="form" class="form-horizontal formCreator" method="post" novalidate="true">
 			<input type="hidden" class="mode" name="mode" value="add">
 			<div class="panel panel-default">
-				<div class="panel-heading"><div class="col-sm-11"><input type="text" class="form-control title" name="data[title]" placeholder="Введите название раздела" required="required"></div><div class="col-sm-1"><div class="iconSelect"><input type="hidden" name="data[icon]" class="icons"><div><i class="" data-icon=""></i></div></div></div></div>
+				<div class="panel-heading">
+					<div class="col-sm-11">
+						<input type="text" class="form-control title" name="data[title]" placeholder="Введите название раздела" required="required">
+					</div>
+					<div class="col-sm-1">
+						<div class="iconSelect">
+							<input type="hidden" name="data[icon]" class="icons">
+							<div><i class="" data-icon=""></i></div>
+						</div>
+					</div>
+					<div class="clearfix" style="margin-bottom: 0.5em;"></div>
+					<div class="col-sm-12">
+						<select class="form-control" name="data[type_module]" required="required">
+							<option value="" selected="selected" disabled="disabled">Выберите тип раздела</option>
+							<option value="route">С роутером без внутренних страниц</option>
+							<option value="route_full">С роутером и внутренними страницами</option>
+							<option value="without_route">Дочерний раздел</option>
+						</select>
+						<br>
+						<div class="text-small route-preview1 hide"></div>
+						<div class="text-small route-preview2 hide"></div>
+					</div>
+					<div class="clearfix routers hide" style="margin-bottom: 0.5em;"></div>
+					<div class="col-sm-12 routers hide">
+						<div class="for-router_custom_link1 hide">
+							<label for="router_custom_link1" class="col-sm-2 control-label text-small">Изменение ссылки основного роутера</label>
+							<div class="col-sm-10">
+								<input type="text" class="form-control route_main input-sm" name="data[route_main]" placeholder="Введите измененный роутер" id="router_custom_link1">
+							</div>
+						</div>
+						<div class="clearfix"></div>
+						<div class="for-router_custom_link2 hide">
+							<label for="router_custom_link2" class="col-sm-2 control-label text-small">Изменение ссылок дочерних роутеров</label>
+							<div class="col-sm-10">
+								<input type="text" class="form-control route_sub input-sm" name="data[route_sub]" placeholder="Введите измененный роутер" id="router_custom_link2">
+							</div>
+						</div>
+						<br>
+						<div class="text-small param-route col-sm-12"></div>
+					</div>
+				</div>
 				<div class="panel-body">
 					<ul class="creator uk-nestable row" data-uk-nestable="{maxDepth:1}"></ul>
 					<input type="submit" class="btn btn-success" value="{L_submit}" disabled="disabled">
@@ -14,33 +57,62 @@
 	</div>
 </div>
 <style type="text/css">
-.iconSelect > div {
-	border: 0.01em solid #aaa;
-	width: 1.8em;
-	height: 1.8em;
-	cursor: pointer;
-}
-.iconSelect > div > i {
-	font-size: 1em;
-	margin: 0.4em auto;
-	display: table;
-}
-.uk-nestable-placeholder { float: left; float: left; width: 97%; margin-left: 15px; margin-right: 15px; }
-.collapse { margin-top: 2rem; margin-bottom: 2rem; }
-.togglePanel { cursor: pointer; background: #eeeeee; padding: 0px; margin-left: 15px; margin-right: 0; width: calc(100% - 30px); }
-.errorInput { border: 1px solid red; animation: errorInput 300ms ease-in-out 1500ms infinite; }
-.removeBtn { position: absolute; top: 0px; right: 15px; z-index: 10; padding-top: 3.5px; padding-bottom: 3.5px; }
-@keyframes errorInput {
-    0% {
-        border-color: rgba(255,0,0,0);
-    }
-    50% {
-        border-color: rgba(255,0,0,1);
-    }
-    100% {
-        border-color: rgba(255,0,0,0);
-    }
-}
+	.iconSelect > div {
+		border: 0.01em solid #aaa;
+		width: 1.8em;
+		height: 1.8em;
+		cursor: pointer;
+	}
+	.iconSelect > div > i {
+		font-size: 1em;
+		margin: 0.4em auto;
+		display: table;
+	}
+	.uk-nestable-placeholder { float: left; float: left; width: 97%; margin-left: 15px; margin-right: 15px; }
+	.collapse { margin-top: 2rem; margin-bottom: 2rem; }
+	.togglePanel { cursor: pointer; background: #eeeeee; padding: 0px; margin-left: 15px; margin-right: 0; width: calc(100% - 30px); }
+	.errorInput { border: 1px solid red; animation: errorInput 300ms ease-in-out 1500ms infinite; }
+	.removeBtn { position: absolute; top: 0px; right: 15px; z-index: 10; padding-top: 3.5px; padding-bottom: 3.5px; }
+	@keyframes errorInput {
+	    0% {
+	        border-color: rgba(255,0,0,0);
+	    }
+	    50% {
+	        border-color: rgba(255,0,0,1);
+	    }
+	    100% {
+	        border-color: rgba(255,0,0,0);
+	    }
+	}
+	.translated {
+		color: #fff;
+	    font-size: 120%;
+	    background: #2c2e2f;
+	    padding: 0.4em 0.4em 0.3em;
+	}
+	.warn-icon {
+		font-size: 1.3em;
+		line-height: normal;
+		color: #F80;
+	}
+	.param-route {
+		display: flex;
+		justify-content: space-around;
+		margin-top: 0.8em;
+	}
+	.param-route input {
+		border: 0;
+		outline: 0;
+		font-weight: bold;
+	}
+	.editor {
+		cursor: pointer;
+	}
+	a.editor {
+		font-size: 1.4em;
+		margin: 0.2em 0.5em;
+		text-decoration: none;
+	}
 </style>
 <script type="text/template" id="tmpCreate">
 	<li class="col-xs-12" data-field="{id}">
@@ -115,9 +187,14 @@
 								</select>
 							</div>
 						</div>
-						<div class="createAltName" data-altname="{id}"></div>
 						<div class="col-xs-12 databased hide" data-hideId="{id}"></div>
 						<div class="col-xs-12 selectedInput hide" data-selectedInput="{id}"></div>
+						<div class="form-group">
+							<label class="col-xs-12 col-md-3 control-label">Значение по-умолчанию</label>
+							<div class="col-xs-12 col-md-9">
+								<textarea class="form-control default onlyText" name="data[{id}][default]" placeholder="Введите подсказку"></textarea>
+							</div>
+						</div>
 						<div class="form-group">
 							<label class="col-xs-12 col-md-3 control-label">Подсказка</label>
 							<div class="col-xs-12 col-md-9">
@@ -139,13 +216,13 @@
 									</label>
 								</div>
 								<div class="checkbox">
-									<label class="altname">
-										<input type="checkbox" name="data[{id}][translate]" class="cbr cbr-primary" value="yes" data-id="{id}">Создать альтернативное имя
-									</label>
-								</div>
-								<div class="checkbox">
 									<label class="required">
 										<input type="checkbox" name="data[{id}][required]" class="cbr cbr-primary" value="yes" data-id="{id}">Обязательное поле
+									</label>
+								</div>
+								<div class="checkbox route_links hide">
+									<label class="route_link">
+										<input type="radio" name="data[route_link]" class="cbr cbr-primary" value="{id}" data-id="{id}">Альтернативное имя для роутера
 									</label>
 								</div>
 								<div class="checkbox">
@@ -155,6 +232,7 @@
 								</div>
 							</div>
 						</div>
+						<div class="createAltName" data-altname="{id}"></div>
 						<div class="col-xs-12 col-md-2">
 							<a href="#" class="btn btn-red remove" data-id="{id}" tabindex="-1">{L_"Удалить"}</a>
 						</div>
@@ -204,10 +282,10 @@
 	</div>
 </script>
 <script type="text/template" class="inputTranslate">
-	<div class="form-group">
+	<div class="form-group alttitle">
 		<label class="col-xs-12 col-md-3 control-label">Альтернативное имя</label>
 		<div class="col-xs-12 col-md-9">
-			<div class="col-sm-12"><input type="text" class="form-control" name="data[{id}][alttitle]" placeholder="" required="required"></div>
+			<input type="text" class="form-control" name="data[{id}][alttitle]" placeholder="" required="required">
 		</div>
 	</div>
 </script>
@@ -316,10 +394,16 @@
 					newStr += isUpperCaseOrWhatever ? newLetter.toUpperCase() : newLetter;
 				}
 			}
+			newStr = newStr.replace(/([a-zA-Z_]+)/g, "$1");
 			return newStr;
 		}
 		return transform(val, "");
 	}
+	var type_module = "";
+	var title_now = "";
+	var sub_title_now = "";
+	window.route_main = "%category%/";
+	window.route_sub = "%category%/%item%/";
 	jQuery(document).ready(function($) {
 		if(struct.length>0) {
 			struct = JSON.parse(struct);
@@ -328,7 +412,14 @@
 				jQuery(".formCreator input[type='hidden'].mode").val("edit");
 				var titles = struct.data.title;
 				jQuery(".formCreator .title").val(titles);
+				jQuery('.formCreator [name="data[type_module]"]').val(struct.data.type_module);
 				delete struct.data.title;
+				delete struct.data.route_link;
+				delete struct.data.type_module;
+				window.route_main = (typeof(struct.data.route_main)!=="undefined" ? struct.data.route_main : "%category%/");
+				window.route_sub = (typeof(struct.data.route_sub)!=="undefined" ? struct.data.route_sub : "%category%/%item%/");
+				delete struct.data.route_main;
+				delete struct.data.route_sub;
 				var icons = struct.data.icon;
 				jQuery(".formCreator .iconSelect > input").val(icons);
 				jQuery(".formCreator .iconSelect > div > i").addClass(icons);
@@ -440,8 +531,9 @@
 						var tpl = tmp;
 						tpl = tpl.replace(/\{id\}/g, i);
 						jQuery(".createAltName[data-altname='"+i+"']").html(tpl);
-						jQuery("[data-field='"+i+"']").find("label.altname input").attr("checked", "checked");
+						jQuery("[data-field='"+i+"']").find("label.route_link input").prop("checked", true);
 						jQuery(".createAltName[data-altname='"+i+"']").find("input").val(dataField.alttitle);
+						sub_title_now = dataField.alttitle;
 						arrTranslate[i] = true;
 					}
 					cbr_replace();
@@ -461,14 +553,53 @@
 		$("body").on("input", ".title", function() {
 			if($(this).parents(".col-xs-12").find(".altName").attr("data-needTranslate")=="true") {
 				$(this).parents(".col-xs-12").find(".altName").val(translater(this.value));
+				var text = $(this).parents(".col-xs-12").find(".alttitle input").val();
+				if(typeof(text)!=="undefined") {
+					text = text.replace("alt_", "");
+					text = text.replace(this.value, "");
+					if(text.length==0) {
+						$(this).parents(".col-xs-12").find(".alttitle input").val("alt_"+translater(this.value)).trigger("input");
+					}
+				}
 			}
 		});
 		$("input[required],textarea[required],select[required]").each(function(i, elem) {
 			if($(elem).val()==null || $(elem).val().length==0) {
-				$(elem).parent().parent().parent().parent().addClass("in");
+				if(typeof($(elem).parents(".uk-nestable-item").find(".hereTitle + .warn-icon")[0])==="undefined") {
+					$(elem).parents(".uk-nestable-item").find(".hereTitle").after("<div class='fa fa-exclamation-triangle warn-icon'></div>");
+				}
 				$(elem).addClass("errorInput");
 			}
 		});
+		if(struct.length==0) {
+			jQuery("input[required],textarea[required],select[required]").trigger("click");
+		}
+		type_module = jQuery('[name="data[type_module]"]').val();
+		title_now = jQuery(".panel-heading .title").val();
+		previewRoute();
+		setTimeout(function() {
+			jQuery("body").off("submit").on("submit", "form", function(e) {
+				if(!$(e.target).hasClass("checker")) {
+					e.preventDefault();
+					e.stopPropagation();
+					var ret = true;
+					$("input[required],textarea[required],select[required],input.required,textarea.required,select.required").each(function(i, elem) {
+						if($(elem).val()==null || $(elem).val().length==0) {
+							if(typeof($(elem).parents(".uk-nestable-item").find(".hereTitle + .warn-icon")[0])==="undefined") {
+								$(elem).parents(".uk-nestable-item").find(".hereTitle").after("<div class='fa fa-exclamation-triangle warn-icon'></div>");
+							}
+							$(elem).addClass("errorInput");
+							ret = false;
+						}
+					});
+					console.log(ret);
+					if(ret) {
+						jQuery(e.target).addClass("checker").trigger("submit");
+					}
+					return false;
+				}
+			});
+		}, 3000);
 	});
 	function selectedDatabaseChange(th) {
 		var id = jQuery(th).parent().parent().parent().parent().attr("data-hideId");
@@ -491,6 +622,74 @@
 			tmp = jQuery(".databaseInput").html();
 			tmp = tmp.replace(/\{id\}/g, id);
 			jQuery(".selectedInput[data-selectedInput='"+id+"']").removeClass('hide').html(tmp);
+		}
+	}
+	function previewRoute() {
+		if(title_now.length==0) {
+			jQuery("#router_custom_link1").val("");
+			jQuery("#router_custom_link2").val("");
+			jQuery(".for-router_custom_link1").addClass("hide");
+			jQuery(".for-router_custom_link2").addClass("hide");
+			jQuery(".route_links").addClass("hide");
+			jQuery(".createAltName").html("");
+			jQuery(".route_links input").prop("checked", false);
+			jQuery(".route_links .cbr-checked").removeClass("cbr-checked");
+			jQuery(".route-preview1").addClass("hide");
+			jQuery(".route-preview2").addClass("hide");
+			jQuery(".route-preview1").html("");
+			jQuery(".route-preview2").html("");
+			return;
+		}
+		jQuery(".uk-nestable-item .translated").remove();
+		if(type_module=="route") {
+			jQuery(".route-preview2").html("");
+			jQuery("#router_custom_link2").val("");
+			jQuery(".for-router_custom_link2").addClass("hide");
+			jQuery(".for-router_custom_link1").removeClass("hide");
+			jQuery(".route-preview1").removeClass("hide");
+			jQuery(".router").removeClass("hide");
+			arrTranslate = {};
+			sub_title_now = "";
+			jQuery(".createAltName").html("");
+			jQuery(".route_links input").prop("checked", false);
+			jQuery(".route_links .cbr-checked").removeClass("cbr-checked");
+			jQuery(".route_links").addClass("hide");
+			jQuery(".param-route").html("<div><input onclick='this.select();' value='%category%' readonly='readonly'> - название раздела("+translater(title_now).toLowerCase()+")</div>");
+			jQuery("#router_custom_link1").val(route_main);
+			route_mains = route_main.replace("%category%", "<b>"+translater(title_now).toLowerCase()+"</b>");
+			jQuery(".route-preview1").html("Будет создана ссылка вида: <span class='editor'>{C_default_http_local}"+route_mains+"</span>&nbsp;<a href='#' class='fa fa-edit editor'></a>");
+		} else if(type_module=="route_full") {
+			jQuery(".for-router_custom_link1").removeClass("hide");
+			jQuery(".for-router_custom_link2").removeClass("hide");
+			jQuery(".route-preview1").removeClass("hide");
+			jQuery(".route-preview2").removeClass("hide");
+			jQuery(".router").removeClass("hide");
+			jQuery(".route_links input:checked").parents(".uk-nestable-item").find(".hereTitle").after("<div class='translated fa fa-language'></div>");
+			jQuery(".route_links").removeClass("hide");
+			jQuery(".param-route").html("<div><input onclick='this.select();' value='%category%' readonly='readonly'> - название раздела("+translater(title_now).toLowerCase()+")</div><div><input onclick='this.select();' value='%item%' readonly='readonly'> - элемент раздела("+(sub_title_now.length==0 ? "id" : sub_title_now.toLowerCase())+")</div>");
+			jQuery("#router_custom_link1").val(route_main);
+			jQuery("#router_custom_link2").val(route_sub);
+			route_mains = route_main.replace("%category%", "<b>"+translater(title_now).toLowerCase()+"</b>");
+			route_subs = route_sub.replace("%category%", "<b>"+translater(title_now).toLowerCase()+"</b>");
+			route_subs = route_subs.replace("%item%", "<b>"+(sub_title_now.length==0 ? "id" : sub_title_now.toLowerCase())+"</b>");
+			jQuery(".route-preview1").html("Будет создана ссылка вида: <span class='editor'>{C_default_http_local}"+route_mains+"</span>&nbsp;<a href='#' class='fa fa-edit editor'></a>");
+			jQuery(".route-preview2").html("Будет создана ссылка вида: <span class='editor'>{C_default_http_local}"+route_subs+"</span>&nbsp;<a href='#' class='fa fa-edit editor'></a>");
+		} else {
+			jQuery(".router").addClass("hide");
+			arrTranslate = {};
+			sub_title_now = "";
+			jQuery("#router_custom_link1").val("");
+			jQuery("#router_custom_link2").val("");
+			jQuery(".for-router_custom_link1").addClass("hide");
+			jQuery(".for-router_custom_link2").addClass("hide");
+			jQuery(".route_links").addClass("hide");
+			jQuery(".createAltName").html("");
+			jQuery(".route_links input").prop("checked", false);
+			jQuery(".route_links .cbr-checked").removeClass("cbr-checked");
+			jQuery(".route-preview1").addClass("hide");
+			jQuery(".route-preview2").addClass("hide");
+			jQuery(".route-preview1").html("");
+			jQuery(".route-preview2").html("");
 		}
 	}
 	jQuery("body").on("click", ".addInputDB", function() {
@@ -568,6 +767,9 @@
 		var tpl = tmp;
 		tpl = tpl.replace(/\{id\}/g, i);
 		jQuery(".creator").append(tpl);
+		if(title_now.length!=0 && type_module=="route_full") {
+			jQuery(".route_links").removeClass("hide");
+		}
 		cbr_replace();
 		jQuery("input[type='submit']").removeAttr("disabled");
 		
@@ -601,18 +803,32 @@
 		});
 		return false;
 	});
-	jQuery("body").on("click", ".altname input", function() {
-		var id = jQuery(this).attr("data-id");
+	jQuery("body").on("click", ".route_links", function() {
+		var id = jQuery(this).find("input").attr("data-id");
+		console.log(jQuery(this).find("input").prop("checked"));
+		jQuery(this).find("input").prop("checked", !(jQuery(this).find("input").prop("checked")));
+		if(jQuery(this).find("input").prop("checked")) {
+			jQuery(this).find(".cbr-replaced").addClass('cbr-checked');
+		} else {
+			jQuery(this).find(".cbr-replaced").removeClass('cbr-checked');
+		}
+		jQuery(".createAltName").each(function(i, elem) {
+			$(elem).html("");
+		});
+		sub_title_now = "";
+		jQuery(".uk-nestable-item .translated").remove();
 		if(typeof(arrTranslate[id])!=="undefined") {
-			jQuery(".createAltName[data-altname='"+id+"']").html("");
 			delete arrTranslate[id];
+			previewRoute();
 		} else {
 			var tmp = $(".inputTranslate").html();
 			var tpl = tmp;
 			tpl = tpl.replace(/\{id\}/g, id);
 			jQuery(".createAltName[data-altname='"+id+"']").html(tpl);
+			jQuery(".createAltName[data-altname='"+id+"'] input").val("alt_"+jQuery('[name="data['+id+'][altName]"]').val()).trigger("input");
 			arrTranslate[id] = true;
 		}
+		return false;
 	});
 	jQuery(".creator").off('nestable-stop').on('nestable-stop', function(ev) {
 		var list = jQuery(this).data('nestable').list();
@@ -641,4 +857,49 @@
 	jQuery("body").on("click", "input.errorInput,textarea.errorInput,select.errorInput", function() {
 		jQuery(this).removeClass("errorInput");
 	});
+	jQuery("body").on("change", '[name="data[type_module]"]', function() {
+		type_module = this.value;
+		previewRoute();
+	});
+	jQuery("body").on("input", ".panel-heading .title", function() {
+		title_now = this.value;
+		previewRoute();
+	});
+	jQuery("body").on("input", ".createAltName input", function() {
+		this.value = this.value.toLowerCase();
+		sub_title_now = this.value;
+		previewRoute();
+	});
+	jQuery("body").on("click", ".editor", function() {
+		jQuery(".routers").toggleClass("hide");
+	});
+	jQuery("body").on("input", '#router_custom_link1', function() {
+		var val = this.value;
+		window.route_main = val;
+		val = val.replace("%category%", "<b>"+translater(title_now).toLowerCase()+"</b>");
+		jQuery(".route-preview1").html("Будет создана ссылка вида: <span class='editor'>{C_default_http_local}"+val+"</span>&nbsp;<a href='#' class='fa fa-edit editor'></a>");
+	});
+	jQuery("body").on("input", '#router_custom_link2', function() {
+		var val = this.value;
+		window.route_sub = val;
+		val = val.replace("%category%", "<b>"+translater(title_now).toLowerCase()+"</b>");
+		val = val.replace("%item%", "<b>"+(sub_title_now.length==0 ? "id" : sub_title_now.toLowerCase())+"</b>");
+		jQuery(".route-preview2").html("Будет созданы ссылки вида: <span class='editor'>{C_default_http_local}"+val+"</span>&nbsp;<a href='#' class='fa fa-edit editor'></a>");
+	});
 </script>
+<style type="text/css">
+	.well {
+		background-color: #ffffff;
+		box-shadow: none;
+		position: relative;
+	}
+	.well:before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		height: 100%;
+		width: 4px;
+		background: #e7bb1a;
+	}
+</style>

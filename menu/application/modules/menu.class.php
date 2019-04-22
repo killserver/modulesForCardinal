@@ -1,13 +1,26 @@
 <?php
-
+/*
+Name: Редактор меню для Cardinal Engine
+Version: 1.10
+Author: killserver
+OnlyUse: true
+ */
 class menu extends modules {
 
-	public static $version = "1.7";
+	public static $version = "1.9";
 
 	function __construct() {
 		if(defined("IS_ADMIN")) {
 			addEvent("admin_core_prints_info", array($this, "show"));
+			addEvent("loadUserLevels", array($this, "addLevel"));
 		}
+	}
+
+	function addLevel($levels) {
+		$levels[LEVEL_CREATOR]['access_creator'] = "yes";
+		$levels[LEVEL_CUSTOMER]['access_creator'] = "yes";
+		$levels[LEVEL_ADMIN]['access_creator'] = "yes";
+		return $levels;
 	}
 
 	function show($ret) {
@@ -22,7 +35,7 @@ class menu extends modules {
 		if($mess==="") {
 			return $ret;
 		}
-		$ret[$mess] = array("echo" => $mess, "time" => time()+365*24*60*60, "block" => true);
+		$ret[$mess] = array("echo" => $mess, "time" => time()+1, "block" => true);
 		return $ret;
 	}
 

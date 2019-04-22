@@ -73,6 +73,12 @@ class Installer extends Core {
 	function __construct() {
 	global $manifest;
 		callAjax();
+
+		$owner = posix_getpwuid(fileowner(__FILE__));
+		if($owner['name']!=get_current_user()) {
+			self::addInfo("Установка не может быть выполнена успешно из-за того, что Вы не являетесь владельцем. Владелец <b>".$owner['name']."</b>. Обратитесь в тех.поддержку для решения данного вопроса", "error", false, 1);
+		}
+
 		if(isset($_GET['remove'])) {
 			if(strpos($_GET['remove'], "/")!==false || strpos($_GET['remove'], "\\")!==false) {
 				header("HTTP/1.1 406 Not Acceptable");
@@ -122,6 +128,9 @@ class Installer extends Core {
 				}
 			}
 			@unlink(PATH_CACHE_USERDATA."Installer".DS.$_GET['remove'].".json");
+			if(is_writable(PATH_CACHE_SYSTEM) && file_exists(PATH_CACHE_SYSTEM."installer.txt")) {
+				@unlink(PATH_CACHE_SYSTEM."installer.txt");
+			}
 			cardinal::RegAction("Удаление модуля ".$_GET['remove']);
 			HTTP::echos("1");
 			return false;
@@ -195,7 +204,6 @@ class Installer extends Core {
 			$oldPath = array(
 				"core".DS."class".DS."system".DS."DBDrivers".DS => str_replace(ROOT_PATH, "", PATH_DB_DRIVERS),
 				"core".DS."class".DS."system".DS => str_replace(ROOT_PATH, "", PATH_SYSTEM),
-				"core".DS."cache".DS."page".DS => str_replace(ROOT_PATH, "", PATH_CACHE_PAGE),
 				'core'.DS.'cache'.DS.'system'.DS => str_replace(ROOT_PATH, "", PATH_CACHE_SYSTEM),
 				'core'.DS.'cache'.DS.'system'.DS => str_replace(ROOT_PATH, "", PATH_LOGS),
 				'core'.DS.'cache'.DS.'lang'.DS => str_replace(ROOT_PATH, "", PATH_CACHE_LANGS),
@@ -236,6 +244,9 @@ class Installer extends Core {
 
 			$tr = $tar_object->extractTo(ROOT_PATH);
 			$this->rcopyModules(ROOT_PATH.$_GET['install'], ROOT_PATH);
+			if(is_writable(PATH_CACHE_SYSTEM) && file_exists(PATH_CACHE_SYSTEM."installer.txt")) {
+				@unlink(PATH_CACHE_SYSTEM."installer.txt");
+			}
 			cardinal::RegAction("Установка модуля ".$_GET['install']);
 			if($tr === true) {
 				$tar_object->close();

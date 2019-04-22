@@ -1,22 +1,21 @@
 <?php
 /*
 Name: Быстрый редактор переводов
-Version: 1.0
+Version: 1.1
 Author: killserver
  */
 class changeLangOnSite extends modules {
+
+	public static $version = "1.1";
 
 	function __construct() {
 		if(defined("IS_ADMIN")) {
 			return;
 		}
-		if(($d = User::get("level"))!==false && !empty($d) && $d>=3) {
-			addEvent("compileTPL", array($this, "langChange"));
-			addEvent("before_jscss_print_css", array($this, "applyStyle"));
-			addEvent("before_jscss_print_js", array($this, "applyJS"));
-			addEvent("templates::display", array($this, "applyChange"), "", 9999999);
-			addEventRef("admin_menu_sorted", array($this, "changeAdmin"));
-		}
+		addEvent("compileTPL", array($this, "langChange"));
+		addEvent("before_jscss_print_css", array($this, "applyStyle"));
+		addEvent("templates::display", array($this, "applyChange"), "", 9999999);
+		addEventRef("admin_menu_sorted", array($this, "changeAdmin"));
 	}
 
 	function changeAdmin(&$menu) {
@@ -52,24 +51,28 @@ class changeLangOnSite extends modules {
 	}
 
 	function langChange($tpl) {
-		$tpl = $this->callback_array("#\{L_([\"|']|)([a-zA-Z0-9\-_]+)(\\1)\[([a-zA-Z0-9\-_]*?)\]\}#", array($this, "getMyLang"), $tpl);
-		$tpl = $this->callback_array("#\{L_()([a-zA-Z0-9\-_]+)()\[([a-zA-Z0-9\-_]*?)\]\}#", array($this, "getMyLang"), $tpl);
-		$tpl = $this->callback_array("#\{L_()([a-zA-Z0-9\-_]+)()\[(.*?)\]\}#", array($this, "getMyLang"), $tpl);
-		$tpl = $this->callback_array("#\{L_([\"|']|)(.+?)(\\1)\}#", array($this, "getMyLang"), $tpl);
-		$tpl = $this->callback_array("#\{L_()(.+?)()\}#", array($this, "getMyLang"), $tpl);
+		$tpl = $this->callback_array("#\{CL_([\"|']|)([a-zA-Z0-9\-_]+)(\\1)\[([a-zA-Z0-9\-_]*?)\]\}#", array($this, "getMyLang"), $tpl);
+		$tpl = $this->callback_array("#\{CL_()([a-zA-Z0-9\-_]+)()\[([a-zA-Z0-9\-_]*?)\]\}#", array($this, "getMyLang"), $tpl);
+		$tpl = $this->callback_array("#\{CL_()([a-zA-Z0-9\-_]+)()\[(.*?)\]\}#", array($this, "getMyLang"), $tpl);
+		$tpl = $this->callback_array("#\{CL_([\"|']|)(.+?)(\\1)\}#", array($this, "getMyLang"), $tpl);
+		$tpl = $this->callback_array("#\{CL_()(.+?)()\}#", array($this, "getMyLang"), $tpl);
 		return $tpl;
 	}
 
 	function getMyLang($array) {
 		if(isset($array[4])) {
+			$array[2] = preg_replace("/\s{2,}/", ' ', $array[2]);
+			$array[4] = preg_replace("/\s{2,}/", ' ', $array[4]);
 			$isset = $this->get_lang($array[2], $array[4]);
 		} else {
+			$array[2] = preg_replace("/\s{2,}/", ' ', $array[2]);
 			$isset = $this->get_lang($array[2]);
 		}
+		$user = userlevel::get("languages");
 		if(!empty($isset) && $isset!='""') {
-			return '<custom-lang data-orText="'.(htmlspecialchars(($array[2]))).'"><custom-text>'.$isset.'</custom-text><custom-tag class="done-lang"></custom-tag><custom-tag class="close-lang"></custom-tag></custom-lang>';
+			return ($user ? '<custom-lang data-orText="'.htmlspecialchars($array[2]).'"><custom-text>' : '').$isset.($user ? '</custom-text><custom-tag class="done-lang"></custom-tag><custom-tag class="close-lang"></custom-tag></custom-lang>' : '');
 		} else if($array[2]!='""') {
-			return '<custom-lang data-orText="'.(htmlspecialchars(($array[2]))).'"><custom-text>'.$array[2].'</custom-text><custom-tag class="done-lang"></custom-tag><custom-tag class="close-lang"></custom-tag></custom-lang>';
+			return ($user ? '<custom-lang data-orText="'.htmlspecialchars($array[2]).'"><custom-text>' : '').$array[2].($user ? '</custom-text><custom-tag class="done-lang"></custom-tag><custom-tag class="close-lang"></custom-tag></custom-lang>' : '');
 		} else {
 			return "";
 		}
@@ -88,27 +91,7 @@ class changeLangOnSite extends modules {
 		return $tpl;
 	}
 
-	function applyJs($tpl) {
-		//$tpl['full'][0] = array("url" => '');
-		return $tpl;
-	}
-
 	function applyChange($tpl) {
-		preg_match("#<div class=\"adminCoreCardinal\">(.*?)</body>#is", $tpl, $admin);
-		if(isset($admin[0])) {
-			preg_match_all("#<custom-lang.*?>.*?<custom-text.*?>(.+?)</custom-text>.*?</custom-lang>#", $admin[1], $all);
-			for($i=0;$i<sizeof($all[0]);$i++) {
-				$tpl = str_replace($all[0][$i], $all[1][$i], $tpl);
-			}
-		}
-		$tplTmp = preg_replace("#<head>(.+?)<custom-lang.*?>.*?<custom-text.*?>(.+?)</custom-text>.*?</custom-lang>(.*?)</head>#is", "<head>$1$2$3</head>", $tpl);
-		if(!empty($tplTmp)) {
-			$tpl = $tplTmp;
-		}
-		preg_match_all("#\"<custom-lang.*?>.*?<custom-text.*?>(.+?)</custom-text>.*?</custom-lang>\"#", $tpl, $all);
-		for($i=0;$i<sizeof($all[0]);$i++) {
-			$tpl = str_replace($all[0][$i], "\"".$all[1][$i]."\"", $tpl);
-		}
 		$success = "Успешно сохранили перевод";
 		$isset = $this->get_lang($success);
 		if(!empty($isset) && $isset!='""') {
@@ -119,7 +102,7 @@ class changeLangOnSite extends modules {
 		if(!empty($isset) && $isset!='""') {
 			$error = $isset;
 		}
-		$tpl = str_replace("</body>", '<script>var adminLangPage = "'.config::Select("default_http_local").ADMINCP_DIRECTORY.'/?pages=Languages&lang='.lang::get_lg().'&saveLang=true";var lang_save_success = "'.$success.'";var lang_save_error = "'.$error.'";</script><script>'.file_get_contents(ROOT_PATH."js".DS."adminChangeLang.js").'</script></body>', $tpl);
+		$tpl = str_replace("</body>", '<script>'.file_get_contents(ROOT_PATH."js".DS."adminChangeLang.js").'</script><script>var adminLangPage = "'.config::Select("default_http_local").ADMINCP_DIRECTORY.'/?pages=Languages&lang='.lang::get_lg().'&saveLang=true";var lang_save_success = "'.$success.'";var lang_save_error = "'.$error.'";</script></body>', $tpl);
 		return $tpl;
 	}
 
