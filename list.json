@@ -485,5 +485,18 @@
 		"changelog": {
 			"1.1": "Модуль вынесен из ядра в силу некорректности выводимых данных в случае активации перевода внутри полей типа input/textarea/select"
 		}
+	},
+	"feedback_module": {
+		"name": "Конструктор любых форм для сайта",
+		"altName": "feedback_module",
+		"description": "Данный модуль предоставляет возможность создавать формы обратных связей, формы захватов и тому подобные",
+		"author": "killserver",
+		"version": "1.0",
+		"image": "http://bhtml.ru/webdesign/call-back-form/call-back-form.jpg",
+		"type": "module",
+		"cardinalVersion": "11.2",
+		"tested": "11.2",
+		"download": "https://raw.githubusercontent.com/killserver/modulesForCardinal/master/feedback_module.zip",
+		"tags": "разработчикам,генераторы,формы обратной связи"
 	}
 }
