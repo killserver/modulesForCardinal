@@ -1,0 +1,4 @@
+[if {not_exists}==true]На данный момент - записей нет[/if {not_exists}==true]
+[if {not_exists}==false]
+    {content}
+[/if {not_exists}==false]

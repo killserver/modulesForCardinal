@@ -1,15 +1,19 @@
 function {method}($lang, $langDB) {
 	$tmp = $this->init_templates();
-	$model = $this->loadModel("{method}");
+	$model = $this->loadModel("{model}");
+	$model->multiple();
 	$model->SetLimit(-1);
+	$model->OrderBy();
 	$model = execEvent("load_{method}", $model);
 	$model = $model->Select();
-	for($i=0;$i<sizeof($model);$i++) {
-		$model[$i] = $model[$i]->getArray();
-		$model[$i] = $this->getLangData($model[$i], $langDB);
-		$tmp->assign_vars($model[$i], "{method}");
+	if(is_array($model) && sizeof($model)>0) {
+		for($i=0;$i<sizeof($model);$i++) {
+			$model[$i] = $model[$i]->getArray();
+			$model[$i] = $this->getDataLang($model[$i], $langDB);
+			$tmp->assign_vars($model[$i], "{method}");
+		}
 	}
-	if($tmp->check_exists("{method}.default")) {
+	if(!$tmp->check_exists("{method}")) {
 		$tpl = "{method}.default";
 	} else {
 		$tpl = "{method}";

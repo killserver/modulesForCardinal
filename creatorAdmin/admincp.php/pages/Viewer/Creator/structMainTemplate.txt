@@ -1,0 +1,6 @@
+[if {count[{method}]}==0]На данный момент - записей нет[/if {count[{method}]}==0]
+[if {count[{method}]}>=1]
+    [foreach block={method}]
+        {content}
+    [/foreach]
+[/if {count[{method}]}>=1]

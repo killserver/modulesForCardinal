@@ -22,7 +22,7 @@
 		<tbody>
 		[foreach block=creator]<tr>
 			<td><label class="checkbox"><input type="checkbox" class="cbr" name="delete[]" value="{creator.table}"></label></td>
-			<td>{L_"{creator.table}"}</td>
+			<td>{L_"{creator.name}"}</td>
 			<td width="15%">
 				[foreachif {creator.created}==true]<a href="./?pages=Creator&mod=Edit&name={creator.table}" class="btn btn-turquoise btn-block">{L_edit}</a>[/foreachif {creator.created}==true]
 				[foreachif {creator.created}==false]<a href="./?pages=Creator&mod=Edit&name={creator.table}" class="btn btn-success btn-block">{L_"Создать"}</a>[/foreachif {creator.created}==false]<br>

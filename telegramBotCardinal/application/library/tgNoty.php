@@ -2,7 +2,7 @@
 
 class tgNoty {
 
-	public static function noty($text, $type = "text", $config = array()) {
+	public static function noty($text, $type = "text", $config = array(), $files = array()) {
 		if(!defined("DS")) {
 			define("DS", DIRECTORY_SEPARATOR);
 		}
@@ -49,10 +49,16 @@ class tgNoty {
 				$arr = array_map("trim", $arr);
 				$count = sizeof($arr);
 				for($i=0;$i<$count;$i++) {
+					if(sizeof($files)>0) {
+						for($z=0;$z<sizeof($files);$z++) {
+							$tg->sendPhoto($arr[$i], $files[$z]);
+							usleep(500);
+						}
+					}
 					// sends an action 'typing'
 					$tg->sendChatAction($arr[$i], 'typing');
 					// send message with a custom reply markup
-					$tg->sendMessage($arr[$i], $text);
+					$tg->sendMessage($arr[$i], $text, "Markdown");
 					$list++;
 				}
 			}
@@ -63,6 +69,11 @@ class tgNoty {
 				$arr = array_map("trim", $arr);
 				$count = sizeof($arr);
 				for($i=0;$i<$count;$i++) {
+					if(sizeof($files)>0) {
+						for($z=0;$z<sizeof($files);$z++) {
+							$tg->sendPhoto($arr[$i], $files[$z]);
+						}
+					}
 					// sends an action 'typing'
 					$tg->sendChatAction($arr[$i], 'typing');
 					// send message with a custom reply markup

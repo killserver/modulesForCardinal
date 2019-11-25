@@ -8,12 +8,19 @@
 			<div class="panel panel-default">
 				<div class="panel-heading">
 					<div class="col-sm-11">
-						<input type="text" class="form-control title" name="data[title]" placeholder="Введите название раздела" required="required">
+						<input type="text" class="form-control title nameTable" name="data[title]" placeholder="Введите название раздела" required="required">
 					</div>
 					<div class="col-sm-1">
 						<div class="iconSelect">
 							<input type="hidden" name="data[icon]" class="icons">
 							<div><i class="" data-icon=""></i></div>
+						</div>
+					</div>
+					<div class="clearfix" style="margin-bottom: 0.5em;"></div>
+					<div class="col-sm-12">
+						<div class="input-group">
+							<span class="input-group-addon">{D_PREFIX_DB}</span>
+							<input type="text" class="form-control alttitle altNameTable" name="data[altTitle]" placeholder="Введите название таблицы" required="required">
 						</div>
 					</div>
 					<div class="clearfix" style="margin-bottom: 0.5em;"></div>
@@ -48,7 +55,7 @@
 					</div>
 				</div>
 				<div class="panel-body">
-					<ul class="creator uk-nestable row" data-uk-nestable="{maxDepth:1}"></ul>
+					<ul class="creator uk-nestable row" data-uk-nestable="{maxDepth:999999}"></ul>
 					<input type="submit" class="btn btn-success" value="{L_submit}" disabled="disabled">
 					<a href="#" class="btn btn-info addCreator pull-right">{L_"Добавить"}</a>
 				</div>
@@ -70,9 +77,12 @@
 	}
 	.uk-nestable-placeholder { float: left; float: left; width: 97%; margin-left: 15px; margin-right: 15px; }
 	.collapse { margin-top: 2rem; margin-bottom: 2rem; }
-	.togglePanel { cursor: pointer; background: #eeeeee; padding: 0px; margin-left: 15px; margin-right: 0; width: calc(100% - 30px); }
+	.togglePanel { cursor: pointer; background: #eeeeee; padding: 5px 8px; margin-left: 15px; margin-right: 0; width: calc(100% - 30px); }
 	.errorInput { border: 1px solid red; animation: errorInput 300ms ease-in-out 1500ms infinite; }
 	.removeBtn { position: absolute; top: 0px; right: 15px; z-index: 10; padding-top: 3.5px; padding-bottom: 3.5px; }
+	.uk-nestable-item .uk-nestable-handle {
+		padding: 0;
+	}
 	@keyframes errorInput {
 	    0% {
 	        border-color: rgba(255,0,0,0);
@@ -116,9 +126,10 @@
 </style>
 <script type="text/template" id="tmpCreate">
 	<li class="col-xs-12" data-field="{id}">
-		<div class="uk-nestable-item">
+		<div class="uk-nestable-item uk-nestable-nochildren">
 			<input type="hidden" name="order[]" value="{id}">
 			<input type="hidden" name="data[{id}][depth]" value="{depth}">
+			<input type="hidden" name="data[{id}][parent_id]" value="{parent_id}">
 			<div class="row">
 				<div class="col-xs-12 togglePanel" data-toggle="{id}">
 					<div class="uk-nestable-handle"></div>
@@ -192,7 +203,7 @@
 						<div class="form-group">
 							<label class="col-xs-12 col-md-3 control-label">Значение по-умолчанию</label>
 							<div class="col-xs-12 col-md-9">
-								<textarea class="form-control default onlyText" name="data[{id}][default]" placeholder="Введите подсказку"></textarea>
+								<textarea class="form-control default onlyText" name="data[{id}][default]" placeholder="Введите значение по-умолчанию"></textarea>
 							</div>
 						</div>
 						<div class="form-group">
@@ -227,7 +238,7 @@
 								</div>
 								<div class="checkbox">
 									<label class="repeater">
-										<input type="checkbox" name="data[{id}][repeater]" class="cbr cbr-primary" value="yes" data-id="{id}" disabled="disabled">Возможность повторять (Скоро)
+										<input type="checkbox" name="data[{id}][repeater]" class="cbr cbr-primary repeater" value="yes" data-id="{id}" disabled="disabled">Возможность повторять (скоро)
 									</label>
 								</div>
 							</div>
@@ -344,9 +355,9 @@
 			"ц": "c",
 			"ч": "ch",
 			"ш": "sh",
-			"щ": "sh'",
+			"щ": "sz",
 			"ъ": "",
-			"ы": "i",
+			"ы": "y",
 			"ь": "",
 			"э": "e",
 			"ю": "yu",
@@ -394,16 +405,214 @@
 					newStr += isUpperCaseOrWhatever ? newLetter.toUpperCase() : newLetter;
 				}
 			}
-			newStr = newStr.replace(/([a-zA-Z_]+)/g, "$1");
+			newStr = newStr.replace(/[^a-zA-Z0-9_]/g, "");
 			return newStr;
 		}
-		return transform(val, "");
+		return transform(val, "_");
 	}
 	var type_module = "";
 	var title_now = "";
 	var sub_title_now = "";
 	window.route_main = "%category%/";
 	window.route_sub = "%category%/%item%/";
+	function builder(data, parent) {
+		Object.keys(data).forEach(function(k) {
+			var dataField = data[k];
+			console.log(dataField);
+			i++;
+			var tmp = jQuery("#tmpCreate").html();
+			var tpl = tmp;
+			tpl = tpl.replace(/\{id\}/g, i);
+			tpl = tpl.replace(/\{depth\}/g, (typeof(dataField.depth)==="undefined" ? "0" : dataField.depth));
+			var parent = (typeof(dataField.parent_id)==="undefined" ? parent : dataField.parent_id);
+			tpl = tpl.replace(/\{parent_id\}/g, parent);
+			parent = parseInt(parent);
+			var appendTo = ".creator";
+			if(parent>0) {
+				appendTo += ' [data-field="'+(parent+1)+'"]';
+			}
+			var elemAddTo = jQuery(appendTo);
+			if(parent>0) {
+				var existsList = elemAddTo.find(".ul-nestable-list").length;
+				if(existsList==0) {
+					tpl = '<ul class="uk-nestable-list">'+tpl+'</ul>';
+				}
+			}
+			elemAddTo.append(tpl);
+			jQuery("[data-field='"+i+"'] .hereTitle").html(dataField.name);
+			jQuery("[data-field='"+i+"'] .hereTitle").after("<small></small>");
+			jQuery("[data-field='"+i+"']").prepend("<input type=\"hidden\" name=\"data["+i+"][beforeAltName]\" value=\""+dataField.altName+"\">");
+			jQuery("[data-field='"+i+"']").find(".title").val(dataField.name);
+			jQuery("[data-field='"+i+"']").find(".altName").val(dataField.altName);
+			if(typeof(dataField.altName)!=="undefined" && dataField.altName.length>0) {
+				jQuery("[data-field='"+i+"']").find(".altName").attr("data-needTranslate", "false");
+			} else {
+				jQuery("[data-field='"+i+"']").find(".altName").attr("data-needTranslate", "false").val(translater(dataField.name));
+			}
+			jQuery("[data-field='"+i+"']").find(".placeholder").val(dataField.placeholder);
+			jQuery("[data-field='"+i+"']").find("select").val(dataField.type);
+			jQuery("[data-field='"+i+"'] .hereTitle small").remove();
+			jQuery("[data-field='"+i+"'] .hereTitle").after("<small style='font-size:75%;'>"+(jQuery("[data-field='"+i+"']").find("select option[value='"+dataField.type+"']").text())+"</small>");
+			if(typeof(dataField.hideOnMain)!=="undefined" && dataField.hideOnMain=="yes") {
+				jQuery("[data-field='"+i+"']").find("label.hides input[type='checkbox']").attr("checked", "checked");
+			}
+			if(typeof(dataField.supportLang)!=="undefined" && dataField.supportLang=="yes") {
+				jQuery("[data-field='"+i+"']").find("label.supportLang input[type='checkbox']").attr("checked", "checked");
+			}
+			if(typeof(dataField.required)!=="undefined" && dataField.required=="yes") {
+				jQuery("[data-field='"+i+"']").find("label.required input[type='checkbox']").attr("checked", "checked");
+			}
+			if(typeof(dataField.default)!=="undefined" && dataField.default.length>0) {
+				jQuery("[data-field='"+i+"']").find("[name*='default']").val(dataField.default)
+			}
+			if(typeof(dataField.placeholder)!=="undefined" && dataField.placeholder.length>0) {
+				jQuery("[data-field='"+i+"']").find("[name*='placeholder']").val(dataField.placeholder)
+			}
+			if(typeof(dataField.repeater)!=="undefined" && dataField.repeater=="yes") {
+				jQuery("[data-field='"+i+"']").find("label.repeater input[type='checkbox']").attr("checked", "checked");
+				jQuery("[data-field='"+i+"']").find(".uk-nestable-nochildren").removeClass('uk-nestable-nochildren')
+			}
+			if(typeof(dataField.selectedData)!=="undefined" && dataField.selectedData=="dataOnInput") {
+				var tmp = jQuery(".databaseSelectRadio").html();
+				tmp = tmp.replace(/\{id\}/g, i);
+				jQuery("[data-hideId='"+i+"']").removeClass('hide').html(tmp);
+				jQuery("[data-hideId='"+i+"'] input[value='dataOnInput']").attr("checked", "checked");
+
+				tmp = jQuery(".databaseInput").html();
+				tmp = tmp.replace(/\{id\}/g, i);
+				jQuery("[data-field='"+i+"'] .selectedInput[data-selectedInput='"+i+"']").removeClass('hide').html(tmp);
+				Object.keys(dataField.field).forEach(function(key) {
+					iInputDB++;
+					var tmp = jQuery(".databaseInputedData").html();
+					var tpl = tmp;
+					tpl = tpl.replace(/\{groupId\}/g, i);
+					tpl = tpl.replace(/\{id\}/g, iInputDB);
+					tpl = tpl.replace(/\{val\}/g, dataField.field[key]);
+					jQuery(".inputedData[data-selectInputedData='"+i+"']").append(tpl);
+				});
+			}
+			if(typeof(dataField.selectedData)!=="undefined" && dataField.selectedData=="dataOnTable") {
+				var tmp = jQuery(".databaseSelectRadio").html();
+				tmp = tmp.replace(/\{id\}/g, i);
+				jQuery("[data-hideId='"+i+"']").removeClass('hide').html(tmp);
+				jQuery("[data-hideId='"+i+"'] input[value='dataOnTable']").attr("checked", "checked");
+
+				var idE = i;
+				
+				jQuery.post("./?pages=Creator&loadTables=1", function(d) {
+					tmp = jQuery(".databaseTemplate").html();
+					tmp = tmp.replace(/\{id\}/g, idE);
+					var datas = "";
+					selectedData = JSON.parse(d);
+					Object.keys(selectedData).forEach(function(k) {
+						datas += "<option value='"+selectedData[k].name+"'>"+selectedData[k].name+"</option>";
+					});
+					tmp = tmp.replace(/\{data\}/g, datas);
+					jQuery(".selectedInput[data-selectedInput='"+idE+"']").removeClass('hide').html(tmp);
+					jQuery(".dataBaseLoad[data-selectInputedData='"+idE+"']").val(dataField.loadDB.name);
+
+					console.log(".selectedInput[data-selectedInput='"+idE+"']");
+
+					var tmp = jQuery(".databaseTemplateSelect").html();
+					var datas = "";
+					if(typeof(selectedData[dataField.loadDB.name])!=="undefined") {
+						var data = selectedData[dataField.loadDB.name].fields;
+						for(var i=0;i<data.length;i++) {
+							datas += "<option value='"+data[i]+"'>"+data[i]+"</option>";
+						}
+					} else {
+						setTimeout(function() {
+							Swal.fire({
+								title: "ВНИМАНИЕ!",
+								text: "Не возможно найти таблицу '"+dataField.loadDB.name+"'. Убедитесь, что она создана",
+								type: 'error',
+								confirmButtonText: 'Отменить и вернуться',
+								cancelButtonText: "Продолжить",
+								showCancelButton: true,
+							}).then(function(resp) {
+								if(resp.value===true) {
+									window.history.back();
+								}
+							});
+						}, 1000);
+					}
+					tmp = tmp.replace(/\{data1\}/g, datas);
+					tmp = tmp.replace(/\{data2\}/g, datas);
+					tmp = tmp.replace(/\{id\}/g, idE);
+					jQuery(".dataBaseSelect[data-selectInputedData='"+idE+"']").html(tmp);
+					jQuery(".dataBaseSelect[data-selectInputedData='"+idE+"'] .dataBaseLoadKey").val(dataField.loadDB.key);
+					jQuery(".dataBaseSelect[data-selectInputedData='"+idE+"'] .dataBaseLoadValue").val(dataField.loadDB.value);
+				});
+			}
+			if(dataField.type=="radio") {
+				tmp = jQuery(".databaseInput").html();
+				tmp = tmp.replace(/\{id\}/g, i);
+				jQuery("[data-field='"+i+"'] .selectedInput[data-selectedInput='"+i+"']").removeClass('hide').html(tmp);
+				Object.keys(dataField.field).forEach(function(key) {
+					iInputDB++;
+					var tmp = jQuery(".databaseInputedData").html();
+					var tpl = tmp;
+					tpl = tpl.replace(/\{groupId\}/g, i);
+					tpl = tpl.replace(/\{id\}/g, iInputDB);
+					tpl = tpl.replace(/\{val\}/g, dataField.field[key]);
+					jQuery(".inputedData[data-selectInputedData='"+i+"']").append(tpl);
+				});
+			}
+			if(dataField.type=="linkToAdmin") {
+				tmp = jQuery(".linkToInput").html();
+				tmp = tmp.replace(/\{id\}/g, i);
+				tmp = tmp.replace(/\{valLink\}/g, dataField.field.link);
+				tmp = tmp.replace(/\{valTitle\}/g, dataField.field.title);
+				jQuery("[data-field='"+i+"'] .selectedInput[data-selectedInput='"+i+"']").removeClass('hide').html(tmp);
+			}
+			if(typeof(dataField.translate)!=="undefined" && typeof(dataField.alttitle)!=="undefined") {
+				var tmp = jQuery(".inputTranslate").html();
+				var tpl = tmp;
+				tpl = tpl.replace(/\{id\}/g, i);
+				jQuery(".createAltName[data-altname='"+i+"']").html(tpl);
+				jQuery("[data-field='"+i+"']").find("label.route_link input").prop("checked", true);
+				jQuery(".createAltName[data-altname='"+i+"']").find("input").val(dataField.alttitle);
+				sub_title_now = dataField.alttitle;
+				arrTranslate[i] = true;
+			}
+			if(typeof(dataField.children)!=="undefined") {
+				builder(dataField.children, parent);
+			}
+			if(typeof(dataField.notRemove)!=="undefined") {
+				$("[data-field='"+i+"']").attr("data-not-remove-panel", "true");
+				$("[data-field='"+i+"'] .removeBtn").remove();
+				$("[data-field='"+i+"'] .remove").parent().remove();
+			} else if(typeof(dataField.disabled)!=="undefined") {
+				$("[data-field='"+i+"'] .removeBtn").remove();
+				$("[data-field='"+i+"']").attr("data-disabled-panel", "true");
+				$("[data-field='"+i+"'] .remove").parent().remove();
+				$("[data-field='"+i+"'] :input").attr("readonly", "readonly");
+				$("[data-field='"+i+"'] .selectedInput .inputedData a.removeData").remove();
+				$("[data-field='"+i+"'] .selectedInput .addInputDB").remove();
+				$("[data-field='"+i+"'] .selectedInput .inputedData [data-inputeddata]").each(function(i, elem) {
+					$(elem).find(".col-sm-2").remove()
+					$(elem).find(".col-sm-10").removeClass('col-sm-10').addClass('col-sm-12');
+				});
+			} else if(typeof(dataField.notEditable)!=="undefined") {
+				$("[data-field='"+i+"'] .removeBtn").remove();
+				$("[data-field='"+i+"'] .uk-nestable-handle").remove();
+				$("[data-field='"+i+"']").attr("data-disabled-panel", "true");
+				$("[data-field='"+i+"'] .remove").parent().remove();
+				$("[data-field='"+i+"'] :input").attr("readonly", "readonly");
+				$("[data-field='"+i+"'] .selectedInput .inputedData a.removeData").remove();
+				$("[data-field='"+i+"'] .selectedInput .addInputDB").remove();
+				$("[data-field='"+i+"'] .selectedInput .inputedData [data-inputeddata]").each(function(i, elem) {
+					$(elem).find(".col-sm-2").remove()
+					$(elem).find(".col-sm-10").removeClass('col-sm-10').addClass('col-sm-12');
+				});
+			}
+			cbr_replace();
+			if(typeof(dataField.disabled)!=="undefined" || typeof(dataField.notEditable)!=="undefined") {
+				$("[data-field='"+i+"'] .cbr-replaced").addClass("cbr-disabled")
+			}
+			jQuery("input[type='submit']").removeAttr("disabled");
+		});
+	}
 	jQuery(document).ready(function($) {
 		if(struct.length>0) {
 			struct = JSON.parse(struct);
@@ -411,9 +620,12 @@
 				console.log("!!! BUILD !!!");
 				jQuery(".formCreator input[type='hidden'].mode").val("edit");
 				var titles = struct.data.title;
-				jQuery(".formCreator .title").val(titles);
+				var altTitle = struct.data.altTitle;
+				jQuery(".formCreator .nameTable").val(titles);
+				jQuery(".formCreator .altNameTable").val(altTitle).attr("disabled", "disabled").attr("data-needTranslate", "false");
 				jQuery('.formCreator [name="data[type_module]"]').val(struct.data.type_module);
 				delete struct.data.title;
+				delete struct.data.altTitle;
 				delete struct.data.route_link;
 				delete struct.data.type_module;
 				window.route_main = (typeof(struct.data.route_main)!=="undefined" ? struct.data.route_main : "%category%/");
@@ -425,124 +637,11 @@
 				jQuery(".formCreator .iconSelect > div > i").addClass(icons);
 				jQuery(".formCreator .iconSelect > div > i").attr("data-icon", icons);
 				delete struct.data.icon;
-				Object.keys(struct.data).forEach(function(k) {
-					var dataField = struct.data[k];
-					console.log(dataField);
-					i++;
-					var tmp = jQuery("#tmpCreate").html();
-					var tpl = tmp;
-					tpl = tpl.replace(/\{id\}/g, i);
-					tpl = tpl.replace(/\{depth\}/g, (typeof(dataField.depth)==="undefined" ? "0" : dataField.depth));
-					jQuery(".creator").append(tpl);
-					jQuery("[data-field='"+i+"'] .hereTitle").html(dataField.name);
-					jQuery("[data-field='"+i+"']").prepend("<input type=\"hidden\" name=\"data["+i+"][beforeAltName]\" value=\""+dataField.altName+"\">");
-					jQuery("[data-field='"+i+"']").find(".title").val(dataField.name);
-					jQuery("[data-field='"+i+"']").find(".altName").val(dataField.altName);
-					jQuery("[data-field='"+i+"']").find(".altName").attr("data-needTranslate", "false");
-					jQuery("[data-field='"+i+"']").find(".placeholder").val(dataField.placeholder);
-					jQuery("[data-field='"+i+"']").find("select").val(dataField.type);
-					if(typeof(dataField.hideOnMain)!=="undefined" && dataField.hideOnMain=="yes") {
-						jQuery("[data-field='"+i+"']").find("label.hides input[type='checkbox']").attr("checked", "checked");
-					}
-					if(typeof(dataField.supportLang)!=="undefined" && dataField.supportLang=="yes") {
-						jQuery("[data-field='"+i+"']").find("label.supportLang input[type='checkbox']").attr("checked", "checked");
-					}
-					if(typeof(dataField.required)!=="undefined" && dataField.required=="yes") {
-						jQuery("[data-field='"+i+"']").find("label.required input[type='checkbox']").attr("checked", "checked");
-					}
-					if(typeof(dataField.selectedData)!=="undefined" && dataField.selectedData=="dataOnInput") {
-						var tmp = jQuery(".databaseSelectRadio").html();
-						tmp = tmp.replace(/\{id\}/g, i);
-						jQuery("[data-hideId='"+i+"']").removeClass('hide').html(tmp);
-						jQuery("[data-hideId='"+i+"'] input[value='dataOnInput']").attr("checked", "checked");
-
-						tmp = jQuery(".databaseInput").html();
-						tmp = tmp.replace(/\{id\}/g, i);
-						jQuery("[data-field='"+i+"'] .selectedInput[data-selectedInput='"+i+"']").removeClass('hide').html(tmp);
-						Object.keys(dataField.field).forEach(function(key) {
-							iInputDB++;
-							var tmp = jQuery(".databaseInputedData").html();
-							var tpl = tmp;
-							tpl = tpl.replace(/\{groupId\}/g, i);
-							tpl = tpl.replace(/\{id\}/g, iInputDB);
-							tpl = tpl.replace(/\{val\}/g, dataField.field[key]);
-							jQuery(".inputedData[data-selectInputedData='"+i+"']").append(tpl);
-						});
-					}
-					if(typeof(dataField.selectedData)!=="undefined" && dataField.selectedData=="dataOnTable") {
-						var tmp = jQuery(".databaseSelectRadio").html();
-						tmp = tmp.replace(/\{id\}/g, i);
-						jQuery("[data-hideId='"+i+"']").removeClass('hide').html(tmp);
-						jQuery("[data-hideId='"+i+"'] input[value='dataOnTable']").attr("checked", "checked");
-
-						var idE = i;
-						
-						jQuery.post("./?pages=Creator&loadTables=1", function(d) {
-							tmp = jQuery(".databaseTemplate").html();
-							tmp = tmp.replace(/\{id\}/g, idE);
-							var datas = "";
-							selectedData = JSON.parse(d);
-							Object.keys(selectedData).forEach(function(k) {
-								datas += "<option value='"+selectedData[k].name+"'>"+selectedData[k].name+"</option>";
-							});
-							tmp = tmp.replace(/\{data\}/g, datas);
-							jQuery(".selectedInput[data-selectedInput='"+idE+"']").removeClass('hide').html(tmp);
-							jQuery(".dataBaseLoad[data-selectInputedData='"+idE+"']").val(dataField.loadDB.name);
-
-							console.log(".selectedInput[data-selectedInput='"+idE+"']");
-
-							var tmp = jQuery(".databaseTemplateSelect").html();
-							var datas = "";
-							var data = selectedData[dataField.loadDB.name].fields;
-							for(var i=0;i<data.length;i++) {
-								datas += "<option value='"+data[i]+"'>"+data[i]+"</option>";
-							}
-							tmp = tmp.replace(/\{data1\}/g, datas);
-							tmp = tmp.replace(/\{data2\}/g, datas);
-							tmp = tmp.replace(/\{id\}/g, idE);
-							jQuery(".dataBaseSelect[data-selectInputedData='"+idE+"']").html(tmp);
-							jQuery(".dataBaseSelect[data-selectInputedData='"+idE+"'] .dataBaseLoadKey").val(dataField.loadDB.key);
-							jQuery(".dataBaseSelect[data-selectInputedData='"+idE+"'] .dataBaseLoadValue").val(dataField.loadDB.value);
-						});
-					}
-					if(dataField.type=="radio") {
-						tmp = jQuery(".databaseInput").html();
-						tmp = tmp.replace(/\{id\}/g, i);
-						jQuery("[data-field='"+i+"'] .selectedInput[data-selectedInput='"+i+"']").removeClass('hide').html(tmp);
-						Object.keys(dataField.field).forEach(function(key) {
-							iInputDB++;
-							var tmp = jQuery(".databaseInputedData").html();
-							var tpl = tmp;
-							tpl = tpl.replace(/\{groupId\}/g, i);
-							tpl = tpl.replace(/\{id\}/g, iInputDB);
-							tpl = tpl.replace(/\{val\}/g, dataField.field[key]);
-							jQuery(".inputedData[data-selectInputedData='"+i+"']").append(tpl);
-						});
-					}
-					if(dataField.type=="linkToAdmin") {
-						tmp = jQuery(".linkToInput").html();
-						tmp = tmp.replace(/\{id\}/g, i);
-						tmp = tmp.replace(/\{valLink\}/g, dataField.field.link);
-						tmp = tmp.replace(/\{valTitle\}/g, dataField.field.title);
-						jQuery("[data-field='"+i+"'] .selectedInput[data-selectedInput='"+i+"']").removeClass('hide').html(tmp);
-					}
-					if(typeof(dataField.translate)!=="undefined" && typeof(dataField.alttitle)!=="undefined") {
-						var tmp = jQuery(".inputTranslate").html();
-						var tpl = tmp;
-						tpl = tpl.replace(/\{id\}/g, i);
-						jQuery(".createAltName[data-altname='"+i+"']").html(tpl);
-						jQuery("[data-field='"+i+"']").find("label.route_link input").prop("checked", true);
-						jQuery(".createAltName[data-altname='"+i+"']").find("input").val(dataField.alttitle);
-						sub_title_now = dataField.alttitle;
-						arrTranslate[i] = true;
-					}
-					cbr_replace();
-					jQuery("input[type='submit']").removeAttr("disabled");
-				});
+				builder(struct.data, "0");
 			}
 		}
 		$("body").on("input", ".altName", function() {
-			var regexp = /[^a-zA-Z0-9]/g;
+			var regexp = /[^a-zA-Z0-9-_]/g;
 			if($(this).val().match(regexp)) {
 				$(this).val($(this).val().replace(regexp, ''));
 			}
@@ -551,16 +650,54 @@
 			$(this).attr("data-needTranslate", "false");
 		});
 		$("body").on("input", ".title", function() {
-			if($(this).parents(".col-xs-12").find(".altName").attr("data-needTranslate")=="true") {
-				$(this).parents(".col-xs-12").find(".altName").val(translater(this.value));
-				var text = $(this).parents(".col-xs-12").find(".alttitle input").val();
+			if($(this).parents(".col-xs-12 > .uk-nestable-item").find(".altName").attr("data-needTranslate")=="true") {
+				$(this).parents(".col-xs-12 > .uk-nestable-item").find(".altName").val(translater(this.value));
+				var text = $(this).parents(".col-xs-12 > .uk-nestable-item").find(".alttitle input").val();
 				if(typeof(text)!=="undefined") {
 					text = text.replace("alt_", "");
 					text = text.replace(this.value, "");
 					if(text.length==0) {
-						$(this).parents(".col-xs-12").find(".alttitle input").val("alt_"+translater(this.value)).trigger("input");
+						$(this).parents(".col-xs-12 > .uk-nestable-item").find(".alttitle input").val("alt_"+translater(this.value)).trigger("input");
 					}
 				}
+			}
+		});
+		$("body").on("input", ".altNameTable", function() {
+			var regexp = /[^a-zA-Z0-9-_]/g;
+			if($(this).val().match(regexp)) {
+				$(this).val($(this).val().replace(regexp, ''));
+			}
+		});
+		$("body").on("input", ".altNameTable", function() {
+			$(this).attr("data-needTranslate", "false");
+		});
+		$("body").on("input", ".nameTable", function() {
+			if($(".altNameTable").attr("data-needTranslate")!="false") {
+				$(".altNameTable").val(translater(this.value));
+				var text = $(".nameTable").val();
+				if(typeof(text)!=="undefined") {
+					text = text.replace(this.value, "");
+					if(text.length==0) {
+						$(".alttitle").val(translater(this.value));
+					}
+				}
+			}
+		});
+		$("body").on("click", "label.repeater", function(e) {
+			if($(e.target).parents(".repeater").find("input").attr("readonly")=="readonly") {
+				return false;
+			}
+			e.preventDefault();
+			var elem = $(this);
+			var input = elem.find("input");
+			if(input.attr("checked")) {
+				elem.find(".cbr-replaced").removeClass('cbr-checked')
+				input.removeAttr('checked');
+				input.parents(".uk-nestable-item").addClass('uk-nestable-nochildren')
+			} else {
+				elem.find(".cbr-replaced").addClass('cbr-checked')
+				input.attr("checked", "checked");
+				input.parents(".uk-nestable-item").removeClass('uk-nestable-nochildren')
 			}
 		});
 		$("input[required],textarea[required],select[required]").each(function(i, elem) {
@@ -577,6 +714,14 @@
 		type_module = jQuery('[name="data[type_module]"]').val();
 		title_now = jQuery(".panel-heading .title").val();
 		previewRoute();
+		$("body").on("click", ".cbr-replaced.cbr-disabled", function(e) {
+			e.preventDefault();
+		});
+		$("body").on("click mousedown touchstart touchend", "select[readonly]", function(e) {
+			e.preventDefault();
+			e.stopPropagation();
+			e.stopImmediatePropagation();
+		});
 		setTimeout(function() {
 			jQuery("body").off("submit").on("submit", "form", function(e) {
 				if(!$(e.target).hasClass("checker")) {
@@ -658,6 +803,9 @@
 			jQuery("#router_custom_link1").val(route_main);
 			route_mains = route_main.replace("%category%", "<b>"+translater(title_now).toLowerCase()+"</b>");
 			jQuery(".route-preview1").html("Будет создана ссылка вида: <span class='editor'>{C_default_http_local}"+route_mains+"</span>&nbsp;<a href='#' class='fa fa-edit editor'></a>");
+			if($(".route_links input:checked").parents('[data-disabled-panel="true"]').length>0) {
+				$('[name="data[type_module]"]').attr("readonly", "readonly");
+			}
 		} else if(type_module=="route_full") {
 			jQuery(".for-router_custom_link1").removeClass("hide");
 			jQuery(".for-router_custom_link2").removeClass("hide");
@@ -674,6 +822,9 @@
 			route_subs = route_subs.replace("%item%", "<b>"+(sub_title_now.length==0 ? "id" : sub_title_now.toLowerCase())+"</b>");
 			jQuery(".route-preview1").html("Будет создана ссылка вида: <span class='editor'>{C_default_http_local}"+route_mains+"</span>&nbsp;<a href='#' class='fa fa-edit editor'></a>");
 			jQuery(".route-preview2").html("Будет создана ссылка вида: <span class='editor'>{C_default_http_local}"+route_subs+"</span>&nbsp;<a href='#' class='fa fa-edit editor'></a>");
+			if($(".route_links input:checked").parents('[data-disabled-panel="true"]').length>0) {
+				$('[name="data[type_module]"]').attr("readonly", "readonly");
+			}
 		} else {
 			jQuery(".router").addClass("hide");
 			arrTranslate = {};
@@ -691,6 +842,21 @@
 			jQuery(".route-preview1").html("");
 			jQuery(".route-preview2").html("");
 		}
+		$("[data-disabled-panel='true']").find(":input").attr("readonly", "readonly");
+		$("[data-disabled-panel='true']").find(":input").each(function(i, elem) {
+			$(elem).parents(".cbr-replaced").addClass("cbr-disabled").on("click mousedown mouseup touchstart touchend touchmove", function(e) {
+				e.preventDefault();
+				e.stopPropagation();
+				e.stopImmediatePropagation();
+				return false;
+			})
+			$(elem).on("click mousedown mouseup touchstart touchend touchmove", function(e) {
+				e.preventDefault();
+				e.stopPropagation();
+				e.stopImmediatePropagation();
+				return false;
+			});
+		});
 	}
 	jQuery("body").on("click", ".addInputDB", function() {
 		var id = jQuery(this).attr("data-addInputDB");
@@ -752,12 +918,14 @@
 			jQuery(".selectedInput[data-selectedInput='"+id+"']").addClass('hide').html("");
 			jQuery("[data-hideId='"+id+"']").addClass('hide').html("");
 		}
+		$(this).parents(".col-xs-12 > .uk-nestable-item").find(".hereTitle").parent().find("small").remove();
+		$(this).parents(".col-xs-12 > .uk-nestable-item").find(".hereTitle").parent().append("<small style='font-size:75%;'>"+(jQuery(this).parent().find("select option[value='"+this.value+"']").text())+"</small>");
 	});
 	jQuery(".creator").on("click", ".remove", function() {
 		var id = jQuery(this).attr("data-id");
 		jQuery("[data-field='"+id+"']").remove();
 		if(jQuery(".creator").html().trim().length==0) {
-			jQuery("input[type='submit']").attr("disabled", "disabled");
+			jQuery("input[type='submit']").attr("readonly", "readonly");
 		}
 		return false;
 	});
@@ -803,7 +971,10 @@
 		});
 		return false;
 	});
-	jQuery("body").on("click", ".route_links", function() {
+	jQuery("body").on("click", ".route_links", function(e) {
+		if($(e.target).parents(".route_links").find("input").attr("readonly")=="readonly") {
+			return false;
+		}
 		var id = jQuery(this).find("input").attr("data-id");
 		console.log(jQuery(this).find("input").prop("checked"));
 		jQuery(this).find("input").prop("checked", !(jQuery(this).find("input").prop("checked")));
@@ -830,15 +1001,23 @@
 		}
 		return false;
 	});
-	jQuery(".creator").off('nestable-stop').on('nestable-stop', function(ev) {
-		var list = jQuery(this).data('nestable').list();
-		var elems = jQuery(this).find('[data-field]');
-		console.log(elems);
-		for(var i=0;i<elems.length;i++) {
-			jQuery(elems[i]).find("input[name*='order']").val((i+1));
-			jQuery(elems[i]).find("input[name*='depth']").val(list[i].depth);
+	function readRec(list, depth, parent_id) {
+		for(var i=0;i<list.length;i++) {
+			var elem = jQuery(".creator").find('[data-field="'+list[i].field+'"]');
+			jQuery(elem).find("input[name*='order']").val((i+1));
+			jQuery(elem).find("input[name*='depth']").val(depth);
+			jQuery(elem).find("input[name*='parent_id']").val(parent_id ? parent_id : depth);
 			console.log(list[i]);
+			if(list[i].children) {
+				depth++;
+				readRec(list[i].children, depth, list[i].field);
+			}
 		}
+	}
+	jQuery(".creator").off('nestable-stop').on('nestable-stop', function(ev) {
+		var list = jQuery(this).data('nestable').serialize();
+		console.log(list);
+		readRec(list, 0)
 	});
 	jQuery("body").on("click", ".togglePanel", function() {
 		var id = jQuery(this).attr("data-toggle");
@@ -902,4 +1081,38 @@
 		width: 4px;
 		background: #e7bb1a;
 	}
+	.swal2-icon {
+		width: 8em;
+		height: 8em;
+	}
+	.swal2-icon.swal2-error [class^=swal2-x-mark-line] {
+		top: 3.7125em;
+		width: 5.9375em;
+	}
+	.swal2-title {
+		font-size: 2.875em;
+	}
+	.swal2-content {
+		font-size: 1.425em;
+	}
+	.swal2-styled.swal2-confirm {
+		font-size: 1.2625em;
+	}
+	.swal2-styled.swal2-cancel {
+		transition: all 300ms ease-in-out;
+		font-size: 1.3625em;
+	}
+	.swal2-popup {
+		width: 39em;
+	}
+	.swal2-styled:focus {
+		box-shadow: none;
+	}
+	.swal2-styled.swal2-confirm:focus {
+		background-color: #2566a5;
+	}
+	.swal2-styled.swal2-cancel:focus {
+		background-color: #7d7d7d;
+	}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
