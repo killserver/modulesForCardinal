@@ -500,5 +500,18 @@
 		"tested": "11.2",
 		"download": "https://raw.githubusercontent.com/killserver/modulesForCardinal/master/feedback_module.zip",
 		"tags": "разработчикам,генераторы,формы обратной связи"
+	},
+	"SmsMaster": {
+		"name": "SMS Master",
+		"altName": "SmsMaster",
+		"description": "SMS Master - модуль, который позволяет Вам работать с несколькими сервисами отправки СМС из одного места и контролировать процесс",
+		"author": "killserver",
+		"version": "1.0",
+		"image": "https://pbs.twimg.com/profile_images/416769653042450433/JoxXq_Xu_400x400.jpeg",
+		"type": "module",
+		"cardinalVersion": "11.2",
+		"tested": "11.2",
+		"download": "https://raw.githubusercontent.com/killserver/modulesForCardinal/master/SmsMaster.zip",
+		"tags": "разработчикам,sms,смс"
 	}
 }
