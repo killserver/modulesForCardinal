@@ -1,0 +1,201 @@
+.content_admin {
+    display: block;
+    position: relative;
+}
+
+.excel-load {
+    margin: 0;
+    position: absolute;
+    z-index: 999;
+    background-color: rgba(0, 160, 210, 0.62);
+    text-align: center;
+    display: none;
+    pointer-events: none;
+    left: 0;
+    top: 0;
+    /* bottom: 30%; */
+    /* right: 30%; */
+    width: 100%;
+    height: 100%;
+    min-height: 300px;
+    border-radius: 3px;
+}
+
+.excel-load > div {
+    display: inline-block;
+    width: 200px;
+    height: 130px;
+    line-height: 130px;
+    font-size: 70px;
+    border-radius: 3px;
+    border: 2px dashed #ffffff;
+    color: #ffffff;
+    margin: 100px 0 0;
+    margin-top: 100px;
+}
+
+.view-drag .excel-load {
+    display: block;
+}
+
+.excel-table {
+    display: flex;
+    flex-direction: column;
+    padding: 5px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.excel-line {
+    display: flex;
+    flex: 1 auto;
+    width: 100%;
+    box-sizing: border-box;
+    margin: 5px 0;
+    /* border-radius: 5px; */
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+.excel-line > * {
+    width: 15%;
+    min-width: 25px;
+    min-height: 50px;
+    overflow: hidden;
+    text-align: center;
+}
+
+.excel-line span {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    padding: 2px;
+    text-align: center;
+    border-left: 1px solid #eeeeee;
+    font-size: 14px;
+    line-height: 16px;
+    
+    /* Ð—Ð°Ð¿Ñ€ÐµÑ‰Ð°ÐµÐ¼ Ð¿ÐµÑ€ÐµÐ½Ð¾Ñ ÑÑ‚Ñ€Ð¾Ðº */
+    
+    /* ÐžÐ±Ñ€ÐµÐ·Ð°ÐµÐ¼ Ð²ÑÐµ, Ñ‡Ñ‚Ð¾ Ð½Ðµ Ð¿Ð¾Ð¼ÐµÑ‰Ð°ÐµÑ‚ÑÑ Ð² Ð¾Ð±Ð»Ð°ÑÑ‚ÑŒ */
+    
+    /* Ð¦Ð²ÐµÑ‚ Ñ„Ð¾Ð½Ð° */
+    
+    /* ÐŸÐ¾Ð»Ñ Ð²Ð¾ÐºÑ€ÑƒÐ³ Ñ‚ÐµÐºÑÑ‚Ð° */
+    
+    /* Ð”Ð¾Ð±Ð°Ð²Ð»ÑÐµÐ¼ Ð¼Ð½Ð¾Ð³Ð¾Ñ‚Ð¾Ñ‡Ð¸Ðµ */
+}
+
+.excel-line span:first-child, .excel-line span:last-child {
+    width: 100px;
+    text-align: center;
+    background-color: #00a0d2;
+    /* border-radius: 5px; */
+    color: #fff;
+    border: none;
+    /* padding: 3px; */
+}
+.excel-line.error span:first-child, .excel-line.error span:last-child{
+    background-color: #F44336;
+}
+.excel-line.comp span:first-child, .excel-line.comp span:last-child{
+    background-color: #8BC34A;
+}
+.excel-line span:nth-child(2) {
+    border: none;
+}
+
+.excel-line input {
+    width: 15px;
+    height: 15px;
+    margin: 0 0 0;
+    border: none;
+}
+
+.excel-head {
+    display: inline-block;
+    background-color: #ffffff;
+    padding: 5px;
+    /* border-radius: 5px; */
+    width: 100%;
+    margin: 0;
+    top: 5px;
+    position: sticky;
+    /* box-sizing: border-box; */
+    text-align: right;
+    font-size: 0;
+    letter-spacing: 0;
+}
+
+.excel-load + .excel-head > *:not(figure), .excel-head > span > *:not(figure) {
+    margin: 0 5px;
+    /* border: navajowhite; */
+    color: #fff;
+    line-height: 30px;
+    /* border-radius: 5px; */
+    /*background-color: #00a0d2;*/
+    border: none;
+    box-sizing: border-box;
+    padding: 0 15px;
+    display: inline-block;
+    vertical-align: top;
+    font-size: 14px;
+}
+ .excel-head > span {
+     max-width: 70%;
+ }
+.excel-head a, .excel-head >span > a{background-color: #00b19d;margin-bottom: 10px;}
+.excel-head button{
+    
+background-color: #7c38bc;
+}
+.excel-head label {
+    display: inline-block;
+    margin: 0;
+    /* padding: 0; */
+    cursor: pointer;
+    background-color: #68b828;
+}
+
+.excel-head label input {
+    display: none;
+}
+
+.excel-head label span {
+    display: block;
+    line-height: 30px;
+    /* background-color: #68b828; */
+    color: #fff;
+    border-radius: 5px;
+    padding: 0;
+}
+
+.excel-head .progress {
+    /* display: inline-block; */
+    float: left;
+    width: 50%;
+    height: 30px;
+    line-height: 30px;
+    border: 1px solid #eeeeee;
+    border-radius: 3px;
+    overflow: hidden;
+    position: relative;
+    margin: 0;
+    color: #fff;
+}
+
+.excel-head .progress i {
+    display: block;
+    position: absolute;
+    text-align: right;
+    top: 0;
+    left: 0;
+    width: 0%;
+    min-width: 30px;
+    padding: 0 5px;
+    box-sizing: border-box;
+    background-color: #68b828;
+    font-style: normal;
+    height: 100%;
+    font-size: 12px;
+}

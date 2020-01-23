@@ -331,13 +331,14 @@
 		"altName": "creatorAdmin",
 		"description": "При помощи данного модуля появляется возможность быстрого создания разделов. Создаётся структура таблиц и разделов в админ-панели. Теперь создавать сайты стало проще!!",
 		"author": "killserver",
-		"version": "2.0",
+		"version": "2.1",
 		"image": "http://wwbmaster.ru/images/responsive.png",
 		"type": "module",
 		"cardinalVersion": "12.0",
 		"tested": "12.0",
 		"download": "https://raw.githubusercontent.com/killserver/modulesForCardinal/master/creatorAdmin.zip",
 		"changelog": {
+			"2.1": "Исправлены мелкие баги",
 			"2.0": "Улучшена совместимость с последними версиями движка",
 			"1.8": "Улучшена совместимость с последними версиями движка. Улучшено взаимодействие с пользователем. Расширены возможности модуля",
 			"1.6.2": "Улучшена совместимость с последними версиями движка",
@@ -513,5 +514,18 @@
 		"tested": "11.2",
 		"download": "https://raw.githubusercontent.com/killserver/modulesForCardinal/master/SmsMaster.zip",
 		"tags": "разработчикам,sms,смс"
+	},
+	"LangExcelModule": {
+		"name": "Языки в Excel",
+		"altName": "LangExcelModule",
+		"description": "Работа с языками через Excel",
+		"author": "killserver",
+		"version": "1.0",
+		"image": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/Microsoft_Excel_2013_logo.svg/489px-Microsoft_Excel_2013_logo.svg.png",
+		"type": "module",
+		"cardinalVersion": "12.0",
+		"tested": "12.0",
+		"download": "https://raw.githubusercontent.com/killserver/modulesForCardinal/master/LangExcelModule.zip",
+		"tags": "языки,excel,выгрузка"
 	}
 }

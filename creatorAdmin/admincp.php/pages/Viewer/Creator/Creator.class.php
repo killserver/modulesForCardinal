@@ -486,7 +486,7 @@ class Creator extends Core {
 			$menu = file_get_contents($pathForReady."structMenu.txt");
 			$title = $_POST['data']['title'];
 			$icon = (isset($_POST['data']['icon']) && !empty($_POST['data']['icon']) ? $_POST['data']['icon'] : "");
-			$altTitle = (!empty($name) ? $name : ($_POST['data']['alttitle']));
+			$altTitle = (!empty($name) ? $name : ($_POST['data']['altTitle']));
 			for($l=0;$l<sizeof($langSupport);$l++) {
 				lang::Update($langSupport[$l], $altTitle, $title);
 			}
@@ -1010,6 +1010,8 @@ class Creator extends Core {
 			$type = "varchar".($isDB ? "(255)" : "");
 		} else if($type=="fileArray") {
 			$type = "longtext";
+		} else if($type=="fileArrayAccess") {
+			$type = "longtext";
 		} else if($type=="date") {
 			$type = "int".($isDB ? "(11)" : "");
 		} else if($type=="time") {
@@ -1030,7 +1032,7 @@ class Creator extends Core {
 			$auto_increment = " auto_increment";
 		}
 		if($isAdd === false && $withName===false) {
-			$return = array($struct['altName'] => (isset($struct['orName']) ? array("orName" => $struct['orName'], $type) : $type));
+			$return = array($struct['altName'] => (isset($struct['orName']) ? array("orName" => $struct['orName'], "comment" => $struct['name'], $type) : $type));
 		} else if($isAdd !== false && $withName===false) {
 			$return = array($struct['altName'] => $type." not null".$auto_increment.(isset($struct['default']) && !empty($struct['default']) ? " DEFAULT ".db::escape($struct['default']) : "")." COMMENT ".db::escape($struct['name']));
 		} else if($isDB) {
