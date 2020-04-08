@@ -273,7 +273,7 @@ class Creator extends Core {
 			$data[$i]['type'] = "varchar";
 		}
 		if($data[$i]['type']=="image" || $data[$i]['type']=="imageAccess") {
-			$listShild .= 'if(isset($row[\''.$altNamer.'\'])) { $row[\''.$altNamer.'\'] = "<img src=\"{C_default_http_local}".$row[\''.$altNamer.'\']."\" style=\"max-width:200px\">"; }'.PHP_EOL;
+			$listShild .= 'if(isset($row[\''.$altNamer.'\']) && strpos($row[\''.$altNamer.'\'], "<img")===false) { $row[\''.$altNamer.'\'] = "<img src=\"{C_default_http_local}".$row[\''.$altNamer.'\']."\" style=\"max-width:200px\">"; }'.PHP_EOL;
 		}
 		$altName = "";
 		if(isset($data[$i]['name'])) {
@@ -301,6 +301,9 @@ class Creator extends Core {
 		}
 		if(isset($data[$i]['required']) && !empty($data[$i]['required'])) {
 			$universalAttributes .= '$model->setAttribute(\''.$altNamer.'\', \'required\', \''.$data[$i]['required'].'\');'.PHP_EOL;
+		}
+		if(isset($data[$i]['height']) && !empty($data[$i]['height'])) {
+			$universalAttributes .= '$model->setAttribute(\''.$altNamer.'\', \'height\', \''.$data[$i]['height'].'\');'.PHP_EOL;
 		}
 		if($data[$i]['type']=="linkToAdmin") {
 			$universalAttributes .= '$model->setAttribute(\''.$altNamer.'\', \'Type\', \'linkToAdmin\');'.PHP_EOL;

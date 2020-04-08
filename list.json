@@ -300,13 +300,14 @@
 		"altName": "telegramBotCardinal",
 		"description": "При помощи данного модуля можно отправлять push-уведомления в Telegram всем тем, кто подписан на рассылку уведомлений",
 		"author": "killserver",
-		"version": "1.0.5",
+		"version": "1.0.6",
 		"image": "https://cdn-images-1.medium.com/max/1000/1*2eHsI5M_V4dAW-iJZh5RbQ.png",
 		"type": "module",
 		"cardinalVersion": "8.5",
-		"tested": "12.0",
+		"tested": "12.1",
 		"download": "https://raw.githubusercontent.com/killserver/modulesForCardinal/master/telegramBotCardinal.zip",
 		"changelog": {
+			"1.0.6": "Улучшена отправка данных в телеграм.АПИ. Исправлена ошибка форматировки текста",
 			"1.0.5": "Добавлена поддержка загрузки фото. Исправлена ошибка отправки форматированного текста",
 			"1.0.4": "Добавлена поддержка работы с системой событий",
 			"1.0.3": "Немного переписана работа скрипта для увеличения общей производительности",
@@ -331,13 +332,14 @@
 		"altName": "creatorAdmin",
 		"description": "При помощи данного модуля появляется возможность быстрого создания разделов. Создаётся структура таблиц и разделов в админ-панели. Теперь создавать сайты стало проще!!",
 		"author": "killserver",
-		"version": "2.1",
+		"version": "2.2",
 		"image": "http://wwbmaster.ru/images/responsive.png",
 		"type": "module",
-		"cardinalVersion": "12.0",
-		"tested": "12.0",
+		"cardinalVersion": "12.1",
+		"tested": "12.1",
 		"download": "https://raw.githubusercontent.com/killserver/modulesForCardinal/master/creatorAdmin.zip",
 		"changelog": {
+			"2.2": "Добавлена поддержка высоты полей Арчеро-подобных разделов. Исправлены мелкие баги",
 			"2.1": "Исправлены мелкие баги",
 			"2.0": "Улучшена совместимость с последними версиями движка",
 			"1.8": "Улучшена совместимость с последними версиями движка. Улучшено взаимодействие с пользователем. Расширены возможности модуля",
@@ -520,12 +522,28 @@
 		"altName": "LangExcelModule",
 		"description": "Работа с языками через Excel",
 		"author": "killserver",
+		"version": "1.1",
+		"image": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/Microsoft_Excel_2013_logo.svg/489px-Microsoft_Excel_2013_logo.svg.png",
+		"type": "module",
+		"cardinalVersion": "12.1",
+		"tested": "12.1",
+		"download": "https://raw.githubusercontent.com/killserver/modulesForCardinal/master/LangExcelModule.zip",
+		"tags": "языки,excel,выгрузка",
+		"changelog": {
+			"1.1": "Исправлена ошибка при которой получалось создать не корректный язык"
+		}
+	},
+	"excelModel": {
+		"name": "Выгрузка данных на основании таблиц бд/моделей в Эксель",
+		"altName": "excelModel",
+		"description": "Выгрузка данных на основании таблиц бд/моделей в Эксель",
+		"author": "killserver",
 		"version": "1.0",
 		"image": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/Microsoft_Excel_2013_logo.svg/489px-Microsoft_Excel_2013_logo.svg.png",
 		"type": "module",
-		"cardinalVersion": "12.0",
-		"tested": "12.0",
-		"download": "https://raw.githubusercontent.com/killserver/modulesForCardinal/master/LangExcelModule.zip",
-		"tags": "языки,excel,выгрузка"
+		"cardinalVersion": "12.1",
+		"tested": "12.1",
+		"download": "https://raw.githubusercontent.com/killserver/modulesForCardinal/master/excelModel.zip",
+		"tags": "модель,быстрое редактирование,excel,выгрузка"
 	}
 }

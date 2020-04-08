@@ -362,14 +362,14 @@ class telegramBot {
     *
     * @see getFile
     *
-    * @param string		$file_id
-    * @param string		$file_path		Is taken from the getFile response
+    * @param string   $file_id
+    * @param string   $file_path    Is taken from the getFile response
     *
     * @return On success, a File Data is returned
     */
    public function getFileData($file_id, $file_path)
    {
-   	return file_get_contents($this->baseFileURL . $file_path . '?' . http_build_query(compact('file_id')));
+    return file_get_contents($this->baseFileURL . $file_path . '?' . http_build_query(compact('file_id')));
    }
 
  /**
@@ -457,9 +457,26 @@ class telegramBot {
     return json_encode(compact('force_reply', 'selective'));
  }
 
-  private function sendRequest($method, $params)
+  private function sendRequest($method, $params, $post = true)
   {
-    return json_decode(file_get_contents($this->baseURL . $method . '?' . http_build_query($params)), true);
+    $url = $this->baseURL . $method;
+    if (!$post) { // GET Request
+      $url .= '?' . http_build_query($params);
+    }
+
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_HEADER, false);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    if($post) {
+      curl_setopt($ch, CURLOPT_POST, 1);
+      curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
+    }
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+    $ret = curl_exec($ch);
+    curl_close($ch);
+
+
+    return json_decode($ret, true);
   }
 
   private function uploadFile($method, $data)

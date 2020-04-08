@@ -43,6 +43,9 @@ class tgNoty {
 		$list = 0;
 		$file = (defined("PATH_CACHE_USERDATA") ? PATH_CACHE_USERDATA : (isset($config['telegramPath']) && !empty($config['telegramPath']) ? $config['telegramPath'] : (defined("PATH_CACHE") ? PATH_CACHE : ROOT_TG)))."tgNoty_chatId.txt";
 		if($type=="text") {
+			$text = str_replace("`", "\`", $text);
+			$text = str_replace("[", "\[", $text);
+			$text = str_replace("_", "\_", $text);
 			$arr = array();
 			if(file_exists($file)) {
 				$arr = file($file);

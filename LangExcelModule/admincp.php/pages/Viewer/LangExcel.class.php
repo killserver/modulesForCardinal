@@ -42,9 +42,8 @@ class LangExcel extends Core {
 		if(isset($_GET["save"])) {
 			$langs = $_GET["save"];
 			if(in_array($langs, $supports)) {
-				if(!in_array($langs, $support)) {
-					lang::Update($langs, 'lang_ini', $langs);
-				}
+				lang::LangRemove($langs, false);
+				lang::Update($langs, 'lang_ini', $langs);
 				lang::set_lang($langs);
 				lang::Update($langs, rawurldecode(Arr::get($_POST, 'original')), rawurldecode(Arr::get($_POST, 'translate')));
 				$this->rest("comp");

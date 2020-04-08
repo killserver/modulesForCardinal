@@ -188,9 +188,13 @@ if(isset($_GET['start'])) {
 	if(empty($data)) {
 		return;
 	}
+	// file_put_contents(dirname(__FILE__).DS."tg.txt", $data.PHP_EOL.PHP_EOL, FILE_APPEND);
 	$data = json_decode($data, true);
 	$username = $data['message']['chat']['first_name']." ".$data['message']['chat']['last_name'];
 	$chat_id = $data['message']['chat']['id'];
+	if($data['message']['text']!="." && $data['message']['text']!="/start") {
+		die();
+	}
 	$arr = array();
 	$save = false;
 	if(file_exists($file)) {
@@ -202,24 +206,39 @@ if(isset($_GET['start'])) {
 			$save = true;
 			// sends an action 'typing'
 			$tg->sendChatAction($chat_id, 'typing');
-			// send message with a custom reply markup
-			$tg->sendMessage($chat_id, "Вы успешно подписались на уведомления с сайта <b>".$hostname."</b>\nДля отписки - перейдите по <a href=\"".$host.$tgUnsubscribe."?id=".$chat_id."\">ссылке</a>", "HTML");
-			file_put_contents($file."_wait", "Данные от пользователя успешно получены.<br>Пользователь: <b>".$username."</b>");
+			if($data['message']['text']=="/start") {
+				// send message with a custom reply markup
+				$tg->sendMessage($chat_id, "Приветствуем! Уведомления с сайта <b>".$hostname."</b> почти начинают поступать! Введите точку для продолжения...", "HTML");
+			} else {
+				// send message with a custom reply markup
+				$tg->sendMessage($chat_id, "Вы успешно подписались на уведомления с сайта <b>".$hostname."</b>\nДля отписки - перейдите по <a href=\"".$host.$tgUnsubscribe."?id=".$chat_id."\">ссылке</a>", "HTML");
+				file_put_contents($file."_wait", "Данные от пользователя успешно получены.<br>Пользователь: <b>".$username."</b>");
+			}
 		} else {
 			// sends an action 'typing'
 			$tg->sendChatAction($chat_id, 'typing');
-			// send message with a custom reply markup
-			$tg->sendMessage($chat_id, "Вы уже подписанны на уведомления с сайта <b>".$hostname."</b>\nДля отписки - перейдите по <a href=\"".$host.$tgUnsubscribe."?id=".$chat_id."\">ссылке</a>", "HTML");
-			file_put_contents($file."_wait", "Вы уже подписанны на уведомления с сайта <b>".$hostname."</b>\nДля отписки - перейдите по <a href=\"".$host.$tgUnsubscribe."?id=".$chat_id."\">ссылке</a>");
+			if($data['message']['text']=="/start") {
+				// send message with a custom reply markup
+				$tg->sendMessage($chat_id, "Приветствуем! Уведомления с сайта <b>".$hostname."</b> почти начинают поступать! Введите точку для продолжения...", "HTML");
+			} else {
+				// send message with a custom reply markup
+				$tg->sendMessage($chat_id, "Вы уже подписанны на уведомления с сайта <b>".$hostname."</b>\nДля отписки - перейдите по <a href=\"".$host.$tgUnsubscribe."?id=".$chat_id."\">ссылке</a>", "HTML");
+				file_put_contents($file."_wait", "Вы уже подписанны на уведомления с сайта <b>".$hostname."</b>\nДля отписки - перейдите по <a href=\"".$host.$tgUnsubscribe."?id=".$chat_id."\">ссылке</a>");
+			}
 		}
 	} else if(!in_array($chat_id, $arr)) {
 		$arr[] = $chat_id;
 		$save = true;
 		// sends an action 'typing'
 		$tg->sendChatAction($chat_id, 'typing');
-		// send message with a custom reply markup
-		$tg->sendMessage($chat_id, "Вы успешно подписались на уведомления с сайта <b>".$hostname."</b>\nДля отписки - перейдите по <a href=\"".$host.$tgUnsubscribe."?id=".$chat_id."\">ссылке</a>", "HTML");
-		file_put_contents($file."_wait", "Данные от пользователя успешно получены.<br>Пользователь: <b>".$username."</b>");
+		if($data['message']['text']=="/start") {
+			// send message with a custom reply markup
+			$tg->sendMessage($chat_id, "Приветствуем! Уведомления с сайта <b>".$hostname."</b> почти начинают поступать! Введите точку для продолжения...", "HTML");
+		} else {
+			// send message with a custom reply markup
+			$tg->sendMessage($chat_id, "Вы успешно подписались на уведомления с сайта <b>".$hostname."</b>\nДля отписки - перейдите по <a href=\"".$host.$tgUnsubscribe."?id=".$chat_id."\">ссылке</a>", "HTML");
+			file_put_contents($file."_wait", "Данные от пользователя успешно получены.<br>Пользователь: <b>".$username."</b>");
+		}
 	}
 	if($save) {
 		file_put_contents($file, trim(implode(PHP_EOL, $arr)).PHP_EOL);

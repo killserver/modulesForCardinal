@@ -212,6 +212,15 @@
 								<input type="text" class="form-control placeholder" name="data[{id}][placeholder]" placeholder="Введите подсказку">
 							</div>
 						</div>
+						<div class="form-group">
+							<label class="col-xs-12 col-md-3 control-label">Высота</label>
+							<div class="col-xs-12 col-md-9">
+								<div class="input-group">
+									<input type="text" class="form-control height" name="data[{id}][height]" placeholder="Введите высоту элемента" value="auto">
+									<span class="input-group-addon">px</span>
+								</div>
+							</div>
+						</div>
 						<br>
 						<div class="form-group">
 							<label class="col-xs-12 col-md-3 control-label">Дополнительные возможности</label>
@@ -468,6 +477,9 @@
 			if(typeof(dataField.placeholder)!=="undefined" && dataField.placeholder.length>0) {
 				jQuery("[data-field='"+i+"']").find("[name*='placeholder']").val(dataField.placeholder)
 			}
+			if(typeof(dataField.height)!=="undefined" && dataField.height.length>0) {
+				jQuery("[data-field='"+i+"']").find("[name*='height']").val(dataField.height)
+			}
 			if(typeof(dataField.repeater)!=="undefined" && dataField.repeater=="yes") {
 				jQuery("[data-field='"+i+"']").find("label.repeater input[type='checkbox']").attr("checked", "checked");
 				jQuery("[data-field='"+i+"']").find(".uk-nestable-nochildren").removeClass('uk-nestable-nochildren')
@@ -622,7 +634,7 @@
 				var titles = struct.data.title;
 				var altTitle = struct.data.altTitle;
 				jQuery(".formCreator .nameTable").val(titles);
-				jQuery(".formCreator .altNameTable").val(altTitle).attr("disabled", "disabled").attr("data-needTranslate", "false");
+				jQuery(".formCreator .altNameTable").val((altTitle ? altTitle : translater(titles).toLowerCase())).attr("disabled", "disabled").attr("data-needTranslate", "false");
 				jQuery('.formCreator [name="data[type_module]"]').val(struct.data.type_module);
 				delete struct.data.title;
 				delete struct.data.altTitle;
