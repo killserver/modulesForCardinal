@@ -1,7 +1,7 @@
 <?php
 /*
 Name: Push-уведомления в Telegram
-Version: 1.0.6
+Version: 1.1
 Author: killserver
  */
 if(!defined("IS_CORE")) {
@@ -11,7 +11,7 @@ if(!defined("IS_CORE")) {
 
 class telegramBotCardinal extends modules {
 
-	public static $version = "1.0.6";
+	public static $version = "1.1";
 	
 	function __construct() {
 		Route::Set('tgUnsubscribe', "tgUnsubscribe.php")->defaults(array(
@@ -24,6 +24,7 @@ class telegramBotCardinal extends modules {
 		));
 		if(function_exists("addEvent")) {
 			addEvent("notyTelegram", array($this, "noty"));
+			addEvent("notyTelegramToId", array($this, "notyToId"));
 		}
 	}
 	
@@ -31,9 +32,14 @@ class telegramBotCardinal extends modules {
 		include(ROOT_PATH."tgLib.php");
 	}
 
-	function noty($mess, $type = "txt") {
+	function noty($mess, $type = "txt", $fileChatList = "tgNoty_chatId.txt") {
 		$tg = $this->loader("tgNoty");
 		return $tg->noty($mess, $type);
+	}
+
+	function notyToId($user_id, $mess, $type = "text") {
+		$tg = $this->loader("tgNoty");
+		return $tg->notyToId($user_id, $mess, $type, array());
 	}
 	
 }

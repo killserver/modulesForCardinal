@@ -300,13 +300,14 @@
 		"altName": "telegramBotCardinal",
 		"description": "При помощи данного модуля можно отправлять push-уведомления в Telegram всем тем, кто подписан на рассылку уведомлений",
 		"author": "killserver",
-		"version": "1.0.6",
+		"version": "1.1",
 		"image": "https://cdn-images-1.medium.com/max/1000/1*2eHsI5M_V4dAW-iJZh5RbQ.png",
 		"type": "module",
 		"cardinalVersion": "8.5",
 		"tested": "12.1",
 		"download": "https://raw.githubusercontent.com/killserver/modulesForCardinal/master/telegramBotCardinal.zip",
 		"changelog": {
+			"1.1": "Добавлена поддержка отправки сообщений по-ИД получателя. Добавлена поддержка отправки фото",
 			"1.0.6": "Улучшена отправка данных в телеграм.АПИ. Исправлена ошибка форматировки текста",
 			"1.0.5": "Добавлена поддержка загрузки фото. Исправлена ошибка отправки форматированного текста",
 			"1.0.4": "Добавлена поддержка работы с системой событий",
@@ -332,13 +333,14 @@
 		"altName": "creatorAdmin",
 		"description": "При помощи данного модуля появляется возможность быстрого создания разделов. Создаётся структура таблиц и разделов в админ-панели. Теперь создавать сайты стало проще!!",
 		"author": "killserver",
-		"version": "2.2",
+		"version": "2.3",
 		"image": "http://wwbmaster.ru/images/responsive.png",
 		"type": "module",
 		"cardinalVersion": "12.1",
 		"tested": "12.1",
 		"download": "https://raw.githubusercontent.com/killserver/modulesForCardinal/master/creatorAdmin.zip",
 		"changelog": {
+			"2.3": "Улучшена поддержка полей, значения которых получаются из БД",
 			"2.2": "Добавлена поддержка высоты полей Арчеро-подобных разделов. Исправлены мелкие баги",
 			"2.1": "Исправлены мелкие баги",
 			"2.0": "Улучшена совместимость с последними версиями движка",
@@ -509,13 +511,16 @@
 		"altName": "SmsMaster",
 		"description": "SMS Master - модуль, который позволяет Вам работать с несколькими сервисами отправки СМС из одного места и контролировать процесс",
 		"author": "killserver",
-		"version": "1.0",
+		"version": "1.1",
 		"image": "https://pbs.twimg.com/profile_images/416769653042450433/JoxXq_Xu_400x400.jpeg",
 		"type": "module",
 		"cardinalVersion": "11.2",
 		"tested": "11.2",
 		"download": "https://raw.githubusercontent.com/killserver/modulesForCardinal/master/SmsMaster.zip",
-		"tags": "разработчикам,sms,смс"
+		"tags": "разработчикам,sms,смс",
+		"changelog": {
+			"1.1": "Расширен функционал отправки СМС. Добавлена возможность сортировки и выбора СМС-сервиса. Добавлена возможность использования СМС-сервисов по-очерёдно"
+		}
 	},
 	"LangExcelModule": {
 		"name": "Языки в Excel",
@@ -538,12 +543,15 @@
 		"altName": "excelModel",
 		"description": "Выгрузка данных на основании таблиц бд/моделей в Эксель",
 		"author": "killserver",
-		"version": "1.0",
+		"version": "1.1",
 		"image": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/Microsoft_Excel_2013_logo.svg/489px-Microsoft_Excel_2013_logo.svg.png",
 		"type": "module",
 		"cardinalVersion": "12.1",
 		"tested": "12.1",
 		"download": "https://raw.githubusercontent.com/killserver/modulesForCardinal/master/excelModel.zip",
-		"tags": "модель,быстрое редактирование,excel,выгрузка"
+		"tags": "модель,быстрое редактирование,excel,выгрузка",
+		"changelog": {
+			"1.1": "Исправлена ошибка перезаписи некоторых файлов других модулей"
+		}
 	}
 }

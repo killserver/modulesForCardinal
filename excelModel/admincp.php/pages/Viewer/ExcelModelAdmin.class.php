@@ -43,7 +43,7 @@ class ExcelModelAdmin extends Core {
 			}
 			$id = $_POST["id"];
 			//var_dump($_POST);die();
-			$WHERE = execEvent("excel_model_model_".$this->model."_id", execEvent("excel_model_model_id", $this->model));
+			$WHERE = execEvent("excel_model_".$this->model."_id", execEvent("excel_model_id", $this->model));
 			if(empty($WHERE) || $WHERE == $this->model) {
 				$this->rest("where is not set", true);
 			}

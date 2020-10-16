@@ -534,6 +534,8 @@ class telegramBot {
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $this->baseURL . $method);
     curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_BINARYTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
 
     $response = json_decode(curl_exec($ch), true);
