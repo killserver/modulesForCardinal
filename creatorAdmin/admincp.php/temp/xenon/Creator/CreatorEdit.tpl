@@ -7,10 +7,10 @@
 			<input type="hidden" class="mode" name="mode" value="add">
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<div class="col-sm-11">
+					<div class="col-xs-11" style="padding:0;">
 						<input type="text" class="form-control title nameTable" name="data[title]" placeholder="Введите название раздела" required="required">
 					</div>
-					<div class="col-sm-1">
+					<div class="col-xs-1" style="padding:0;">
 						<div class="iconSelect">
 							<input type="hidden" name="data[icon]" class="icons">
 							<div><i class="" data-icon=""></i></div>
@@ -27,9 +27,15 @@
 					<div class="col-sm-12">
 						<select class="form-control" name="data[type_module]" required="required">
 							<option value="" selected="selected" disabled="disabled">Выберите тип раздела</option>
-							<option value="route">С роутером без внутренних страниц</option>
-							<option value="route_full">С роутером и внутренними страницами</option>
-							<option value="without_route">Дочерний раздел</option>
+							<optgroup label="С несколькими записями">
+								<option value="route">С роутером без внутренних страниц</option>
+								<option value="route_full">С роутером и внутренними страницами</option>
+								<option value="without_route">Дочерний раздел(без создания ссылок)</option>
+							</optgroup>
+							<optgroup label="Одна запись">
+								<option value="route_page">С роутером</option>
+								<option value="without_route_page">Дочерний раздел(без создания ссылок)</option>
+							</optgroup>
 						</select>
 						<br>
 						<div class="text-small route-preview1 hide"></div>
@@ -189,6 +195,7 @@
 										<option value="systime">Автоматическое установление времени</option>
 									</optgroup>
 									<optgroup label="Разное">
+										<option value="panel">Панель</option>
 										<option value="array">Массив данных</option>
 										<option value="multiple-array">Массив данных с возможностью выбора нескольких значений</option>
 										<option value="hidden">Скрытое поле</option>
@@ -200,7 +207,7 @@
 						</div>
 						<div class="col-xs-12 databased hide" data-hideId="{id}"></div>
 						<div class="col-xs-12 selectedInput hide" data-selectedInput="{id}"></div>
-						<div class="form-group">
+						<div class="form-group hideIfPanel">
 							<label class="col-xs-12 col-md-3 control-label">Значение по-умолчанию</label>
 							<div class="col-xs-12 col-md-9">
 								<textarea class="form-control default onlyText" name="data[{id}][default]" placeholder="Введите значение по-умолчанию"></textarea>
@@ -212,7 +219,7 @@
 								<input type="text" class="form-control placeholder" name="data[{id}][placeholder]" placeholder="Введите подсказку">
 							</div>
 						</div>
-						<div class="form-group">
+						<div class="form-group hideIfPanel">
 							<label class="col-xs-12 col-md-3 control-label">Высота</label>
 							<div class="col-xs-12 col-md-9">
 								<div class="input-group">
@@ -222,7 +229,7 @@
 							</div>
 						</div>
 						<br>
-						<div class="form-group">
+						<div class="form-group hideIfPanel">
 							<label class="col-xs-12 col-md-3 control-label">Дополнительные возможности</label>
 							<div class="col-xs-12 col-md-9">
 								<div class="checkbox">
@@ -233,6 +240,11 @@
 								<div class="checkbox">
 									<label class="supportLang">
 										<input type="checkbox" name="data[{id}][supportLang]" class="cbr cbr-primary" value="yes" data-id="{id}">Поддержка мультиязычности
+									</label>
+								</div>
+								<div class="checkbox">
+									<label class="quickEdit">
+										<input type="checkbox" name="data[{id}][quickEdit]" class="cbr cbr-primary quickEdit" value="yes" data-id="{id}">Поддержка быстрого редактирования
 									</label>
 								</div>
 								<div class="checkbox">
@@ -322,6 +334,154 @@
 			<input type="text" class="form-control" name="data[{id}][field][title]" placeholder="" required="required" value="{valTitle}">
 		</div>
 	</div>
+</script>
+<script type="text/javascript">
+	/**
+	 * jQuery serializeObject
+	 * @copyright 2014, macek <paulmacek@gmail.com>
+	 * @link https://github.com/macek/jquery-serialize-object
+	 * @license BSD
+	 * @version 2.5.0
+	 */
+	(function(root, factory) {
+
+	  // AMD
+	  if (typeof define === "function" && define.amd) {
+	    define(["exports", "jquery"], function(exports, $) {
+	      return factory(exports, $);
+	    });
+	  }
+
+	  // CommonJS
+	  else if (typeof exports !== "undefined") {
+	    var $ = require("jquery");
+	    factory(exports, $);
+	  }
+
+	  // Browser
+	  else {
+	    factory(root, (root.jQuery || root.Zepto || root.ender || root.$));
+	  }
+
+	}(this, function(exports, $) {
+
+	  var patterns = {
+	    validate: /^[a-z_][a-z0-9_]*(?:\[(?:\d*|[a-z0-9_]+)\])*$/i,
+	    key:      /[a-z0-9_]+|(?=\[\])/gi,
+	    push:     /^$/,
+	    fixed:    /^\d+$/,
+	    named:    /^[a-z0-9_]+$/i
+	  };
+
+	  function FormSerializer(helper, $form) {
+
+	    // private variables
+	    var data     = {},
+	        pushes   = {};
+
+	    // private API
+	    function build(base, key, value) {
+	      base[key] = value;
+	      return base;
+	    }
+
+	    function makeObject(root, value) {
+
+	      var keys = root.match(patterns.key), k;
+
+	      // nest, nest, ..., nest
+	      while ((k = keys.pop()) !== undefined) {
+	        // foo[]
+	        if (patterns.push.test(k)) {
+	          var idx = incrementPush(root.replace(/\[\]$/, ''));
+	          value = build([], idx, value);
+	        }
+
+	        // foo[n]
+	        else if (patterns.fixed.test(k)) {
+	          value = build([], k, value);
+	        }
+
+	        // foo; foo[bar]
+	        else if (patterns.named.test(k)) {
+	          value = build({}, k, value);
+	        }
+	      }
+
+	      return value;
+	    }
+
+	    function incrementPush(key) {
+	      if (pushes[key] === undefined) {
+	        pushes[key] = 0;
+	      }
+	      return pushes[key]++;
+	    }
+
+	    function encode(pair) {
+	      switch ($('[name="' + pair.name + '"]', $form).attr("type")) {
+	        case "checkbox":
+	          return pair.value === "on" ? true : pair.value;
+	        default:
+	          return pair.value;
+	      }
+	    }
+
+	    function addPair(pair) {
+	      if (!patterns.validate.test(pair.name)) return this;
+	      var obj = makeObject(pair.name, encode(pair));
+	      data = helper.extend(true, data, obj);
+	      return this;
+	    }
+
+	    function addPairs(pairs) {
+	      if (!helper.isArray(pairs)) {
+	        throw new Error("formSerializer.addPairs expects an Array");
+	      }
+	      for (var i=0, len=pairs.length; i<len; i++) {
+	        this.addPair(pairs[i]);
+	      }
+	      return this;
+	    }
+
+	    function serialize() {
+	      return data;
+	    }
+
+	    function serializeJSON() {
+	      return JSON.stringify(serialize());
+	    }
+
+	    // public API
+	    this.addPair = addPair;
+	    this.addPairs = addPairs;
+	    this.serialize = serialize;
+	    this.serializeJSON = serializeJSON;
+	  }
+
+	  FormSerializer.patterns = patterns;
+
+	  FormSerializer.serializeObject = function serializeObject() {
+	    return new FormSerializer($, this).
+	      addPairs(this.serializeArray()).
+	      serialize();
+	  };
+
+	  FormSerializer.serializeJSON = function serializeJSON() {
+	    return new FormSerializer($, this).
+	      addPairs(this.serializeArray()).
+	      serializeJSON();
+	  };
+
+	  if (typeof $.fn !== "undefined") {
+	    $.fn.serializeObject = FormSerializer.serializeObject;
+	    $.fn.serializeJSON   = FormSerializer.serializeJSON;
+	  }
+
+	  exports.FormSerializer = FormSerializer;
+
+	  return FormSerializer;
+	}));
 </script>
 <script type="application/json" id="json">{struct}</script>
 <script type="text/javascript">
@@ -419,6 +579,11 @@
 		}
 		return transform(val, "_");
 	}
+	var values = function(obj) {
+		return Object.keys(obj).map(function(e) {
+			return obj[e];
+		})
+	}
 	var type_module = "";
 	var title_now = "";
 	var sub_title_now = "";
@@ -467,6 +632,9 @@
 			}
 			if(typeof(dataField.supportLang)!=="undefined" && dataField.supportLang=="yes") {
 				jQuery("[data-field='"+i+"']").find("label.supportLang input[type='checkbox']").attr("checked", "checked");
+			}
+			if(typeof(dataField.quickEdit)!=="undefined" && dataField.quickEdit=="yes") {
+				jQuery("[data-field='"+i+"']").find("label.quickEdit input[type='checkbox']").attr("checked", "checked");
 			}
 			if(typeof(dataField.required)!=="undefined" && dataField.required=="yes") {
 				jQuery("[data-field='"+i+"']").find("label.required input[type='checkbox']").attr("checked", "checked");
@@ -622,7 +790,13 @@
 			if(typeof(dataField.disabled)!=="undefined" || typeof(dataField.notEditable)!=="undefined") {
 				$("[data-field='"+i+"'] .cbr-replaced").addClass("cbr-disabled")
 			}
-			jQuery("input[type='submit']").removeAttr("disabled");
+			if(typeof(dataField.type)!=="undefined" && dataField.type=="panel") {
+				$("[data-field='"+i+"']").find(".hideIfPanel").hide();
+			}
+			
+			if(values(struct.data).filter(function(item) { return item.type!=="panel"; }).length>0) {
+				jQuery("input[type='submit']").removeAttr("disabled");
+			}
 		});
 	}
 	jQuery(document).ready(function($) {
@@ -798,7 +972,7 @@
 			return;
 		}
 		jQuery(".uk-nestable-item .translated").remove();
-		if(type_module=="route") {
+		if(type_module=="route" || type_module=="route_page") {
 			jQuery(".route-preview2").html("");
 			jQuery("#router_custom_link2").val("");
 			jQuery(".for-router_custom_link2").addClass("hide");
@@ -818,7 +992,7 @@
 			if($(".route_links input:checked").parents('[data-disabled-panel="true"]').length>0) {
 				$('[name="data[type_module]"]').attr("readonly", "readonly");
 			}
-		} else if(type_module=="route_full") {
+		} else if(type_module=="route_full" || type_module=="route_full_page") {
 			jQuery(".for-router_custom_link1").removeClass("hide");
 			jQuery(".for-router_custom_link2").removeClass("hide");
 			jQuery(".route-preview1").removeClass("hide");
@@ -906,7 +1080,15 @@
 	});
 	jQuery(".creator").on("change", ".selected", function() {
 		var id = jQuery(this).attr("data-selectId");
-		if(this.value=="multiple-array") {
+		$(".hideIfPanel").show();
+		if(this.value=="panel") {
+			$(".hideIfPanel").hide();
+			if(values(struct.data).filter(function(item) { return item.type!=="panel"; }).length>0) {
+				jQuery("input[type='submit']").removeAttr("disabled");
+			} else {
+				jQuery("input[type='submit']").attr("disabled", "disabled");
+			}
+		} else if(this.value=="multiple-array") {
 			var tmp = jQuery(".databaseSelectRadio").html();
 			tmp = tmp.replace(/\{id\}/g, id);
 			jQuery("[data-hideId='"+id+"']").removeClass('hide').html(tmp);
@@ -936,6 +1118,12 @@
 	jQuery(".creator").on("click", ".remove", function() {
 		var id = jQuery(this).attr("data-id");
 		jQuery("[data-field='"+id+"']").remove();
+		struct = $(".content_admin form").serializeObject();
+		if(values(struct.data).filter(function(item) { return item.type!=="panel"; }).length>0) {
+			jQuery("input[type='submit']").removeAttr("disabled");
+		} else {
+			jQuery("input[type='submit']").attr("disabled", "disabled");
+		}
 		if(jQuery(".creator").html().trim().length==0) {
 			jQuery("input[type='submit']").attr("readonly", "readonly");
 		}
@@ -951,7 +1139,10 @@
 			jQuery(".route_links").removeClass("hide");
 		}
 		cbr_replace();
-		jQuery("input[type='submit']").removeAttr("disabled");
+		struct = $(".content_admin form").serializeObject();
+		if(values(struct.data).filter(function(item) { return item.type!=="panel"; }).length>0) {
+			jQuery("input[type='submit']").removeAttr("disabled");
+		}
 		
 		return false;
 	});

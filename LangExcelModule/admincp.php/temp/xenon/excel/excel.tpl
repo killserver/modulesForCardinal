@@ -3,6 +3,7 @@
 <label class="excel-load" ><div class="fa-cloud-upload" ></div></label>
 <div class="excel-head" >
 	<figure class="progress" ><i></i></figure>
+	<button onclick="excel.start()" >Перезалить</button>
 	<button onclick="excel.complete()" >Выполнить</button>
 	<label><input type="checkbox" onchange="excel.selected(this.checked)" /><span>Отметить</span></label>
 </div>
@@ -16,7 +17,7 @@
 </div>
 <div class="excel-table" ></div>
 
-<script src="{C_default_http_local}{D_ADMINCP_DIRECTORY}/temp/xenon/excel/excel.js"></script>
+<script src="{C_default_http_local}{D_ADMINCP_DIRECTORY}/temp/xenon/excel/excel.js?3"></script>
 <script src="{C_default_http_local}{D_ADMINCP_DIRECTORY}/temp/xenon/excel/xlsx.full.min.js"></script>
 <script type="application/json" id="supportsLang">{json}</script>
 <script>

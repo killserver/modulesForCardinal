@@ -1,7 +1,7 @@
 <?php
 /*
 Name: Быстрое создание разделов
-Version: 2.3
+Version: 2.5
 Author: killserver
  */
 if(!defined("IS_CORE")) {
@@ -22,7 +22,7 @@ class creatorAdmin extends modules {
 		return $levels;
 	}
 
-	public static $version = "2.3";
+	public static $version = "2.5";
 
 }
 

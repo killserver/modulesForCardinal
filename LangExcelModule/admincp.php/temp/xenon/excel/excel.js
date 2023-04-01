@@ -152,7 +152,7 @@ excel.view = function(data) {
 		}
 		excel.body.appendChild(el);
 	}
-	for(var i=2; i<data.length;i++) {
+	for(var i=3; i<data.length;i++) {
 		if(data[i].length == 0) continue;
 		var el = document.createElement("div");
 		el.className = "excel-line";
@@ -165,12 +165,39 @@ excel.view = function(data) {
 		excel.body.appendChild(el);
 	}
 }
+excel.start = function() {
+	excel.data = new Array;
+	[].forEach.call(excel.body.querySelectorAll('.excel-line:not(.header)'),function(e){
+		if(e.querySelector("input").checked == true) excel.data.push(e);
+	});
+	excel.progress(excel.data.length);
+	var url;
+	if(typeof(loadExcelModel)!=="undefined") {
+		url = default_localadmin_link+loadExcelModel+"&startSave=true"
+	} else {
+		url = default_localadmin_link+"?pages=LangExcel&save="+excel.langLoad+"&startSave=true"
+	}
+	ajax({ "url": url }, function(d) {
+		d = JSON.parse(d);
+		if(d["error"] != false) {
+			toastr.error(d);
+		} else {
+			excel.send(0);
+		}
+	});
+}
 excel.complete = function(k) {
 	excel.data = new Array;
 	[].forEach.call(excel.body.querySelectorAll('.excel-line:not(.header)'),function(e){
 		if(e.querySelector("input").checked == true) excel.data.push(e);
 	});
 	excel.progress(excel.data.length);
+	var url;
+	if(typeof(loadExcelModel)!=="undefined") {
+		url = default_localadmin_link+loadExcelModel+"&startSave=true"
+	} else {
+		url = default_localadmin_link+"?pages=LangExcel&save="+excel.langLoad+"&startSave=true"
+	}
 	excel.send(0);
 }
 excel.send = function(k) {

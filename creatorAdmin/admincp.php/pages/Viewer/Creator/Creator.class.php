@@ -159,6 +159,10 @@ class Creator extends Core {
 		if(file_exists($pathForThisModule."file_".$name.".txt") && $install===false) { unlink($pathForThisModule."file_".$name.".txt"); }
 		if(file_exists(PATH_MODULES.$altTitleUp."Archer.class.".ROOT_EX)) { unlink(PATH_MODULES.$altTitleUp."Archer.class.".ROOT_EX); }
 		if(file_exists(PATH_MODELS."Model".$altTitleUp.".".ROOT_EX)) { unlink(PATH_MODELS."Model".$altTitleUp.".".ROOT_EX); }
+		if(file_exists(PATH_CACHE_SYSTEM."tables.".ROOT_EX)) { unlink(PATH_CACHE_SYSTEM."tables.".ROOT_EX); }
+		if(file_exists(PATH_CACHE_SYSTEM."tables_".$name.".".ROOT_EX)) { unlink(PATH_CACHE_SYSTEM."tables_".$name.".".ROOT_EX); }
+		if(file_exists(PATH_CACHE_SYSTEM."tables-full-".db::$dbName."-".(defined("PREFIX_DB") && PREFIX_DB!=="" ? PREFIX_DB : "").$name.".".ROOT_EX)) { unlink(PATH_CACHE_SYSTEM."tables-full-".db::$dbName."-".(defined("PREFIX_DB") && PREFIX_DB!=="" ? PREFIX_DB : "").$name.".".ROOT_EX); }
+		if(file_exists(PATH_CACHE_SYSTEM."tables-".db::$dbName."-".(defined("PREFIX_DB") && PREFIX_DB!=="" ? PREFIX_DB : "").$name.".".ROOT_EX)) { unlink(PATH_CACHE_SYSTEM."tables-".db::$dbName."-".(defined("PREFIX_DB") && PREFIX_DB!=="" ? PREFIX_DB : "").$name.".".ROOT_EX); }
 		if(file_exists(ADMIN_MENU.$name.".main.".ROOT_EX)) { unlink(ADMIN_MENU.$name.".main.".ROOT_EX); }
 		if(defined("TEMPLATEPATH")) {
 			$file = TEMPLATEPATH."list_".$name.".default.".templates::changeTypeTpl();
@@ -236,7 +240,7 @@ class Creator extends Core {
 		return $data;
 	}
 
-	private static function workInField(&$data, &$listShild, &$universalAttributesTakeAdd, &$universalAttributesTakeEdit, &$universalAttributes, &$universalAttributesShow, &$createAutoField, &$exclude, &$excludeLang, &$fieldsForTranslate, &$altTranslateField, &$altLinkField, $first, $i, $langSupport, $sort, $sufix = "", $ignoreNotFirst = true, $supportLang = false, $z = 0) {
+	private static function workInField(&$data, &$listShild, &$universalAttributesTakeAdd, &$universalAttributesTakeEdit, &$universalAttributes, &$universalAttributesShow, &$createAutoField, &$exclude, &$excludeLang, &$fieldsForTranslate, &$altTranslateField, &$altLinkField, &$addToConstructor, $first, $i, $langSupport, $sort, $sufix = "", $ignoreNotFirst = true, $supportLang = false, $z = 0, $nameTable = "", $nameTableUp = "") {
 		if(isset($data[$i]['altName']) && !empty($data[$i]['altName'])) {
 			$altNameField = nucfirst($data[$i]['altName']);
 		} else {
@@ -248,7 +252,7 @@ class Creator extends Core {
 			$supportLang = true;
 			unset($data[$i]['supportLang']);
 			for($z=0;$z<sizeof($upper);$z++) {
-				self::workInField($data, $listShild, $universalAttributesTakeAdd, $universalAttributesTakeEdit, $universalAttributes, $universalAttributesShow, $createAutoField, $exclude, $excludeLang, $fieldsForTranslate, $altTranslateField, $altLinkField, $first, $i, $langSupport, $sort, $upper[$z], ($z===0), $supportLang, $z);
+				self::workInField($data, $listShild, $universalAttributesTakeAdd, $universalAttributesTakeEdit, $universalAttributes, $universalAttributesShow, $createAutoField, $exclude, $excludeLang, $fieldsForTranslate, $altTranslateField, $altLinkField, $addToConstructor, $first, $i, $langSupport, $sort, $upper[$z], ($z===0), $supportLang, $z, $nameTable, $nameTableUp);
 			}
 			unset($data[$i]);
 			return;
@@ -264,6 +268,15 @@ class Creator extends Core {
 		$data[$i]['sort'] = $sort;
 		$data[$i]['altName'] .= $sufix;
 		$altNamer = $data[$i]['altName'];
+		if(sizeof($data)==1 && $data[$i]['type']=="panel") {
+			unset($data[$i]);
+			return;
+		} else if(sizeof($data)>1 && $data[$i]['type']=="panel") {
+			$universalAttributes .= '$model->addPseudoPosition("'.$data[$i]['altName'].'", \'before\', "'.$data[$i+1]['altName'].'");'.PHP_EOL.'$model->setAttribute("'.$data[$i]['altName'].'", \'type\', \'subpanel\');'.PHP_EOL.'$model->setAttribute("'.$data[$i]['altName'].'", \'title_subpanel\', "'.$data[$i]['name'].'");'.PHP_EOL;
+			unset($data[$i]);
+			return;
+		}
+		// vdump($_POST);die();
 		$forAutoField = ($i);
 		if(!empty($sufix) && $z>0) {
 			$forAutoField += $z;
@@ -273,7 +286,7 @@ class Creator extends Core {
 			$data[$i]['type'] = "varchar";
 		}
 		if($data[$i]['type']=="image" || $data[$i]['type']=="imageAccess") {
-			$listShild .= 'if(isset($row[\''.$altNamer.'\']) && strpos($row[\''.$altNamer.'\'], "<img")===false) { $row[\''.$altNamer.'\'] = "<img src=\"{C_default_http_local}".$row[\''.$altNamer.'\']."\" style=\"max-width:200px\">"; }'.PHP_EOL;
+			$listShild .= 'if(isset($row[\''.$altNamer.'\']) && !isset(self::$cache[\''.$altNamer.'\']) && strpos($row[\''.$altNamer.'\'], "<img")===false && !empty($row[\''.$altNamer.'\'])) { $row[\''.$altNamer.'\'] = "<img class=\"lazyload\" data-src=\"".(strpos($row[\''.$altNamer.'\'], "http")===false ? "{C_default_http_local}".$row[\''.$altNamer.'\'] : $row[\''.$altNamer.'\'])."\" style=\"max-width:200px\">"; }'.PHP_EOL;
 		}
 		$altName = "";
 		if(isset($data[$i]['name'])) {
@@ -302,9 +315,14 @@ class Creator extends Core {
 		if(isset($data[$i]['required']) && !empty($data[$i]['required'])) {
 			$universalAttributes .= '$model->setAttribute(\''.$altNamer.'\', \'required\', \''.$data[$i]['required'].'\');'.PHP_EOL;
 		}
+		if(isset($data[$i]['quickEdit']) && !empty($data[$i]['quickEdit'])) {
+			$addToConstructor .= 'KernelArcher::addQuickEdit("'.$data[$i]['altName'].'", "Model'.$nameTableUp.'");'.PHP_EOL;
+		}
 		if(isset($data[$i]['height']) && !empty($data[$i]['height'])) {
 			$universalAttributes .= '$model->setAttribute(\''.$altNamer.'\', \'height\', \''.$data[$i]['height'].'\');'.PHP_EOL;
 		}
+		$universalAttributesTakeAdd .= PHP_EOL.PHP_EOL.'if(isset($model->createdTime) && $model->createdTime==0) { $model->createdTime = $model->Time(); }'.PHP_EOL.PHP_EOL;
+		$universalAttributesTakeEdit .= PHP_EOL.PHP_EOL.'if(isset($model->editedTime) && $model->editedTime==0) { $model->editedTime = $model->Time(); }'.PHP_EOL.PHP_EOL;
 		if($data[$i]['type']=="linkToAdmin") {
 			$universalAttributes .= '$model->setAttribute(\''.$altNamer.'\', \'Type\', \'linkToAdmin\');'.PHP_EOL;
 			$universalAttributes .= '$model->setAttribute(\''.$altNamer.'\', \'linkLink\', \''.$data[$i]['field']['link'].'\');'.PHP_EOL;
@@ -315,14 +333,14 @@ class Creator extends Core {
 			$universalAttributesShow .= '$model->setAttribute(\''.$altNamer.'\', \'Type\', \'datetime\');'.PHP_EOL;
 			$data[$i]['type'] = "hidden";
 		} else if($data[$i]['type']=="multiple-array" && $data[$i]['selectedData']=="dataOnInput") {
-			$name = $data[$i]['loadDB']['name'];
-			if(defined("PREFIX_DB") && PREFIX_DB!=="") {
-				$len = strlen(PREFIX_DB);
-				$name = substr($name, $len);
-			}
-			$listShild .= 'if(isset($row[\''.$altNamer.'\'])) { $row[\''.$altNamer.'\'] = explode(",", $row[\''.$altNamer.'\']); $arr = array(); $finder = explode(";=-=;", "'.implode(";=-=;", $data[$i]['field']).'"); for($i=0;$i<sizeof($row[\''.$altNamer.'\']);$i++) { if(in_array($row[\''.$altNamer.'\'][$i], $finder)) { $find = true; $arr[] = $row[\''.$altNamer.'\'][$i]; } } if($find===false) { $row[\''.$altNamer.'\'] = "{L_\"Не найдено\"}"; } else { $row[\''.$altNamer.'\'] = implode(",", $arr); } }'.PHP_EOL;
+			// $name = $data[$i]['loadDB']['name'];
+			// if(defined("PREFIX_DB") && PREFIX_DB!=="") {
+			// 	$len = strlen(PREFIX_DB);
+			// 	$name = substr($name, $len);
+			// }
+			$listShild .= 'if(isset($row[\''.$altNamer.'\']) && !isset(self::$cache[\''.$altNamer.'\'])) { $row[\''.$altNamer.'\'] = explode(",", $row[\''.$altNamer.'\']); $arr = array(); $finder = explode(";=-=;", "'.implode(";=-=;", $data[$i]['field']).'"); for($i=0;$i<sizeof($row[\''.$altNamer.'\']);$i++) { if(in_array($row[\''.$altNamer.'\'][$i], $finder)) { $find = true; $arr[] = $row[\''.$altNamer.'\'][$i]; } } if($find===false) { $row[\''.$altNamer.'\'] = "{L_\"Не найдено\"}"; } else { $row[\''.$altNamer.'\'] = implode(",", $arr); } }'.PHP_EOL;
 
-			$universalAttributes .= 'if(property_exists($model, "'.$altNamer.'")) { $model->setAttribute("'.$altNamer.'", "Type", "multiple-array"); $model->'.$altNamer.' = explode(",", $model->'.$altNamer.'); $default = $cats = array(); $finder = explode(";=-=;", "'.implode(";=-=;", $data[$i]['field']).'"); for($i=0;$i<sizeof($finder);$i++) { if(isset($model->'.$altNamer.'[$i]) && in_array($model->'.$altNamer.'[$i], $finder)) { $default[] = $model->'.$altNamer.'[$i]; } $cats[] = array("".$finder[$i] => $finder[$i]); } $category = $cats; $category[\'default\'] = $default; $model->'.$altNamer.' = $category; }'.PHP_EOL;
+			$universalAttributes .= 'if(property_exists($model, "'.$altNamer.'") && !isset(self::$modifiedAttrs[\''.$altNamer.'\'])) { $model->setAttribute("'.$altNamer.'", "Type", "multiple-array"); $model->'.$altNamer.' = explode(",", $model->'.$altNamer.'); $default = $cats = array(); $finder = explode(";=-=;", "'.implode(";=-=;", $data[$i]['field']).'"); for($i=0;$i<sizeof($finder);$i++) { if(isset($model->'.$altNamer.'[$i]) && in_array($model->'.$altNamer.'[$i], $finder)) { $default[] = $model->'.$altNamer.'[$i]; } $cats[] = array("".$finder[$i] => $finder[$i]); } $category = $cats; $category[\'default\'] = $default; $model->'.$altNamer.' = $category; }'.PHP_EOL;
 			$d = 'if(property_exists($model, "'.$altNamer.'") && isset($_POST[\''.$altNamer.'\'])) { $model->'.$altNamer.' = explode(",", $_POST[\''.$altNamer.'\']); $cats = array(); $finder = explode(";=-=;", "'.implode(";=-=;", $data[$i]['field']).'"); for($i=0;$i<sizeof($model->'.$altNamer.');$i++) { if(in_array($model->'.$altNamer.'[$i], $finder)) { $cats[] = $model->'.$altNamer.'[$i]; } } $model->'.$altNamer.' = implode(",", $cats); }';
 			$universalAttributesTakeAdd .= $d.PHP_EOL;
 			$universalAttributesTakeEdit .= $d.PHP_EOL;
@@ -333,10 +351,10 @@ class Creator extends Core {
 				$len = strlen(PREFIX_DB);
 				$name = substr($name, $len);
 			}
-			$listShild .= 'if(isset($row[\''.$altNamer.'\'])) { $db = self::init_db(); $find = false; if(!isset(self::$cache[\''.$name.'\']) || !is_array(self::$cache[\''.$name.'\']) || sizeof(self::$cache[\''.$name.'\'])==0) { self::$cache[\''.$name.'\'] = array(); $db->doquery("SELECT `'.$data[$i]['loadDB']['key'].'`, `'.$data[$i]['loadDB']['value'].'` FROM {{'.$name.'}} ORDER BY `'.$data[$i]['loadDB']['key'].'` DESC", true); while($rows = $db->fetch_assoc()) { self::$cache[\''.$name.'\'][$rows[\''.$data[$i]['loadDB']['key'].'\']] = $rows[\''.$data[$i]['loadDB']['value'].'\']; } } if(isset(self::$cache[\''.$name.'\'])) { $row[\''.$altNamer.'\'] = explode(",", $row[\''.$altNamer.'\']); $arr = array(); for($i=0;$i<sizeof($row[\''.$altNamer.'\']);$i++) { if(isset(self::$cache[\''.$name.'\'][$row[\''.$altNamer.'\'][$i]])) { $find = true; $arr[] = self::$cache[\''.$name.'\'][$row[\''.$altNamer.'\'][$i]]; } } } if($find===false) { $row[\''.$altNamer.'\'] = "{L_\"Не найдено\"}"; } else { $row[\''.$altNamer.'\'] = implode(",", $arr); } }'.PHP_EOL;
+			$listShild .= 'if(isset($row[\''.$altNamer.'\']) && !isset(self::$cache[\''.$altNamer.'\'])) { $db = self::init_db(); $find = false; if(!isset(self::$cache[\''.$name.'\']) || !is_array(self::$cache[\''.$name.'\']) || sizeof(self::$cache[\''.$name.'\'])==0) { self::$cache[\''.$name.'\'] = array(); $db->doquery("SELECT `'.$data[$i]['loadDB']['key'].'`, `'.$data[$i]['loadDB']['value'].'` FROM {{'.$name.'}} ORDER BY `'.$data[$i]['loadDB']['key'].'` DESC", true); while($rows = $db->fetch_assoc()) { self::$cache[\''.$name.'\'][$rows[\''.$data[$i]['loadDB']['key'].'\']] = $rows[\''.$data[$i]['loadDB']['value'].'\']; } } if(isset(self::$cache[\''.$name.'\'])) { $row[\''.$altNamer.'\'] = explode(",", $row[\''.$altNamer.'\']); $arr = array(); for($i=0;$i<sizeof($row[\''.$altNamer.'\']);$i++) { if(isset(self::$cache[\''.$name.'\'][$row[\''.$altNamer.'\'][$i]])) { $find = true; $arr[] = self::$cache[\''.$name.'\'][$row[\''.$altNamer.'\'][$i]]; } } } if($find===false) { $row[\''.$altNamer.'\'] = "{L_\"Не найдено\"}"; } else { $row[\''.$altNamer.'\'] = implode(",", $arr); } }'.PHP_EOL;
 
 
-			$universalAttributes .= 'if(property_exists($model, "'.$altNamer.'")) { $model->setAttribute("'.$altNamer.'", "Type", "multiple-array"); $model->'.$altNamer.' = explode(",", $model->'.$altNamer.'); $default = array(); $category = array(); $db = self::init_db(); $db->doquery("SELECT * FROM {{'.$name.'}}", true); while($row = $db->fetch_assoc()) { if(in_array($row[\''.$data[$i]['loadDB']['key'].'\'], $model->'.$altNamer.')) { $default[] = $row[\''.$data[$i]['loadDB']['key'].'\']; } $category[$row[\''.$data[$i]['loadDB']['key'].'\']] = array("".$row[\''.$data[$i]['loadDB']['key'].'\'] => $row[\''.$data[$i]['loadDB']['value'].'\']); } $category[\'default\'] = $default; $model->'.$altNamer.' = $category; }'.PHP_EOL;
+			$universalAttributes .= 'if(property_exists($model, "'.$altNamer.'") && !isset(self::$modifiedAttrs[\''.$altNamer.'\'])) { $model->setAttribute("'.$altNamer.'", "Type", "multiple-array"); $model->'.$altNamer.' = explode(",", $model->'.$altNamer.'); $default = array(); $category = array(); $db = self::init_db(); $db->doquery("SELECT * FROM {{'.$name.'}} ORDER BY `'.$data[$i]['loadDB']['key'].'` DESC", true); while($row = $db->fetch_assoc()) { if(in_array($row[\''.$data[$i]['loadDB']['key'].'\'], $model->'.$altNamer.')) { $default[] = $row[\''.$data[$i]['loadDB']['key'].'\']; } $category[$row[\''.$data[$i]['loadDB']['key'].'\']] = array("".$row[\''.$data[$i]['loadDB']['key'].'\'] => $row[\''.$data[$i]['loadDB']['value'].'\']); } $category[\'default\'] = $default; $model->'.$altNamer.' = $category; }'.PHP_EOL;
 			$d = 'if(property_exists($model, "'.$altNamer.'") && isset($_POST[\''.$altNamer.'\'])) { $model->'.$altNamer.' = $_POST[\''.$altNamer.'\']; }';
 			$universalAttributesTakeAdd .= $d.PHP_EOL;
 			$universalAttributesTakeEdit .= $d.PHP_EOL;
@@ -348,9 +366,9 @@ class Creator extends Core {
 				$name = substr($name, $len);
 			}
 			$universalAttributesShow .= '$model->setAttribute(\''.$altNamer.'\', \'Type\', \''.$data[$i]['type'].'\');'.PHP_EOL;
-			$listShild .= 'if(isset($row[\''.$altNamer.'\'])) { $db = self::init_db(); $find = false; if(!isset(self::$cache[\''.$name.'\']) || !is_array(self::$cache[\''.$name.'\']) || sizeof(self::$cache[\''.$name.'\'])==0) { self::$cache[\''.$name.'\'] = array(); $db->doquery("SELECT `'.$data[$i]['loadDB']['key'].'`, `'.$data[$i]['loadDB']['value'].'` FROM {{'.$name.'}} ORDER BY `'.$data[$i]['loadDB']['key'].'` DESC", true); while($rows = $db->fetch_assoc()) { self::$cache[\''.$name.'\'][$rows[\''.$data[$i]['loadDB']['key'].'\']] = $rows[\''.$data[$i]['loadDB']['value'].'\']; } } if(isset(self::$cache[\''.$name.'\']) && isset(self::$cache[\''.$name.'\'][$row[\''.$altNamer.'\']])) { $find = true; $row[\''.$altNamer.'\'] = self::$cache[\''.$name.'\'][$row[\''.$altNamer.'\']]; } if($find===false) { $row[\''.$altNamer.'\'] = "{L_\"Не найдено\"}"; } }'.PHP_EOL;
-			$universalAttributes .= 'if(property_exists($model, "'.$altNamer.'")) { $model->setAttribute("'.$altNamer.'", "Type", "array"); $category = array(); $db = self::init_db(); $db->doquery("SELECT * FROM {{'.$name.'}}", true); $default = ""; while($row = $db->fetch_assoc()) { if($model->'.$altNamer.' == $row[\''.$data[$i]['loadDB']['key'].'\']) { $default = $row[\''.$data[$i]['loadDB']['value'].'\']; } $category[$row[\''.$data[$i]['loadDB']['key'].'\']] = $row[\''.$data[$i]['loadDB']['value'].'\']; } $category[\'default\'] = $default; $model->'.$altNamer.' = $category; }'.PHP_EOL;
-			$d = 'if(property_exists($model, "'.$altNamer.'") && isset($_POST[\''.$altNamer.'\'])) { $model->'.$altNamer.' = $_POST[\''.$altNamer.'\']; $db = self::init_db(); $db->doquery("SELECT * FROM {{'.$name.'}}", true); while($row = $db->fetch_assoc()) { if($model->'.$altNamer.' == $row[\''.$data[$i]['loadDB']['value'].'\']) { $model->'.$altNamer.' = $row[\''.$data[$i]['loadDB']['key'].'\']; } } }';
+			$listShild .= 'if(isset($row[\''.$altNamer.'\']) && !isset(self::$cache[\''.$altNamer.'\'])) { $db = self::init_db(); $find = false; if(!isset(self::$cache[\''.$name.'\']) || !is_array(self::$cache[\''.$name.'\']) || sizeof(self::$cache[\''.$name.'\'])==0) { self::$cache[\''.$name.'\'] = array(); $db->doquery("SELECT `'.$data[$i]['loadDB']['key'].'`, `'.$data[$i]['loadDB']['value'].'` FROM {{'.$name.'}} ORDER BY `'.$data[$i]['loadDB']['key'].'` DESC", true); while($rows = $db->fetch_assoc()) { self::$cache[\''.$name.'\'][$rows[\''.$data[$i]['loadDB']['key'].'\']] = $rows[\''.$data[$i]['loadDB']['value'].'\']; } } if(isset(self::$cache[\''.$name.'\']) && isset(self::$cache[\''.$name.'\'][$row[\''.$altNamer.'\']])) { $find = true; $row[\''.$altNamer.'\'] = self::$cache[\''.$name.'\'][$row[\''.$altNamer.'\']]; } if($find===false) { $row[\''.$altNamer.'\'] = "{L_\"Не найдено\"}"; } }'.PHP_EOL;
+			$universalAttributes .= 'if(property_exists($model, "'.$altNamer.'")) { $model->setAttribute("'.$altNamer.'", "Type", "array"); $category = array(); $db = self::init_db(); $db->doquery("SELECT * FROM {{'.$name.'}} ORDER BY `'.$data[$i]['loadDB']['key'].'` DESC", true); $default = ""; while($row = $db->fetch_assoc()) { if($model->'.$altNamer.' == $row[\''.$data[$i]['loadDB']['key'].'\']) { $default = $row[\''.$data[$i]['loadDB']['value'].'\']; } $category[$row[\''.$data[$i]['loadDB']['key'].'\']] = $row[\''.$data[$i]['loadDB']['value'].'\']; } $category[\'default\'] = $default; $model->'.$altNamer.' = $category; }'.PHP_EOL;
+			$d = 'if(property_exists($model, "'.$altNamer.'") && isset($_POST[\''.$altNamer.'\'])) { $model->'.$altNamer.' = $_POST[\''.$altNamer.'\']; $db = self::init_db(); $db->doquery("SELECT * FROM {{'.$name.'}} ORDER BY `'.$data[$i]['loadDB']['key'].'` DESC", true); while($row = $db->fetch_assoc()) { if($model->'.$altNamer.' == $row[\''.$data[$i]['loadDB']['value'].'\']) { $model->'.$altNamer.' = $row[\''.$data[$i]['loadDB']['key'].'\']; } } }';
 			$universalAttributesTakeAdd .= $d.PHP_EOL;
 			$universalAttributesTakeEdit .= $d.PHP_EOL;
 		} else if($data[$i]['type']=="array" || $data[$i]['type']=="enum") {
@@ -490,6 +508,8 @@ class Creator extends Core {
 			$title = $_POST['data']['title'];
 			$icon = (isset($_POST['data']['icon']) && !empty($_POST['data']['icon']) ? $_POST['data']['icon'] : "");
 			$altTitle = (!empty($name) ? $name : ($_POST['data']['altTitle']));
+			$nameArcherPage = $altTitle;
+			//vdump($altTitle);
 			for($l=0;$l<sizeof($langSupport);$l++) {
 				lang::Update($langSupport[$l], $altTitle, $title);
 			}
@@ -590,16 +610,31 @@ class Creator extends Core {
 			$excludeLang = array();
 			$createAutoField = array();
 			$fieldsForTranslate = array();
-			$altLinkField = $altTranslateField = "";
+			$addToConstructor = $altLinkField = $altTranslateField = "";
 			$data = array_values($data);
 			$count=0;
+			// vdump($data);die();
 			while(true) {
 				if(!isset($data[$count])) {
 					break;
 				}
-				self::workInField($data, $listShild, $universalAttributesTakeAdd, $universalAttributesTakeEdit, $universalAttributes, $universalAttributesShow, $createAutoField, $exclude, $excludeLang, $fieldsForTranslate, $altTranslateField, $altLinkField, $first, $count, $langSupport, $count);
+				self::workInField($data, $listShild, $universalAttributesTakeAdd, $universalAttributesTakeEdit, $universalAttributes, $universalAttributesShow, $createAutoField, $exclude, $excludeLang, $fieldsForTranslate, $altTranslateField, $altLinkField, $addToConstructor, $first, $count, $langSupport, $count, "", true, false, 0, $altTitle, $altTitleUp);
 				$count++;
 			}
+			if($type_module=="route_page" || $type_module=="without_route_page") {
+				$addToConstructor .= 'addEventRef("changeInfoArcher", function(&$typeUni, &$page, &$viewId) {
+					if($typeUni=="'.$altTitle.'" && !isset($_GET[\'viewId\'])) {
+						$rel = db::doquery("SELECT COUNT(`'.$first."Id".'`) FROM {{'.$altTitle.'}}");
+						if($rel[\'count\']==0) {
+							$page = "Add";
+						} else if($rel[\'count\']>0) {
+							$page = "Edit";
+							$viewId = 1;
+						}
+					}
+				});';
+			}
+			// addToConstructor
 			if(empty($altLinkField)) {
 				$altLinkField = $first."Id";
 			}
@@ -610,6 +645,7 @@ class Creator extends Core {
 					$prefix = PREFIX_DB;
 				}
 			}
+			// vdump($addToConstructor);die();
 			if(!empty($route_main)) {
 				$routers = file_get_contents($pathForReady."structRoute.txt");
 				$routers = str_replace("{name}", "main_".$altTitle, $routers);
@@ -701,6 +737,7 @@ class Creator extends Core {
 			$exclude[] = '"createdTime"';
 			$exclude[] = '"editedTime"';
 			$archer = str_replace("{router}", trim($router), $archer);
+			$archer = str_replace("{addToConstructor}", trim($addToConstructor), $archer);
 			$archer = str_replace("{router_method}", trim($router_method), $archer);
 			$archer = str_replace("{universalAttributes}", trim($universalAttributes), $archer);
 			$archer = str_replace("{universalAttributesShow}", trim($universalAttributesShow), $archer);
@@ -918,20 +955,21 @@ class Creator extends Core {
 				modules::create_table($altTitle, $db, true);
 				execEvent("creator_new_section", $altTitle, $data, $db);
 			}
-			if(file_exists(PATH_CACHE_SYSTEM."tables.".ROOT_EX)) {
-				@unlink(PATH_CACHE_SYSTEM."tables.".ROOT_EX);
-			}
-			if(file_exists(PATH_CACHE_SYSTEM."tables-".db::$dbName."-".$altTitle.".".ROOT_EX)) {
-				@unlink(PATH_CACHE_SYSTEM."tables-".db::$dbName."-".$altTitle.".".ROOT_EX);
-			}
 
 			if(!is_writeable(ADMIN_MENU)) {
 				@chmod(ADMIN_MENU, 077);
 			}
 			if(file_exists(ADMIN_MENU.$altTitle.".main.".ROOT_EX)) { unlink(ADMIN_MENU.$altTitle.".main.".ROOT_EX); }
+			if(file_exists(PATH_CACHE_SYSTEM."tables.".ROOT_EX)) { unlink(PATH_CACHE_SYSTEM."tables.".ROOT_EX); }
+			if(file_exists(PATH_CACHE_SYSTEM."tables_".$name.".".ROOT_EX)) { unlink(PATH_CACHE_SYSTEM."tables_".$name.".".ROOT_EX); }
+			if(file_exists(PATH_CACHE_SYSTEM."tables-full-".db::$dbName."-".(defined("PREFIX_DB") && PREFIX_DB!=="" ? PREFIX_DB : "").$name.".".ROOT_EX)) { unlink(PATH_CACHE_SYSTEM."tables-full-".db::$dbName."-".(defined("PREFIX_DB") && PREFIX_DB!=="" ? PREFIX_DB : "").$name.".".ROOT_EX); }
+			if(file_exists(PATH_CACHE_SYSTEM."tables-".db::$dbName."-".(defined("PREFIX_DB") && PREFIX_DB!=="" ? PREFIX_DB : "").$name.".".ROOT_EX)) { unlink(PATH_CACHE_SYSTEM."tables-".db::$dbName."-".(defined("PREFIX_DB") && PREFIX_DB!=="" ? PREFIX_DB : "").$name.".".ROOT_EX); }
 			file_put_contents(ADMIN_MENU.$altTitle.".main.".ROOT_EX, $menu);
 			if(!$install) {
-				location("./?pages=Creator");
+				if(db::connected()) {
+					sleep(3);
+				}
+				location(!db::connected() ? "./?pages=Creator" : "./?pages=Archer&type=".$nameArcherPage);
 			}
 			return true;
 		}
@@ -1018,6 +1056,8 @@ class Creator extends Core {
 		} else if($type=="file") {
 			$type = "varchar".($isDB ? "(255)" : "");
 		} else if($type=="fileArray") {
+			$type = "longtext";
+		} else if($type=="fileAccess") {
 			$type = "longtext";
 		} else if($type=="fileArrayAccess") {
 			$type = "longtext";

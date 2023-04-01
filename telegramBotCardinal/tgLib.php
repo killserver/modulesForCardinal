@@ -191,6 +191,7 @@ if(isset($_GET['start'])) {
 	// file_put_contents(dirname(__FILE__).DS."tg.txt", $data.PHP_EOL.PHP_EOL, FILE_APPEND);
 	$data = json_decode($data, true);
 	$username = $data['message']['chat']['first_name']." ".$data['message']['chat']['last_name'];
+	$nick = $data['message']['chat']['username'];
 	$chat_id = $data['message']['chat']['id'];
 	if($data['message']['text']!="." && $data['message']['text']!="/start") {
 		die();
@@ -202,7 +203,7 @@ if(isset($_GET['start'])) {
 		$arr = array_map("trim", $arr);
 		$arr = rebuildArrTG($arr);
 		if(!in_array($chat_id, $arr)) {
-			$arr[] = $chat_id;
+			$arr[] = $chat_id."=-=".json_encode($nick."=-=".$username."=-=".date("d-m-Y H:i:s"));
 			$save = true;
 			// sends an action 'typing'
 			$tg->sendChatAction($chat_id, 'typing');
@@ -227,7 +228,7 @@ if(isset($_GET['start'])) {
 			}
 		}
 	} else if(!in_array($chat_id, $arr)) {
-		$arr[] = $chat_id;
+		$arr[] = $chat_id."=-=".json_encode($nick."=-=".$username."=-=".date("d-m-Y H:i:s"));
 		$save = true;
 		// sends an action 'typing'
 		$tg->sendChatAction($chat_id, 'typing');

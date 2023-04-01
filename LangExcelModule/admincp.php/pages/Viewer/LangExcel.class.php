@@ -39,10 +39,18 @@ class LangExcel extends Core {
 		sortByValue($supports);
 		templates::assign_var("json", json_encode($supports));
 		$supports = array_keys($supports);
+		if(isset($_GET['startSave'])) {
+			$langs = $_GET["save"];
+			if(in_array($langs, $supports)) {
+				lang::Remove($langs, false);
+				$this->rest("comp");
+			} else {
+				$this->rest($this->translateError("Язык не поддерживается"), true);
+			}
+		}
 		if(isset($_GET["save"])) {
 			$langs = $_GET["save"];
 			if(in_array($langs, $supports)) {
-				lang::LangRemove($langs, false);
 				lang::Update($langs, 'lang_ini', $langs);
 				lang::set_lang($langs);
 				lang::Update($langs, rawurldecode(Arr::get($_POST, 'original')), rawurldecode(Arr::get($_POST, 'translate')));

@@ -381,81 +381,81 @@ class telegramBot {
   * @return Array
   *
   */
- public function setWebhook($url, $certificate = null)
- {
-  if (filter_var($url, FILTER_VALIDATE_URL) === false)
-    throw new Exception('Invalid URL provided');
+   public function setWebhook($url, $certificate = null)
+   {
+    if (filter_var($url, FILTER_VALIDATE_URL) === false)
+      throw new Exception('Invalid URL provided');
 
-  if (parse_url($url, PHP_URL_SCHEME) !== 'https')
-    throw new Exception('Invalid URL, it should be a HTTPS url.');
+    if (parse_url($url, PHP_URL_SCHEME) !== 'https')
+      throw new Exception('Invalid URL, it should be a HTTPS url.');
 
-  if (is_null($certificate))
-    return $this->sendRequest('setWebhook', compact('url', 'certificate'));
-  else
-    return $this->uploadFile('setWebhook', compact('url', 'certificate'));
-}
+    if (is_null($certificate))
+      return $this->sendRequest('setWebhook', compact('url', 'certificate'));
+    else
+      return $this->uploadFile('setWebhook', compact('url', 'certificate'));
+  }
 
- /**
-  * Returns webhook updates sent by Telegram.
-  * Works only if you set a webhook.
-  *
-  * @see setWebhook
-  *
-  * @return Array
-  */
- public function getWebhookUpdates()
- {
-   $body = json_decode(file_get_contents('php://input'), true);
+   /**
+    * Returns webhook updates sent by Telegram.
+    * Works only if you set a webhook.
+    *
+    * @see setWebhook
+    *
+    * @return Array
+    */
+   public function getWebhookUpdates()
+   {
+     $body = json_decode(file_get_contents('php://input'), true);
 
-   return $body;
- }
+     return $body;
+   }
 
- /**
-  * Builds a custom keyboard markup.
-  *
-  * @link https://core.telegram.org/bots/api#replykeyboardmarkup
-  *
-  * @param array $keyboard
-  * @param bool  $resize_keyboard
-  * @param bool  $one_time_keyboard
-  * @param bool  $selective
-  *
-  * @return string
-  */
- public function replyKeyboardMarkup($keyboard, $resize_keyboard = false, $one_time_keyboard = false, $selective = false)
- {
-    return json_encode(compact('keyboard', 'resize_keyboard', 'one_time_keyboard', 'selective'));
- }
+   /**
+    * Builds a custom keyboard markup.
+    *
+    * @link https://core.telegram.org/bots/api#replykeyboardmarkup
+    *
+    * @param array $keyboard
+    * @param bool  $resize_keyboard
+    * @param bool  $one_time_keyboard
+    * @param bool  $selective
+    *
+    * @return string
+    */
+   public function replyKeyboardMarkup($keyboard, $resize_keyboard = false, $one_time_keyboard = false, $selective = false)
+   {
+      return json_encode(compact('keyboard', 'resize_keyboard', 'one_time_keyboard', 'selective'));
+   }
 
- /**
-  * Hide the current custom keyboard and display the default letter-keyboard.
-  *
-  * @link https://core.telegram.org/bots/api#replykeyboardhide
-  *
-  * @param bool $selective
-  *
-  * @return string
-  */
- public static function replyKeyboardHide($selective = false)
- {
-    $hide_keyboard = true;
-    return json_encode(compact('hide_keyboard', 'selective'));
- }
+   /**
+    * Hide the current custom keyboard and display the default letter-keyboard.
+    *
+    * @link https://core.telegram.org/bots/api#replykeyboardhide
+    *
+    * @param bool $selective
+    *
+    * @return string
+    */
+   public static function replyKeyboardHide($selective = false)
+   {
+      $hide_keyboard = true;
+      return json_encode(compact('hide_keyboard', 'selective'));
+   }
 
- /**
-  * Display a reply interface to the user (act as if the user has selected the bots message and tapped 'Reply').
-  *
-  * @link https://core.telegram.org/bots/api#forcereply
-  *
-  * @param bool $selective
-  *
-  * @return string
-  */
- public static function forceReply($selective = false)
- {
-    $force_reply = true;
-    return json_encode(compact('force_reply', 'selective'));
- }
+   /**
+    * Display a reply interface to the user (act as if the user has selected the bots message and tapped 'Reply').
+    *
+    * @link https://core.telegram.org/bots/api#forcereply
+    *
+    * @param bool $selective
+    *
+    * @return string
+    */
+   public static function forceReply($selective = false)
+   {
+      $force_reply = true;
+      return json_encode(compact('force_reply', 'selective'));
+   }
 
   private function sendRequest($method, $params, $post = true)
   {

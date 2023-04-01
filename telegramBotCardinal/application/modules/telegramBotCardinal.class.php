@@ -1,7 +1,7 @@
 <?php
 /*
 Name: Push-уведомления в Telegram
-Version: 1.1
+Version: 1.2
 Author: killserver
  */
 if(!defined("IS_CORE")) {
@@ -11,7 +11,7 @@ if(!defined("IS_CORE")) {
 
 class telegramBotCardinal extends modules {
 
-	public static $version = "1.1";
+	public static $version = "1.2";
 	
 	function __construct() {
 		Route::Set('tgUnsubscribe', "tgUnsubscribe.php")->defaults(array(

@@ -1,7 +1,7 @@
 <?php
 /*
 Name: Работа с языками через Excel
-Version: 1.1
+Version: 1.2
 Author: killserver
  */
 if(!defined("IS_CORE")) {
@@ -20,7 +20,7 @@ class LangExcelModule extends modules {
 		return $levels;
 	}
 
-	public static $version = "1.1";
+	public static $version = "1.2";
 
 }
 
